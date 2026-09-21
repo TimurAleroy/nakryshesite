@@ -123,7 +123,7 @@
     border-radius: 100px; padding: 15px 30px; font-family: 'Inter', sans-serif;
     font-size: 13.5px; font-weight: 500; cursor: pointer; border: 1px solid transparent;
     transition: transform 0.22s cubic-bezier(.2,.8,.3,1), filter 0.2s, border-color 0.2s, background 0.25s, box-shadow 0.25s, color 0.2s;
-    white-space: nowrap; letter-spacing: 0.4px;
+    white-space: nowrap; letter-spacing: 1px; text-transform: uppercase;
   }
   .btn svg { transition: transform 0.25s cubic-bezier(.2,.8,.3,1); }
   .btn:hover svg { transform: translateX(3px); }
@@ -1076,7 +1076,7 @@
         </div>
       </div>
       <a href="#vip" onclick="openOverlay('vip'); return false;" class="btn btn-primary teaser-cta">
-        Смотреть ВИП-Комнаты
+        Смотреть Комнаты
         <svg class="icon-mark" style="--mark-rot:90deg" width="12" height="16" viewBox="0 0 24 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="17"/><path d="M12 15 L6 29 L18 29 Z"/></svg>
       </a>
     </div>
@@ -1555,6 +1555,37 @@
     observeReveal(grid.querySelectorAll('.reveal'));
   }
 
+  // Сброс формы брони + экрана успеха + ошибки + кнопки к исходному состоянию.
+  // Используется при каждом открытии брони (общая/ВИП/мероприятие) и при восстановлении
+  // страницы из bfcache (см. обработчик pageshow ниже) — иначе, если бронь уже была
+  // отправлена, при повторном открытии/возврате на страницу всё ещё висит "Заявка принята".
+  function resetBookingUI(formId, successId, errorId, btnId, dateFieldId) {
+    const form = document.getElementById(formId);
+    const success = document.getElementById(successId);
+    if (form) {
+      form.reset();
+      form.style.display = 'block';
+    }
+    if (success) success.classList.remove('show');
+    if (errorId) hideFormError(errorId);
+    if (btnId) {
+      const btn = document.getElementById(btnId);
+      if (btn) { btn.disabled = false; btn.textContent = 'Отправить заявку'; }
+    }
+    // <input type="date"> не имеет HTML-атрибута value — его дефолт (сегодня) проставляется
+    // только через JS один раз при загрузке страницы, а form.reset() откатывает к пустому
+    // значению. Поэтому после reset() дату нужно проставить заново, иначе поле становится
+    // невалидным и форма молча перестаёт отправляться.
+    if (dateFieldId) {
+      const dateEl = document.getElementById(dateFieldId);
+      if (dateEl) {
+        const today = new Date().toISOString().split('T')[0];
+        dateEl.min = today;
+        dateEl.value = today;
+      }
+    }
+  }
+
   // Своя, полностью отдельная форма брони на мероприятие — общий #booking она не трогает,
   // как и у ВИП-комнат (bookVip) — просто здесь вместо оверлея переключаются блоки внутри #events.
   function openEventBooking(i) {
@@ -1571,11 +1602,7 @@
     const timeLabel = ev.date && ev.date.includes('T') ? ev.date.slice(11, 16) : '';
     document.getElementById('eventsBookingDate').textContent = [dateLabel, timeLabel].filter(Boolean).join(' · ');
 
-    const form = document.getElementById('eventsBookingForm');
-    form.reset();
-    form.style.display = 'block';
-    document.getElementById('eventsBookingSuccess').classList.remove('show');
-    hideFormError('eventsBookingError');
+    resetBookingUI('eventsBookingForm', 'eventsBookingSuccess', 'eventsBookingError', 'evSubmitBtn');
 
     document.getElementById('eventsGrid').style.display = 'none';
     panel.style.display = 'block';
@@ -1682,6 +1709,8 @@
     el.classList.add('is-open');
     document.body.classList.add('overlay-open');
     el.scrollTop = 0;
+    // Оверлей брони стола — всегда открываем с чистой формой, а не с прошлым "Заявка принята".
+    if (id === 'booking') resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
   }
   function closeOverlay(id) {
     const el = document.getElementById(id);
@@ -1769,6 +1798,9 @@
     panel.dataset.room = room;
     const label = document.getElementById('vipBookingRoom');
     if (label) label.textContent = `ВИП-комнату №${room}`;
+    // Всегда открываем с чистой формой — иначе после успешной брони при повторном
+    // открытии этой же комнаты (или другой) всё ещё висит "Заявка принята".
+    resetBookingUI('vipBookingForm', 'vipBookingSuccess', 'vipBookingError', 'vipSubmitBtn', 'vipDate');
     panel.classList.add('is-open');
     panel.scrollTop = 0;
   }
@@ -1940,6 +1972,33 @@
       }
     });
   }
+
+  // ── Восстановление из bfcache (кнопка «назад»/жест назад, иногда и «обновить» на телефоне) ──
+  // Мобильные браузеры часто не делают полную перезагрузку страницы, а достают её из
+  // back-forward cache прямо с тем DOM, который был в момент ухода — то есть с открытым
+  // оверлеем брони и уже показанным «Заявка принята». Раз localStorage/sessionStorage
+  // нигде не используется, это единственное объяснение — event.persisted ловит именно
+  // такое восстановление и сбрасывает все оверлеи и формы брони к исходному состоянию.
+  window.addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+
+    document.querySelectorAll('.is-open').forEach(el => el.classList.remove('is-open'));
+    document.body.classList.remove('overlay-open');
+
+    const navDrawerEl = document.getElementById('navDrawer');
+    const navBackdropEl = document.getElementById('navBackdrop');
+    if (navDrawerEl) navDrawerEl.classList.remove('open');
+    if (navBackdropEl) navBackdropEl.classList.remove('open');
+
+    resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
+    resetBookingUI('vipBookingForm', 'vipBookingSuccess', 'vipBookingError', 'vipSubmitBtn', 'vipDate');
+    resetBookingUI('eventsBookingForm', 'eventsBookingSuccess', 'eventsBookingError', 'evSubmitBtn');
+
+    const eventsBookingPanel = document.getElementById('eventsBooking');
+    const eventsGridPanel = document.getElementById('eventsGrid');
+    if (eventsBookingPanel) eventsBookingPanel.style.display = 'none';
+    if (eventsGridPanel) eventsGridPanel.style.display = 'grid';
+  });
 
 </script>
 </body>
