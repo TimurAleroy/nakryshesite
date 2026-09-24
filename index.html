@@ -567,7 +567,7 @@
   .event-desc { font-size: 12.5px; color: var(--text-sub); line-height: 1.6; }
 
   /* ── Отдельная бронь на мероприятие (своя форма, общий #booking не трогает) ── */
-  .events-booking { max-width: 580px; margin: 0 auto; padding: 36px; scroll-margin-top: 72px; }
+  .events-booking { position: relative; max-width: 580px; margin: 0 auto; padding: 36px; scroll-margin-top: 72px; }
   .events-booking-back {
     display: inline-flex; align-items: center; gap: 7px; background: none; border: none;
     color: var(--text-muted); font-size: 12.5px; font-family: 'Inter', sans-serif; cursor: pointer;
@@ -576,6 +576,16 @@
   .events-booking-back:hover { color: var(--accent); }
   .events-booking-back svg { transition: transform 0.2s; }
   .events-booking-back:hover svg { transform: translateX(-3px); }
+  /* Крестик закрытия — в углу карточки, тот же визуальный язык, что у .overlay-close
+     (круг, тонкая рамка, поворот на hover), но не position:fixed — карточка лежит в
+     обычном потоке страницы, а не поверх неё, поэтому крестик закреплён внутри самой карточки. */
+  .events-booking-close {
+    position: absolute; top: 18px; right: 18px; z-index: 2;
+    width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: rgba(30,16,4,0.55); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
+    cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .events-booking-close:hover { border-color: var(--accent); background: rgba(184,115,51,0.2); transform: rotate(90deg); }
   .events-booking-head { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
   .events-booking-title { font-family: 'Jost', sans-serif; font-size: 25px; margin: 6px 0 6px; }
   .events-booking-date { font-size: 13.5px; color: var(--accent); }
@@ -1188,6 +1198,9 @@
 
       <!-- Отдельная бронь на мероприятие — своя форма, общий #booking не трогает -->
       <div class="card events-booking" id="eventsBooking" style="display:none;">
+        <button type="button" class="events-booking-close" onclick="closeEventBooking()" aria-label="Закрыть">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+        </button>
         <button type="button" class="events-booking-back" onclick="closeEventBooking()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           Все мероприятия
