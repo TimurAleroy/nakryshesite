@@ -618,6 +618,49 @@
   .form-textarea { resize: vertical; min-height: 76px; }
   .form-input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(2) hue-rotate(0deg); cursor: pointer; }
 
+  /* ── СВОЙ КАЛЕНДАРЬ / ВРЕМЯ ДЛЯ ДЕСКТОПА (часть 23) ──
+     Нативный попап у <input type="date/time"> — виджет браузера/ОС, он живёт
+     вне DOM страницы и никаким CSS не красится (можно стилизовать только
+     рамку поля и маленькую иконку — см. правило выше). На десктопе (>860px,
+     тот же брейкпоинт, где формы становятся двухколоночными) подменяем сам
+     попап своим дропдауном в цвет бренда — см. initDateTimePicker в JS.
+     На мобильном трогать не стали: там родной пикер листать пальцем удобнее
+     собственной вёрстки, и JS-инициализация там намеренно не запускается. */
+  .dt-field { position: relative; }
+  .dt-field input[readonly] { cursor: pointer; }
+  .dt-dropdown {
+    position: absolute; top: calc(100% + 8px); left: 0; z-index: 20;
+    background: var(--bg-card); border: 1px solid var(--accent-line); border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5); padding: 14px; display: none; min-width: 240px;
+  }
+  .dt-dropdown.is-open { display: block; }
+  .dt-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .dt-cal-title { font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: 0.5px; text-transform: capitalize; }
+  .dt-cal-nav {
+    width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-sub); font-size: 16px; transition: background 0.15s, color 0.15s;
+  }
+  .dt-cal-nav:hover { background: var(--accent-soft); color: var(--accent); }
+  .dt-cal-nav.is-disabled { opacity: 0.25; pointer-events: none; }
+  .dt-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .dt-cal-dow { font-size: 9.5px; text-transform: uppercase; color: var(--text-muted); text-align: center; padding-bottom: 6px; }
+  .dt-cal-day {
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; font-size: 12.5px; cursor: pointer; color: var(--text); transition: background 0.15s, color 0.15s;
+  }
+  .dt-cal-day:hover { background: var(--accent-soft); color: var(--accent); }
+  .dt-cal-day.is-today { color: var(--accent); }
+  .dt-cal-day.is-selected { background: var(--accent); color: var(--bg); }
+  .dt-cal-day.is-disabled { color: var(--text-muted); opacity: 0.3; cursor: default; pointer-events: none; }
+  .dt-cal-day.is-empty { visibility: hidden; pointer-events: none; }
+  .dt-time-list { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+  .dt-time-opt { padding: 8px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text); transition: background 0.15s, color 0.15s; }
+  .dt-time-opt:hover { background: var(--accent-soft); color: var(--accent); }
+  .dt-time-opt.is-selected { background: var(--accent); color: var(--bg); }
+  .dt-time-list::-webkit-scrollbar { width: 5px; }
+  .dt-time-list::-webkit-scrollbar-track { background: transparent; }
+  .dt-time-list::-webkit-scrollbar-thumb { background: var(--accent-line); border-radius: 3px; }
+
   .contact-method { display: flex; gap: 10px; }
   .contact-method label {
     flex: 1; text-align: center; border: 1px solid var(--border); border-radius: 10px;
@@ -936,11 +979,11 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Дата</label>
-              <input type="date" class="form-input" id="vipDate" required>
+              <div class="dt-field"><input type="date" class="form-input" id="vipDate" required></div>
             </div>
             <div class="form-group">
               <label class="form-label">Время</label>
-              <input type="time" class="form-input" id="vipTime" value="20:00" required>
+              <div class="dt-field"><input type="time" class="form-input" id="vipTime" value="20:00" required></div>
             </div>
           </div>
           <div class="form-group">
@@ -1322,11 +1365,11 @@
             <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Дата</label>
-                <input type="date" class="form-input" id="bkDate" required>
+                <div class="dt-field"><input type="date" class="form-input" id="bkDate" required></div>
               </div>
               <div class="form-group">
                 <label class="form-label">Время</label>
-                <input type="time" class="form-input" id="bkTime" value="20:00" required>
+                <div class="dt-field"><input type="time" class="form-input" id="bkTime" value="20:00" required></div>
               </div>
             </div>
 
@@ -1875,6 +1918,139 @@
     return local.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   }
 
+  // ── СВОЙ КАЛЕНДАРЬ / ВРЕМЯ ДЛЯ ДЕСКТОПА (часть 23) ──
+  // Родной попап <input type="date/time"> — вне DOM, CSS его не красит (см.
+  // комментарий у .dt-dropdown в <style>). На десктопе подменяем сам попап
+  // своим дропдауном; на мобильном (≤860px — тот же брейкпоинт, где формы
+  // становятся одноколоночными) ничего не делаем — там родной пикер удобнее
+  // пальцем, и мобильный дизайн трогать не просили.
+  const DT_DESKTOP_QUERY = '(min-width: 861px)';
+
+  function setupDatePicker(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input || !window.matchMedia(DT_DESKTOP_QUERY).matches) return;
+    const field = input.closest('.dt-field');
+    if (!field || field.dataset.dtReady) return;
+    field.dataset.dtReady = '1';
+    input.readOnly = true; // блокирует нативный попап (Chrome/Edge/Safari), значение остаётся рабочим
+
+    const dd = document.createElement('div');
+    dd.className = 'dt-dropdown';
+    field.appendChild(dd);
+
+    const monthNames = ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'];
+    const dowNames = ['пн','вт','ср','чт','пт','сб','вс'];
+    let viewDate = input.value ? new Date(input.value + 'T00:00:00') : new Date();
+
+    function toISO(y, m, d) { return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`; }
+
+    function render() {
+      const minDate = input.min ? new Date(input.min + 'T00:00:00') : null;
+      const year = viewDate.getFullYear(), month = viewDate.getMonth();
+      const startDow = (new Date(year, month, 1).getDay() + 6) % 7; // неделя с понедельника
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const todayISO = toISO(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+      let cells = '';
+      for (let i = 0; i < startDow; i++) cells += '<div class="dt-cal-day is-empty"></div>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const iso = toISO(year, month, d);
+        const disabled = minDate && new Date(year, month, d) < new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+        const cls = ['dt-cal-day'];
+        if (iso === todayISO) cls.push('is-today');
+        if (iso === input.value) cls.push('is-selected');
+        if (disabled) cls.push('is-disabled');
+        cells += `<div class="${cls.join(' ')}" data-iso="${iso}">${d}</div>`;
+      }
+      const prevMonthEnd = new Date(year, month, 0);
+      const prevDisabled = minDate && prevMonthEnd < new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+
+      dd.innerHTML = `
+        <div class="dt-cal-head">
+          <span class="dt-cal-nav${prevDisabled ? ' is-disabled' : ''}" data-nav="-1">‹</span>
+          <span class="dt-cal-title">${monthNames[month]} ${year}</span>
+          <span class="dt-cal-nav" data-nav="1">›</span>
+        </div>
+        <div class="dt-cal-grid">
+          ${dowNames.map(n => `<div class="dt-cal-dow">${n}</div>`).join('')}
+          ${cells}
+        </div>`;
+
+      dd.querySelectorAll('.dt-cal-day[data-iso]').forEach(el => {
+        el.addEventListener('click', () => {
+          input.value = el.dataset.iso;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          close();
+        });
+      });
+      dd.querySelectorAll('.dt-cal-nav').forEach(el => {
+        el.addEventListener('click', () => {
+          if (el.classList.contains('is-disabled')) return;
+          viewDate = new Date(year, month + parseInt(el.dataset.nav, 10), 1);
+          render();
+        });
+      });
+    }
+
+    function onOutside(e) { if (!field.contains(e.target)) close(); }
+    function open() { viewDate = input.value ? new Date(input.value + 'T00:00:00') : new Date(); render(); dd.classList.add('is-open'); document.addEventListener('click', onOutside); }
+    function close() { dd.classList.remove('is-open'); document.removeEventListener('click', onOutside); }
+
+    input.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dd.classList.contains('is-open') ? close() : open();
+    });
+  }
+
+  // Слоты времени — по часам работы заведения («Ежедневно, 13:00 – 01:00»,
+  // см. brand-dna-reference.md), с шагом 30 минут; endMin > 24*60 — это те
+  // же «01:00», только следующих суток, чтобы список шёл по порядку, не
+  // перескакивая с 23:30 обратно на 00:00 визуально в середине списка.
+  function setupTimePicker(inputId, startMin = 13 * 60, endMin = 25 * 60, step = 30) {
+    const input = document.getElementById(inputId);
+    if (!input || !window.matchMedia(DT_DESKTOP_QUERY).matches) return;
+    const field = input.closest('.dt-field');
+    if (!field || field.dataset.dtReady) return;
+    field.dataset.dtReady = '1';
+    input.readOnly = true;
+
+    const dd = document.createElement('div');
+    dd.className = 'dt-dropdown';
+    field.appendChild(dd);
+
+    const options = [];
+    for (let m = startMin; m <= endMin; m += step) {
+      options.push(`${String(Math.floor((m % 1440) / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`);
+    }
+
+    function render() {
+      dd.innerHTML = `<div class="dt-time-list">${options.map(t =>
+        `<div class="dt-time-opt${t === input.value ? ' is-selected' : ''}" data-t="${t}">${t}</div>`
+      ).join('')}</div>`;
+      dd.querySelectorAll('.dt-time-opt').forEach(el => {
+        el.addEventListener('click', () => {
+          input.value = el.dataset.t;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          close();
+        });
+      });
+      const sel = dd.querySelector('.is-selected');
+      if (sel) sel.scrollIntoView({ block: 'center' });
+    }
+
+    function onOutside(e) { if (!field.contains(e.target)) close(); }
+    function open() { render(); dd.classList.add('is-open'); document.addEventListener('click', onOutside); }
+    function close() { dd.classList.remove('is-open'); document.removeEventListener('click', onOutside); }
+
+    input.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dd.classList.contains('is-open') ? close() : open();
+    });
+  }
+
+  setupDatePicker('bkDate');
+  setupTimePicker('bkTime');
+
   function showFormError(id, msg) {
     const el = document.getElementById(id);
     el.textContent = msg;
@@ -1937,6 +2113,8 @@
   if (vipDateInput) {
     vipDateInput.min = new Date().toISOString().split('T')[0];
     vipDateInput.value = vipDateInput.min;
+    setupDatePicker('vipDate');
+    setupTimePicker('vipTime');
   }
 
   const vipBookingFormEl = document.getElementById('vipBookingForm');
