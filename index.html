@@ -661,6 +661,32 @@
   .dt-time-list::-webkit-scrollbar-track { background: transparent; }
   .dt-time-list::-webkit-scrollbar-thumb { background: var(--accent-line); border-radius: 3px; }
 
+  /* ── СВОЙ СЧЁТЧИК «КОЛИЧЕСТВО ГОСТЕЙ» ──
+     Нативные стрелки у <input type="number"> — тоже виджет браузера не в цвет
+     бренда (та же история, что с датой/временем выше). Прячем их и рисуем
+     свой степпер «− число +», значение внутри — тот же <input type="number">,
+     редактируется и вручную. Работает одинаково на десктопе и мобильном —
+     в отличие от даты/времени, у number-инпутов нативная стрелка есть только
+     в десктопных браузерах, на телефоне её и так нет. */
+  .qty-field {
+    display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; transition: border-color 0.15s;
+  }
+  .qty-field:focus-within { border-color: var(--accent); }
+  .qty-btn {
+    width: 44px; height: 46px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    background: transparent; border: none; color: var(--text-sub); cursor: pointer; font-size: 18px;
+    line-height: 1; transition: background 0.15s, color 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .qty-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .qty-btn:active { background: var(--accent); color: var(--bg); }
+  .qty-btn.is-disabled { opacity: 0.3; pointer-events: none; }
+  .qty-input {
+    flex: 1; min-width: 0; width: 100%; text-align: center; background: transparent; border: none; outline: none;
+    color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif; padding: 13px 0; -moz-appearance: textfield;
+  }
+  .qty-input::-webkit-inner-spin-button, .qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
   .contact-method { display: flex; gap: 10px; }
   .contact-method label {
     flex: 1; text-align: center; border: 1px solid var(--border); border-radius: 10px;
@@ -988,7 +1014,11 @@
           </div>
           <div class="form-group">
             <label class="form-label">Количество гостей</label>
-            <input type="number" class="form-input" id="vipGuests" min="1" max="5" value="4">
+            <div class="qty-field">
+              <button type="button" class="qty-btn" data-qty-step="-1" aria-label="Меньше">−</button>
+              <input type="number" class="qty-input" id="vipGuests" min="1" max="5" value="4" inputmode="numeric">
+              <button type="button" class="qty-btn" data-qty-step="1" aria-label="Больше">+</button>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Как удобнее связаться</label>
@@ -1279,7 +1309,11 @@
 
           <div class="form-group">
             <label class="form-label">Количество гостей</label>
-            <input type="number" class="form-input" id="evGuests" min="1" value="2">
+            <div class="qty-field">
+              <button type="button" class="qty-btn" data-qty-step="-1" aria-label="Меньше">−</button>
+              <input type="number" class="qty-input" id="evGuests" min="1" value="2" inputmode="numeric">
+              <button type="button" class="qty-btn" data-qty-step="1" aria-label="Больше">+</button>
+            </div>
           </div>
 
           <div class="form-group">
@@ -1375,7 +1409,11 @@
 
             <div class="form-group">
               <label class="form-label">Количество гостей</label>
-              <input type="number" class="form-input" id="bkGuests" min="1" value="2">
+              <div class="qty-field">
+                <button type="button" class="qty-btn" data-qty-step="-1" aria-label="Меньше">−</button>
+                <input type="number" class="qty-input" id="bkGuests" min="1" value="2" inputmode="numeric">
+                <button type="button" class="qty-btn" data-qty-step="1" aria-label="Больше">+</button>
+              </div>
             </div>
 
             <div class="form-group">
@@ -2050,6 +2088,44 @@
 
   setupDatePicker('bkDate');
   setupTimePicker('bkTime');
+
+  // ── Свой степпер «количество гостей» — прячем нативные стрелки браузера ──
+  function setupQtyStepper(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const field = input.closest('.qty-field');
+    if (!field) return;
+    const minusBtn = field.querySelector('[data-qty-step="-1"]');
+    const plusBtn = field.querySelector('[data-qty-step="1"]');
+    const min = input.min !== '' ? parseInt(input.min, 10) : 1;
+    const max = input.max !== '' ? parseInt(input.max, 10) : Infinity;
+
+    function clamp(v) { return Math.min(max, Math.max(min, v)); }
+    function updateDisabled() {
+      const v = parseInt(input.value, 10);
+      minusBtn.classList.toggle('is-disabled', !isNaN(v) && v <= min);
+      plusBtn.classList.toggle('is-disabled', !isNaN(v) && v >= max);
+    }
+    function step(delta) {
+      const current = parseInt(input.value, 10);
+      input.value = clamp((isNaN(current) ? min : current) + delta);
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      updateDisabled();
+    }
+    minusBtn.addEventListener('click', () => step(-1));
+    plusBtn.addEventListener('click', () => step(1));
+    input.addEventListener('input', updateDisabled);
+    input.addEventListener('blur', () => {
+      const v = parseInt(input.value, 10);
+      input.value = clamp(isNaN(v) ? min : v);
+      updateDisabled();
+    });
+    updateDisabled();
+  }
+
+  setupQtyStepper('bkGuests');
+  setupQtyStepper('vipGuests');
+  setupQtyStepper('evGuests');
 
   function showFormError(id, msg) {
     const el = document.getElementById(id);
