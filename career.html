@@ -871,6 +871,10 @@
     max-height: 260px; overflow-y: auto; box-shadow: 0 18px 40px -12px rgba(0,0,0,0.55);
   }
   .custom-select.open .custom-select-list { display: block; }
+  .custom-select-list::-webkit-scrollbar { width: 5px; }
+  .custom-select-list::-webkit-scrollbar-track { background: transparent; }
+  .custom-select-list::-webkit-scrollbar-thumb { background: var(--accent-line); border-radius: 3px; }
+  .custom-select-list { scrollbar-width: thin; scrollbar-color: var(--accent-line) transparent; }
   .custom-select-list li {
     padding: 11px 13px; border-radius: 8px; font-size: 14px; color: var(--text); cursor: pointer; transition: background 0.15s, color 0.15s;
   }
