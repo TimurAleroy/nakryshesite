@@ -655,6 +655,12 @@
   .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
   .form-textarea { resize: vertical; min-height: 76px; }
   .form-input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(2) hue-rotate(0deg); cursor: pointer; }
+  /* Нативные стрелки у <input type="number"> (Возраст) — виджет браузера не в цвет
+     бренда (белый фон/чёрные стрелки). Прячем их, само поле остаётся обычным
+     текстовым вводом с числовой клавиатурой на телефоне (inputmode="numeric"). */
+  input[type="number"].form-input { -moz-appearance: textfield; }
+  input[type="number"].form-input::-webkit-inner-spin-button,
+  input[type="number"].form-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
   /* ── СВОЙ КАЛЕНДАРЬ / ВРЕМЯ ДЛЯ ДЕСКТОПА (часть 23) ──
      Нативный попап у <input type="date/time"> — виджет браузера/ОС, он живёт
