@@ -2301,38 +2301,130 @@
   }
 
   // ── Phone mask (та же логика, что в гостевом приложении) ──
-  function formatRuPhone(input) {
-    const cursorPos = input.selectionStart ?? input.value.length;
-    const oldValue = input.value;
+  // ─── Телефон +7 (XXX) XXX-XX-XX ─────────────────────────────
+  // «+7» — неприкосновенный префикс: курсор никогда не встаёт перед ним или внутри
+  // него (раньше на телефоне курсор оказывался перед «+7», набранная цифра
+  // вставалась перед кодом страны и номер перемешивался). Считаем только цифры
+  // самого номера (10 после +7) и возвращаем курсор туда же, где их было столько же.
+  const RU_PHONE_PREFIX = '+7';
 
-    let digitsBeforeCursor = 0;
-    for (let i = 0; i < cursorPos && i < oldValue.length; i++) {
-      if (/\d/.test(oldValue[i])) digitsBeforeCursor++;
-    }
-
-    let digits = oldValue.replace(/\D/g, '');
-    if (digits.startsWith('8')) digits = '7' + digits.slice(1);
-    if (!digits.startsWith('7')) digits = '7' + digits;
-    digits = digits.slice(0, 11);
-    const d = digits.slice(1);
-
-    let formatted = '+7';
-    if (d.length > 0) formatted += ' (' + d.slice(0, 3);
-    if (d.length >= 3) formatted += ')';
-    if (d.length > 3) formatted += ' ' + d.slice(3, 6);
-    if (d.length > 6) formatted += '-' + d.slice(6, 8);
-    if (d.length > 8) formatted += '-' + d.slice(8, 10);
-
-    input.value = formatted;
-
-    let count = 0;
-    let newPos = formatted.length;
-    for (let i = 0; i < formatted.length; i++) {
-      if (count === digitsBeforeCursor) { newPos = i; break; }
-      if (/\d/.test(formatted[i])) count++;
-    }
-    input.setSelectionRange(newPos, newPos);
+  // 10 цифр номера из любого текста: «+7 (989) 123-45-67», «8 989 123 45 67»,
+  // «89891234567», «9891234567», «7989…» — всё приводится к «9891234567».
+  function ruPhoneNationalDigits(text) {
+    let d = String(text || '').replace(/\D/g, '');
+    if (d.length >= 11 && (d[0] === '7' || d[0] === '8')) d = d.slice(1);
+    return d.slice(0, 10);
   }
+
+  function ruPhoneFormat(d) {
+    let out = RU_PHONE_PREFIX;
+    if (d.length > 0) out += ' (' + d.slice(0, 3);
+    if (d.length >= 3) out += ')';
+    if (d.length > 3) out += ' ' + d.slice(3, 6);
+    if (d.length > 6) out += '-' + d.slice(6, 8);
+    if (d.length > 8) out += '-' + d.slice(8, 10);
+    return out;
+  }
+
+  // Позиция в отформатированной строке после n-й цифры номера (не считая «+7»)
+  function ruPhoneCaretAfter(formatted, n) {
+    if (n <= 0) return Math.min(formatted.length, formatted.indexOf('(') >= 0 ? formatted.indexOf('(') + 1 : RU_PHONE_PREFIX.length);
+    let count = 0;
+    for (let i = RU_PHONE_PREFIX.length; i < formatted.length; i++) {
+      if (/\d/.test(formatted[i])) { count++; if (count === n) return i + 1; }
+    }
+    return formatted.length;
+  }
+
+  function formatRuPhone(input, ev) {
+    ev = ev || window.event;
+    const raw = input.value;
+    const cursor = input.selectionStart ?? raw.length;
+
+    // Цифры номера и сколько их стоит слева от курсора. «+7» (где бы он ни оказался)
+    // вырезаем — его «7» не часть номера; цифры, набранные ПЕРЕД ним, тоже считаем
+    // цифрами номера (чтобы ничего не потерять, если курсор всё-таки был в начале).
+    const p = raw.indexOf(RU_PHONE_PREFIX);
+    let body = raw, bodyCursor = cursor;
+    if (p >= 0) {
+      body = raw.slice(0, p) + raw.slice(p + RU_PHONE_PREFIX.length);
+      bodyCursor = cursor <= p ? cursor : Math.max(p, cursor - RU_PHONE_PREFIX.length);
+    }
+    let digits = body.replace(/\D/g, '');
+    let before = body.slice(0, bodyCursor).replace(/\D/g, '').length;
+    // Поле было пустым/стёрто целиком, и вставили полный номер — «8…»/«7…» в начале лишние
+    if (p < 0 && digits.length >= 11 && (digits[0] === '7' || digits[0] === '8')) { digits = digits.slice(1); before = Math.max(0, before - 1); }
+
+    // Стёрли скобку/пробел/дефис — цифры не изменились; тогда стираем цифру перед ними,
+    // иначе форматирование вернёт знак обратно и Backspace «застрянет».
+    const prev = input.dataset.phoneDigits;
+    if (ev && ev.inputType === 'deleteContentBackward' && prev === digits && before > 0) {
+      digits = digits.slice(0, before - 1) + digits.slice(before);
+      before -= 1;
+    }
+
+    digits = digits.slice(0, 10);
+    before = Math.min(before, digits.length);
+    const formatted = ruPhoneFormat(digits);
+    input.value = formatted;
+    input.dataset.phoneDigits = digits;
+    const pos = ruPhoneCaretAfter(formatted, before);
+    try { input.setSelectionRange(pos, pos); } catch {}
+  }
+
+  function isRuPhoneInput(el) {
+    return el && el.tagName === 'INPUT' && /formatRuPhone/.test(el.getAttribute('oninput') || '');
+  }
+  // Курсор не пускаем раньше конца «+7 (» — ни при фокусе, ни при нажатии, ни стрелками
+  function ruPhoneClampCaret(el) {
+    if (!isRuPhoneInput(el)) return;
+    if (!el.value || el.value.indexOf(RU_PHONE_PREFIX) !== 0) formatRuPhone(el, {});
+    const min = el.value.length <= RU_PHONE_PREFIX.length ? el.value.length : RU_PHONE_PREFIX.length + 2;
+    if ((el.selectionStart ?? 0) < min || (el.selectionEnd ?? 0) < min) {
+      const end = el.value.length;
+      try { el.setSelectionRange(end, end); } catch {}
+    }
+  }
+  document.addEventListener('focusin', e => {
+    const el = e.target;
+    if (!isRuPhoneInput(el)) return;
+    el.dataset.phoneDigits = ruPhoneNationalDigits(el.value.indexOf(RU_PHONE_PREFIX) === 0 ? el.value.slice(RU_PHONE_PREFIX.length) : el.value);
+    setTimeout(() => ruPhoneClampCaret(el), 0);
+  });
+  ['click', 'keyup', 'select'].forEach(t => document.addEventListener(t, e => ruPhoneClampCaret(e.target)));
+
+  // Вставка номера: полный номер в любом виде заменяет поле целиком, кусок цифр —
+  // вставляется в место курсора. Раньше «8 989…» или «+7 (989)…» склеивались
+  // с уже стоящим «+7» и номер получался неправильным.
+  document.addEventListener('paste', e => {
+    const el = e.target;
+    if (!isRuPhoneInput(el)) return;
+    const text = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+    const pasted = text.replace(/\D/g, '');
+    if (!pasted) { e.preventDefault(); return; }
+    e.preventDefault();
+    let digits;
+    let caretDigits;
+    if (pasted.length >= 10) {
+      digits = ruPhoneNationalDigits(pasted);
+      caretDigits = digits.length;
+    } else {
+      const cur = ruPhoneNationalDigits(el.value.indexOf(RU_PHONE_PREFIX) === 0 ? el.value.slice(RU_PHONE_PREFIX.length) : el.value);
+      const f = el.value;
+      const s = el.selectionStart ?? f.length, en = el.selectionEnd ?? f.length;
+      const count = str => str.slice(RU_PHONE_PREFIX.length).replace(/\D/g, '').length;
+      const a = count(f.slice(0, Math.max(s, RU_PHONE_PREFIX.length)));
+      const b = count(f.slice(0, Math.max(en, RU_PHONE_PREFIX.length)));
+      digits = (cur.slice(0, a) + pasted + cur.slice(b)).slice(0, 10);
+      caretDigits = Math.min(a + pasted.length, digits.length);
+    }
+    const formatted = ruPhoneFormat(digits);
+    el.value = formatted;
+    el.dataset.phoneDigits = digits;
+    const pos = ruPhoneCaretAfter(formatted, caretDigits);
+    try { el.setSelectionRange(pos, pos); } catch {}
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  });
 
   // ── Минимальная дата бронирования — сегодня ──
   const bkDateInput = document.getElementById('bkDate');
