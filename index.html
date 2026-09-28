@@ -682,22 +682,85 @@
     .event-more { margin-top: 24px; }
   }
 
-  /* ── Отдельная бронь на мероприятие (своя форма, общий #booking не трогает) ── */
-  .events-booking { position: relative; max-width: 580px; margin: 0 auto; padding: 36px; scroll-margin-top: 112px; }
-  /* Крестик закрытия — в углу карточки, тот же визуальный язык, что у .overlay-close
-     (круг, тонкая рамка, поворот на hover), но не position:fixed — карточка лежит в
-     обычном потоке страницы, а не поверх неё, поэтому крестик закреплён внутри самой карточки.
-     Текстовая ссылка "← Все мероприятия" убрана — вела туда же, куда и крестик, дублировала его. */
-  .events-booking-close {
-    position: absolute; top: 18px; right: 18px; z-index: 2;
-    width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: rgba(30,16,4,0.55); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
-    cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  /* ── Окно мероприятия (по образцу страницы события kaifuso.rest): заголовок,
+     широкий постер + липкая форма брони справа, «О событии», «Другие события».
+     Бронь — своя форма (общий #booking не трогает). ── */
+  #event {
+    position: fixed; inset: 0; z-index: 300; background: var(--bg);
+    display: none; overflow-y: auto; -webkit-overflow-scrolling: touch;
   }
-  .events-booking-close:hover { border-color: var(--accent); background: rgba(184,115,51,0.2); transform: rotate(90deg); }
-  .events-booking-head { padding-right: 50px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-  .events-booking-title { font-family: 'Jost', sans-serif; font-size: 25px; margin: 6px 0 6px; }
-  .events-booking-date { font-size: 13.5px; color: var(--accent); }
+  #event.is-open { display: block; }
+  .ev-page { padding-top: 104px; padding-bottom: 110px; }
+  .ev-crumbs { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--text-muted); margin-bottom: 18px; }
+  .ev-crumbs a { color: var(--text-sub); transition: color 0.2s; }
+  .ev-crumbs a:hover { color: var(--accent); }
+  .ev-crumbs #evCrumbName { color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .ev-page-title {
+    font-family: 'Jost', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px;
+    font-size: clamp(30px, 4.2vw, 60px); line-height: 1.1; color: var(--text); margin-bottom: 40px;
+  }
+  .ev-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 44px; align-items: start; }
+  .ev-poster {
+    position: relative; border-radius: 40px; overflow: hidden; background: #140a03;
+    border: 1px solid var(--border); aspect-ratio: 16 / 9;
+  }
+  .ev-poster.is-tall { aspect-ratio: 4 / 5; max-width: 560px; }
+  .ev-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ev-poster .event-poster-ph .ph-day { font-size: 120px; }
+
+  .ev-about { margin-top: 64px; }
+  .ev-about-title {
+    font-family: 'Jost', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px;
+    font-size: clamp(26px, 3vw, 42px); color: var(--text); margin-bottom: 26px;
+  }
+  .ev-facts { display: flex; flex-wrap: wrap; gap: 18px 64px; padding-top: 22px; border-top: 1px solid var(--border); margin-bottom: 30px; }
+  .ev-fact-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .ev-fact-value { font-size: 18px; color: var(--text); text-transform: uppercase; letter-spacing: 0.3px; }
+  .ev-desc { font-size: 16px; line-height: 1.8; color: var(--text-sub); max-width: 760px; }
+  .ev-desc p + p { margin-top: 14px; }
+
+  .ev-side { position: sticky; top: 96px; }
+  .events-booking { position: relative; padding: 32px; }
+  .ev-side-title {
+    font-family: 'Jost', sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: 0.5px;
+    font-size: 26px; color: var(--text); margin-bottom: 6px;
+  }
+  .events-booking-date { font-size: 13.5px; color: var(--accent); margin-bottom: 22px; }
+
+  .ev-others { margin-top: 110px; }
+  .ev-others-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .ev-others-track { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .ev-other {
+    display: grid; grid-template-columns: 42% 58%; min-height: 240px; cursor: pointer; text-align: left;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 28px; overflow: hidden;
+    font: inherit; color: inherit; padding: 0; transition: border-color 0.25s;
+  }
+  .ev-other:hover { border-color: var(--accent-line); }
+  .ev-other .event-poster { min-height: 100%; }
+  .ev-other .event-poster-ph .ph-day { font-size: 54px; }
+  .ev-other .event-poster-ph .ph-format { display: none; }
+  .ev-other-body { padding: 22px 20px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .ev-other-body .event-pill { padding: 8px 14px; font-size: 12px; }
+  .ev-other-title { font-family: 'Jost', sans-serif; font-size: 19px; line-height: 1.25; text-transform: uppercase; color: var(--text); }
+
+  @media (max-width: 1100px) {
+    .ev-layout { grid-template-columns: 1fr; gap: 32px; }
+    .ev-side { position: static; }
+    .ev-about { margin-top: 44px; }
+    .ev-others-track { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .ev-page { padding-top: 84px; padding-bottom: 70px; }
+    .ev-page-title { margin-bottom: 26px; }
+    .ev-poster { border-radius: 28px; aspect-ratio: 4 / 5; }
+    .ev-poster .event-poster-ph .ph-day { font-size: 88px; }
+    .events-booking { padding: 24px 20px; }
+    .ev-side-title { font-size: 21px; line-height: 1.25; }
+    .ev-facts { gap: 16px 40px; }
+    .ev-desc { font-size: 15px; }
+    .ev-others { margin-top: 70px; }
+    .ev-others-track { grid-template-columns: 1fr; }
+  }
 
   /* ── BOOKING (полноэкранный оверлей, часть 16 — раньше была обычной секцией на странице) ── */
   #booking .wrap { padding-top: 108px; padding-bottom: 90px; }
@@ -1388,17 +1451,39 @@
         </div>
       </div>
 
-      <!-- Отдельная бронь на мероприятие — своя форма, общий #booking не трогает -->
-      <div class="card events-booking" id="eventsBooking" style="display:none;">
-        <button type="button" class="events-booking-close" onclick="closeEventBooking()" aria-label="Закрыть">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
-        </button>
-        <div class="events-booking-head">
-          <div class="sec-label">Заявка на мероприятие</div>
-          <h3 class="events-booking-title" id="eventsBookingTitle"></h3>
-          <div class="events-booking-date" id="eventsBookingDate"></div>
+    </div>
+  </section>
+
+  <!-- ── МЕРОПРИЯТИЕ (полноэкранный оверлей, как страница события на kaifuso.rest) ── -->
+  <section id="event">
+    <div class="overlay-brand">На Крыше · Афиша</div>
+    <button type="button" class="overlay-close" onclick="closeOverlay('event')" aria-label="Закрыть">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
+
+    <div class="wrap ev-page">
+      <div class="ev-crumbs">
+        <a href="#events" onclick="closeOverlay('event'); return true;">Афиша</a>
+        <span>/</span>
+        <span id="evCrumbName"></span>
+      </div>
+      <h2 class="ev-page-title" id="evPageTitle"></h2>
+
+      <div class="ev-layout">
+        <div class="ev-main">
+          <div class="ev-poster" id="evPoster"></div>
+
+          <div class="ev-about">
+            <h3 class="ev-about-title">О событии</h3>
+            <div class="ev-facts" id="evFacts"></div>
+            <div class="ev-desc" id="evDesc"></div>
+          </div>
         </div>
 
+        <aside class="ev-side">
+          <div class="card events-booking" id="eventsBooking">
+            <h3 class="ev-side-title">Забронировать стол</h3>
+            <div class="events-booking-date" id="eventsBookingDate"></div>
         <div class="form-feedback error" id="eventsBookingError"></div>
 
         <form id="eventsBookingForm">
@@ -1449,9 +1534,19 @@
           <h3>Заявка принята</h3>
           <p>Мы свяжемся с вами в ближайшее время, чтобы подтвердить бронь на мероприятие.</p>
         </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="ev-others" id="evOthersWrap">
+        <div class="ev-others-head">
+          <h3 class="ev-about-title" style="margin:0;">Другие события</h3>
+        </div>
+        <div class="ev-others-track" id="evOthers"></div>
       </div>
     </div>
   </section>
+
 
   <!-- ── БРОНИРОВАНИЕ (полноэкранный оверлей) ─────────── -->
   <section id="booking">
@@ -1775,7 +1870,7 @@
           <h3 class="event-title">${escapeHtml(e.name || '')}</h3>
           ${e.format ? `<div class="event-format">${escapeHtml(e.format)}</div>` : ''}
           ${e.description ? `<div class="event-desc"${e.format ? '' : ' style="margin-top:auto;padding-top:40px;"'}>${escapeHtml(e.description)}</div>` : ''}
-          <button type="button" class="event-more" onclick="openEventBooking(${i})">
+          <button type="button" class="event-more" onclick="openEventDetail(${i})">
             Подробнее
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
           </button>
@@ -1794,7 +1889,7 @@
     const nav = document.getElementById('eventsNav');
     if (!grid || !nav) return;
     const overflow = grid.scrollWidth - grid.clientWidth > 4;
-    nav.hidden = !overflow || grid.style.display === 'none';
+    nav.hidden = !overflow;
     document.getElementById('eventsPrev').disabled = grid.scrollLeft <= 4;
     document.getElementById('eventsNext').disabled = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 4;
   }
@@ -1843,35 +1938,86 @@
     }
   }
 
-  // Своя, полностью отдельная форма брони на мероприятие — общий #booking она не трогает,
-  // как и у ВИП-комнат (bookVip) — просто здесь вместо оверлея переключаются блоки внутри #events.
-  function openEventBooking(i) {
+  // «Подробнее» — открывает окно мероприятия (как страница события на kaifuso.rest):
+  // заголовок, постер, форма брони справа, «О событии» и «Другие события».
+  // Бронь — своя отдельная форма, общий #booking она не трогает.
+  function eventDateParts(raw) {
+    raw = raw || '';
+    const d = new Date(raw.length === 10 ? raw + 'T00:00:00' : raw);
+    const ok = !isNaN(d);
+    return {
+      ok,
+      day: ok ? d.getDate() : '',
+      monthShort: ok ? EVENT_MONTHS[d.getMonth()] : '',
+      dateLabel: ok ? `${d.getDate()} ${EVENT_MONTHS_GEN[d.getMonth()]}` : '',
+      time: raw.includes('T') ? raw.slice(11, 16) : ''
+    };
+  }
+  function eventPosterHTML(e) {
+    const p = eventDateParts(e.date);
+    return `<div class="event-poster-ph">
+        <div class="ph-day">${p.day}</div>
+        <div class="ph-month">${p.monthShort}</div>
+        ${e.format ? `<div class="ph-format">${escapeHtml(e.format)}</div>` : ''}
+      </div>
+      ${e.poster ? `<img src="${escapeHtml(e.poster)}" alt="${escapeHtml(e.name || '')}" loading="lazy" onerror="this.remove()">` : ''}`;
+  }
+
+  function openEventDetail(i) {
     const ev = eventsData[i];
     if (!ev) return;
+    const p = eventDateParts(ev.date);
 
+    document.getElementById('evCrumbName').textContent = ev.name || '';
+    document.getElementById('evPageTitle').textContent = ev.name || '';
+
+    // Постер: широкий кадр по умолчанию; вертикальную афишу (сторис-формат)
+    // показываем в её пропорциях, чтобы не резать текст на ней.
+    const poster = document.getElementById('evPoster');
+    poster.classList.remove('is-tall');
+    poster.innerHTML = eventPosterHTML(ev);
+    const img = poster.querySelector('img');
+    if (img) {
+      const fit = () => { if (img.naturalHeight > img.naturalWidth) poster.classList.add('is-tall'); };
+      img.complete ? fit() : img.addEventListener('load', fit, { once: true });
+    }
+
+    const facts = [];
+    if (p.dateLabel) facts.push(['Когда', p.dateLabel]);
+    if (p.time) facts.push(['Сбор гостей', p.time]);
+    if (ev.format) facts.push(['Формат', ev.format]);
+    document.getElementById('evFacts').innerHTML = facts
+      .map(([l, v]) => `<div><div class="ev-fact-label">${l}:</div><div class="ev-fact-value">${escapeHtml(v)}</div></div>`)
+      .join('');
+
+    const desc = (ev.description || '').split(/\n+/).map(t => t.trim()).filter(Boolean);
+    document.getElementById('evDesc').innerHTML = desc.length
+      ? desc.map(t => `<p>${escapeHtml(t)}</p>`).join('')
+      : '<p>Подробности вечера уточняйте у администратора — оставьте заявку справа, и мы перезвоним.</p>';
+
+    // Форма брони — привязываем к этому мероприятию и сбрасываем прошлое состояние.
     const panel = document.getElementById('eventsBooking');
     panel.dataset.eventName = ev.name || '';
     panel.dataset.eventDate = ev.date || '';
-
-    document.getElementById('eventsBookingTitle').textContent = ev.name || '';
-    const dateISO = (ev.date || '').slice(0, 10);
-    const dateLabel = dateISO ? formatDateLocal(dateISO) : '';
-    const timeLabel = ev.date && ev.date.includes('T') ? ev.date.slice(11, 16) : '';
-    document.getElementById('eventsBookingDate').textContent = [dateLabel, timeLabel].filter(Boolean).join(' · ');
-
+    document.getElementById('eventsBookingDate').textContent =
+      [p.dateLabel, p.time ? `сбор гостей в ${p.time}` : ''].filter(Boolean).join(' · ');
     resetBookingUI('eventsBookingForm', 'eventsBookingSuccess', 'eventsBookingError', 'evSubmitBtn');
 
-    document.getElementById('eventsGrid').style.display = 'none';
-    document.getElementById('eventsNav').hidden = true;
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+    // Другие события — остальные из афиши, клик переключает окно.
+    const others = eventsData.map((e, j) => ({ e, j })).filter(o => o.j !== i);
+    document.getElementById('evOthersWrap').style.display = others.length ? '' : 'none';
+    document.getElementById('evOthers').innerHTML = others.map(({ e, j }) => {
+      const q = eventDateParts(e.date);
+      return `<button type="button" class="ev-other" onclick="openEventDetail(${j})">
+        <div class="event-poster">${eventPosterHTML(e)}</div>
+        <div class="ev-other-body">
+          ${q.dateLabel ? `<div class="event-pill"><span>${q.dateLabel}</span>${q.time ? `<span class="spark">✦</span><span>${q.time}</span>` : ''}</div>` : ''}
+          <div class="ev-other-title">${escapeHtml(e.name || '')}</div>
+        </div>
+      </button>`;
+    }).join('');
 
-  function closeEventBooking() {
-    document.getElementById('eventsBooking').style.display = 'none';
-    document.getElementById('eventsGrid').style.display = 'flex';
-    updateEventsNav();
-    document.getElementById('events').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openOverlay('event');
   }
 
   const eventsBookingFormEl = document.getElementById('eventsBookingForm');
@@ -1992,7 +2138,7 @@
       vipBookingPanel.classList.remove('is-open');
       return;
     }
-    document.querySelectorAll('#vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open').forEach(el => closeOverlay(el.id));
+    document.querySelectorAll('#vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open, #event.is-open').forEach(el => closeOverlay(el.id));
   });
 
   // ── Полноэкранный слайдер (используется и в VIP, и в «Пространствах») ──
@@ -2428,10 +2574,7 @@
     resetBookingUI('vipBookingForm', 'vipBookingSuccess', 'vipBookingError', 'vipSubmitBtn', 'vipDate');
     resetBookingUI('eventsBookingForm', 'eventsBookingSuccess', 'eventsBookingError', 'evSubmitBtn');
 
-    const eventsBookingPanel = document.getElementById('eventsBooking');
-    const eventsGridPanel = document.getElementById('eventsGrid');
-    if (eventsBookingPanel) eventsBookingPanel.style.display = 'none';
-    if (eventsGridPanel) { eventsGridPanel.style.display = 'flex'; updateEventsNav(); }
+    closeOverlay('event');
   });
 
 </script>
