@@ -385,8 +385,9 @@
   #vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open { display: block; }
   body.overlay-open { overflow: hidden; }
 
+  /* Надпись — часть верха страницы: уезжает вместе с ней при прокрутке и не ложится на фото. Крестик остаётся под рукой. */
   .overlay-brand {
-    position: fixed; top: 26px; left: 32px; z-index: 305;
+    position: absolute; top: 26px; left: 32px; z-index: 305;
     font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: 3px; text-transform: uppercase;
     color: var(--text-sub); pointer-events: none;
   }
@@ -399,16 +400,6 @@
   .overlay-close:hover { border-color: var(--accent); background: rgba(184,115,51,0.2); transform: rotate(90deg); }
 
   #vip, #spaces, #menu, #booking { padding: 0; }
-
-  /* Шапка оверлея: как только страницу прокрутили, под надписью и крестиком появляется сплошная плашка —
-     содержимое (фото, текст) уходит под неё и не заезжает на надпись. На самом верху плашки нет, чтобы не закрывать фото. */
-  #vip::before, #spaces::before, #menu::before, #booking::before, #event::before {
-    content: ''; position: fixed; top: 0; left: 0; right: 0; height: 78px; z-index: 304; pointer-events: none;
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 78%, rgba(30,16,4,0.92) 100%);
-    border-bottom: 1px solid var(--border);
-    opacity: 0; transition: opacity 0.25s ease;
-  }
-  #vip.is-scrolled::before, #spaces.is-scrolled::before, #menu.is-scrolled::before, #booking.is-scrolled::before, #event.is-scrolled::before { opacity: 1; }
 
   /* ── ПОЛНОЭКРАННЫЙ СЛАЙДЕР (VIP и Пространства) ──── */
   .fs-slider { position: relative; width: 100%; height: 100vh; min-height: 480px; overflow: hidden; }
@@ -2212,15 +2203,9 @@
     el.classList.add('is-open');
     document.body.classList.add('overlay-open');
     el.scrollTop = 0;
-    el.classList.remove('is-scrolled');
     // Оверлей брони стола — всегда открываем с чистой формой, а не с прошлым "Заявка принята".
     if (id === 'booking') resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
   }
-  // Шапка оверлея становится сплошной, когда содержимое прокручено (см. .is-scrolled в стилях)
-  ['vip', 'spaces', 'menu', 'booking', 'event'].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('scroll', () => el.classList.toggle('is-scrolled', el.scrollTop > 8), { passive: true });
-  });
   function closeOverlay(id) {
     const el = document.getElementById(id);
     if (!el) return;
