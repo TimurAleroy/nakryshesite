@@ -1854,7 +1854,7 @@
   const EVENT_MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   let eventsData = [];
 
-  async function loadEvents() {
+  async function loadEvents(attempt = 0) {
     const grid = document.getElementById('eventsGrid');
     if (!grid) return;
     try {
@@ -1862,13 +1862,15 @@
       if (!res.ok) throw new Error('bad response');
       const events = await res.json();
       if (!Array.isArray(events) || !events.length) {
-        grid.innerHTML = '<div class="menu-empty" style="flex:1;">Ближайших мероприятий пока нет 🎭<br>Следите за обновлениями</div>';
+        grid.innerHTML = '<div class="menu-empty" style="flex:1;">Пока мероприятий нет<br>Следите за обновлениями — анонсы появятся здесь</div>';
         return;
       }
       eventsData = events;
       renderEventsGrid();
     } catch {
-      grid.innerHTML = '<div class="menu-empty" style="flex:1;">Афиша временно недоступна</div>';
+      // сервер мог просыпаться или не ответить с первого раза — пробуем ещё дважды, и только потом говорим об ошибке
+      if (attempt < 2) { setTimeout(() => loadEvents(attempt + 1), 1500 * (attempt + 1)); return; }
+      grid.innerHTML = '<div class="menu-empty" style="flex:1;">Не получилось загрузить афишу<br>Обновите страницу через минуту</div>';
     }
   }
 
