@@ -1887,7 +1887,7 @@
       const dateLabel = ok ? `${day} ${EVENT_MONTHS_GEN[d.getMonth()]}` : '';
       const time = raw.includes('T') ? raw.slice(11, 16) : '';
       const pill = dateLabel
-        ? `<div class="event-pill"><span>${dateLabel}</span>${time ? `<span class="spark">✦</span><span>Сбор гостей в ${time}</span>` : ''}</div>`
+        ? `<div class="event-pill"><span>${dateLabel}</span>${time ? `<span class="spark">✦</span><span>Начало в ${time}</span>` : ''}</div>`
         : '';
       const poster = e.poster
         ? `<img src="${escapeHtml(e.poster)}" alt="${escapeHtml(e.name || '')}" loading="lazy" onerror="this.remove()">`
@@ -2070,8 +2070,8 @@
 
     const facts = [];
     if (p.dateLabel) facts.push(['Когда', p.dateLabel]);
-    if (p.time) facts.push(['Сбор гостей', p.time]);
-    if (ev.format) facts.push(['Формат', ev.format]);
+    if (p.time) facts.push(['Начало', p.time]);
+    if (ev.format) facts.push(['Детали', ev.format]);
     document.getElementById('evFacts').innerHTML = facts
       .map(([l, v]) => `<div><div class="ev-fact-label">${l}:</div><div class="ev-fact-value">${escapeHtml(v)}</div></div>`)
       .join('');
