@@ -601,9 +601,10 @@
   .menu-overlay-inner { max-width: 1080px; margin: 0 auto; padding: 100px 24px 90px; }
   .menu-overlay-head { text-align: center; max-width: 640px; margin: 0 auto 36px; }
   .menu-overlay-head .sec-sub { margin: 10px auto 0; }
+  /* Верхние 66px плашки — место под крестик «Закрыть» (он закреплён по центру сверху), фильтры лежат под ним */
   .menu-tabs-sticky {
     position: sticky; top: 0; z-index: 6; background: var(--bg);
-    padding: 14px 0; margin-bottom: 6px; border-bottom: 1px solid var(--border);
+    padding: 66px 0 14px; margin-top: -20px; margin-bottom: 6px; border-bottom: 1px solid var(--border);
   }
   .menu-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
   .menu-tab {
