@@ -1115,7 +1115,7 @@
           </div>
           <div class="fs-slide-content">
             <div class="fs-slide-label">ВИП-комната</div>
-            <h3 class="fs-slide-title">№ 1</h3>
+            <h3 class="fs-slide-title">1</h3>
             <p class="fs-slide-text">Отдельная комната для компании до&nbsp;5 человек — свой экран, кальян и официант, который ведёт весь вечер.</p>
             <button type="button" class="btn btn-primary fs-slide-cta" onclick="bookVip(1)">Забронировать</button>
           </div>
@@ -1130,7 +1130,7 @@
           </div>
           <div class="fs-slide-content">
             <div class="fs-slide-label">ВИП-комната</div>
-            <h3 class="fs-slide-title">№ 2</h3>
+            <h3 class="fs-slide-title">2</h3>
             <p class="fs-slide-text">Отдельная комната для компании до&nbsp;5 человек — свой экран, кальян и официант, который ведёт весь вечер.</p>
             <button type="button" class="btn btn-primary fs-slide-cta" onclick="bookVip(2)">Забронировать</button>
           </div>
@@ -1145,7 +1145,7 @@
           </div>
           <div class="fs-slide-content">
             <div class="fs-slide-label">ВИП-комната</div>
-            <h3 class="fs-slide-title">№ 3</h3>
+            <h3 class="fs-slide-title">3</h3>
             <p class="fs-slide-text">Отдельная комната для компании до&nbsp;5 человек — свой экран, кальян и официант, который ведёт весь вечер.</p>
             <button type="button" class="btn btn-primary fs-slide-cta" onclick="bookVip(3)">Забронировать</button>
           </div>
@@ -1180,7 +1180,7 @@
           К комнатам
         </button>
         <div class="sec-label">Бронирование ВИП</div>
-        <h3 class="vip-booking-title">Заявка на <span id="vipBookingRoom">ВИП-комнату №1</span></h3>
+        <h3 class="vip-booking-title">Заявка на <span id="vipBookingRoom">ВИП-комнату 1</span></h3>
 
         <div class="form-feedback error" id="vipBookingError"></div>
 
@@ -1234,7 +1234,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12l5 5L20 6"/></svg>
           </div>
           <h3>Заявка принята</h3>
-          <p>Мы свяжемся с вами в ближайшее время, чтобы подтвердить бронь ВИП-комнаты.</p>
+          <p id="vipBookingSuccessNote">Мы свяжемся с вами в ближайшее время, чтобы подтвердить бронь ВИП-комнаты.</p>
         </div>
       </div>
     </div>
@@ -2288,7 +2288,7 @@
     if (!panel) return;
     panel.dataset.room = room;
     const label = document.getElementById('vipBookingRoom');
-    if (label) label.textContent = `ВИП-комнату №${room}`;
+    if (label) label.textContent = `ВИП-комнату ${room}`;
     // Всегда открываем с чистой формой — иначе после успешной брони при повторном
     // открытии этой же комнаты (или другой) всё ещё висит "Заявка принята".
     resetBookingUI('vipBookingForm', 'vipBookingSuccess', 'vipBookingError', 'vipSubmitBtn', 'vipDate');
@@ -2699,8 +2699,9 @@
       const guests = document.getElementById('vipGuests').value;
       const contactMethod = document.querySelector('input[name="vipContactMethod"]:checked')?.value || '';
       const rawComment = document.getElementById('vipComment').value.trim();
+      // комната уходит отдельным полем (так бронь попадает в свою комнату на графике и схеме), а не текстом в комментарии
+      const roomName = room ? `ВИП-комната ${room}` : 'ВИП-комната';
       const comment = [
-        room ? `ВИП-комната №${room}` : 'ВИП-комната',
         contactMethod ? `Связь: ${contactMethod}` : '',
         rawComment
       ].filter(Boolean).join('. ');
@@ -2715,8 +2716,16 @@
         const res = await fetch(`${PROXY_BASE}/api/booking`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, date: dateStr, dateISO, time, guests, comment })
+          body: JSON.stringify({ name, phone, date: dateStr, dateISO, time, guests, comment, room: roomName })
         });
+        // комната на это время уже занята — заявка не создана
+        if (res.status === 409) {
+          const d = await res.json().catch(() => ({}));
+          showFormError('vipBookingError', d.message || 'К сожалению, эта комната на это время уже занята. Выберите другую комнату или время.');
+          btn.disabled = false;
+          btn.textContent = originalText;
+          return;
+        }
         if (!res.ok) throw new Error('bad response');
 
         vipBookingFormEl.style.display = 'none';
