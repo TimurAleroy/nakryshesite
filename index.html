@@ -2283,6 +2283,14 @@
   initSlider('spacesSlider');
 
   // ── VIP-бронь: отдельный блок внутри оверлея (общую форму не трогает) ──
+  // Гость выбирает дату вечера: 00:30 «на пятое» — это ночь с пятого на шестое, то есть календарно уже шестое.
+  // Раньше уходила выбранная дата как есть, и такая бронь попадала на предыдущий вечер.
+  function bookingCalDate(dateISO, time) {
+    if (!dateISO || !/^\d{2}:\d{2}$/.test(time || '') || Number(time.slice(0, 2)) >= 6) return dateISO;
+    const d = new Date(dateISO + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() + 1);
+    return d.toISOString().slice(0, 10);
+  }
   function bookVip(room) {
     const panel = document.getElementById('vipBooking');
     if (!panel) return;
@@ -2652,8 +2660,16 @@
       const res = await fetch(`${PROXY_BASE}/api/booking`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, date: dateStr, dateISO, time, guests, comment })
+        body: JSON.stringify({ name, phone, date: dateStr, dateISO: bookingCalDate(dateISO, time), time, guests, comment })
       });
+      // закрытая дата (частное мероприятие, выходной) или время вне часов работы — показываем причину от сервера
+      if (res.status === 409) {
+        const d = await res.json().catch(() => ({}));
+        showFormError('bookingError', d.message || 'На эту дату и время бронь не принимается. Выберите, пожалуйста, другие.');
+        btn.disabled = false;
+        btn.textContent = originalText;
+        return;
+      }
       if (!res.ok) throw new Error('bad response');
 
       document.getElementById('bookingForm').style.display = 'none';
@@ -2716,9 +2732,9 @@
         const res = await fetch(`${PROXY_BASE}/api/booking`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, date: dateStr, dateISO, time, guests, comment, room: roomName })
+          body: JSON.stringify({ name, phone, date: dateStr, dateISO: bookingCalDate(dateISO, time), time, guests, comment, room: roomName })
         });
-        // комната на это время уже занята — заявка не создана
+        // комната занята, дата закрыта или время вне часов работы — заявка не создана, показываем причину от сервера
         if (res.status === 409) {
           const d = await res.json().catch(() => ({}));
           showFormError('vipBookingError', d.message || 'К сожалению, эта комната на это время уже занята. Выберите другую комнату или время.');
