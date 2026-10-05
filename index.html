@@ -380,7 +380,12 @@
     overflow-y: auto; -webkit-overflow-scrolling: touch;
   }
   #vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open { display: block; }
-  body.overlay-open { overflow: hidden; }
+  /* Страницу под окном держим на месте через position:fixed (JS ниже запоминает прокрутку и
+     возвращает её при закрытии). Одного overflow:hidden на iPhone мало — страница под окном
+     продолжает забирать свайп. */
+  body.overlay-open { overflow: hidden; position: fixed; left: 0; right: 0; width: 100%; }
+  /* жест у края окна не передаётся странице под ним */
+  #vip, #spaces, #menu, #booking, #event { overscroll-behavior: contain; }
 
   /* Надпись — часть верха страницы: уезжает вместе с ней при прокрутке и не ложится на фото. Крестик остаётся под рукой. */
   .overlay-brand {
@@ -391,7 +396,7 @@
   .overlay-close {
     position: fixed; top: 18px; left: 50%; margin-left: -21px; z-index: 305;
     width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: rgba(30,16,4,0.55); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
+    background: rgba(30,16,4,0.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
     cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.2s;
   }
   .overlay-close:hover { border-color: var(--accent); background: rgba(184,115,51,0.2); transform: rotate(90deg); }
@@ -399,7 +404,7 @@
   #vip, #spaces, #menu, #booking { padding: 0; }
 
   /* ── ПОЛНОЭКРАННЫЙ СЛАЙДЕР (VIP и Пространства) ──── */
-  .fs-slider { position: relative; width: 100%; height: 100vh; min-height: 480px; overflow: hidden; }
+  .fs-slider { position: relative; width: 100%; height: 100vh; height: 100dvh; min-height: 480px; overflow: hidden; }
 
   .fs-track {
     position: absolute; inset: 0; display: flex;
@@ -804,7 +809,8 @@
   .booking-trust { margin-top: 26px; font-size: 12.5px; color: var(--text-sub); line-height: 1.7; padding-top: 20px; border-top: 1px solid var(--border); }
 
   .booking-form-card { padding: 32px; background: var(--bg); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+  .form-row > .form-group { min-width: 0; }
   .form-group { margin-bottom: 16px; }
   .form-label { display: block; font-size: 11px; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
   .form-input, .form-textarea {
@@ -815,6 +821,14 @@
   .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
   .form-textarea { resize: vertical; min-height: 76px; }
   .form-input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(2) hue-rotate(0deg); cursor: pointer; }
+  /* Поля даты и времени в Safari на iPhone имеют свой минимальный размер и растягивают форму
+     за границу карточки. Фиксируем ширину по карточке и убираем родной вид поля. */
+  .form-input { min-width: 0; max-width: 100%; }
+  .form-input[type="date"], .form-input[type="time"] {
+    -webkit-appearance: none; appearance: none; display: block; min-height: 47px; line-height: 1.2; text-align: left;
+  }
+  .form-input[type="date"]::-webkit-date-and-time-value,
+  .form-input[type="time"]::-webkit-date-and-time-value { text-align: left; min-height: 1.2em; }
 
   /* ── СВОЙ КАЛЕНДАРЬ / ВРЕМЯ ДЛЯ ДЕСКТОПА (часть 23) ──
      Нативный попап у <input type="date/time"> — виджет браузера/ОС, он живёт
@@ -922,6 +936,8 @@
     pointer-events: none;
   }
   #map-section.unlocked iframe { pointer-events: auto; }
+  #map-section .map-shield { position: absolute; inset: 0; z-index: 1; touch-action: pan-y; }
+  #map-section.unlocked .map-shield { display: none; }
   #map-section .map-tint {
     position: absolute; inset: 0; pointer-events: none;
     background: rgba(30,16,4,0.24);
@@ -980,7 +996,14 @@
     .quick-info-item { flex: 1 1 45%; padding: 0 20px; }
     .quick-info-item:nth-child(2n+1) { padding-left: 0; }
     .quick-info-item:nth-child(2n) { border-left: 1px solid var(--border); }
-    .booking-inner { grid-template-columns: 1fr; gap: 40px; }
+    .booking-inner { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    /* на телефоне порядок: заголовок, форма, потом адрес и часы */
+    .booking-left { display: contents; }
+    .booking-head { order: 1; }
+    .booking-form-card { order: 2; }
+    .booking-aside { order: 3; }
+    /* iPhone приближает страницу при касании поля со шрифтом меньше 16 px */
+    .form-input, .form-textarea, .qty-input { font-size: 16px; }
     .fs-slide-content { padding: 0 24px 44px; }
     .fs-hint { display: none; }
     .fs-badges { top: 70px; right: 14px; }
@@ -993,7 +1016,7 @@
     .film-item { border-radius: 32px; }
     .film-item.wide { aspect-ratio: 0.9; }
     .film-arrow { display: none; }
-    .form-row { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
     .booking-form-card { padding: 22px; }
     .fs-arrow { width: 38px; height: 38px; }
     .fs-arrow-prev { left: 10px; }
@@ -1004,6 +1027,12 @@
     .quick-info-row { flex-direction: column; gap: 20px; }
     .quick-info-item { border-left: none !important; padding: 0 !important; }
     .gallery-photo { height: 220px; }
+  }
+  /* самые узкие телефоны: кнопки шапки не выходят за край экрана */
+  @media (max-width: 360px) {
+    header .wrap { gap: 8px; }
+    .header-actions { gap: 4px; }
+    .header-actions .btn { padding-left: 16px; padding-right: 16px; }
   }
 </style>
 </head>
@@ -1589,10 +1618,13 @@
 
     <div class="wrap">
       <div class="booking-inner">
-        <div>
+        <div class="booking-left">
+          <div class="booking-head">
           <div class="sec-label">Бронирование</div>
           <h2 class="sec-heading">Забронируйте столик</h2>
           <p class="sec-sub">Оставьте заявку — администратор подтвердит бронь лично и свяжется удобным для вас способом.</p>
+          </div>
+          <div class="booking-aside">
           <div class="booking-info-list">
             <div class="booking-info-row">
               <div class="booking-info-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
@@ -1611,6 +1643,7 @@
             Смотреть на карте
           </a>
           <div class="booking-trust">Если что-то пойдёт не так — просто скажите. Мы не спорим, мы исправляем.</div>
+          </div>
         </div>
 
         <div class="reveal card booking-form-card">
@@ -1689,6 +1722,9 @@
          и до явного клика "Разблокировать карту" не перехватывает скролл/тач —
          потери в производительности от отказа от lazy здесь незаметны. -->
     <iframe id="mapFrame" src="https://yandex.ru/map-widget/v1/?ll=44.627692%2C43.042877&z=16&pt=44.627692,43.042877,pm2rdm" allowfullscreen title="На Крыше на карте"></iframe>
+    <!-- Невидимый слой: пока карта заблокирована, он принимает касания сам и отдаёт их странице.
+         Одного pointer-events:none у iframe на iPhone мало, касание уходило в карту. -->
+    <div class="map-shield" id="mapShield"></div>
     <div class="map-tint"></div>
     <div class="map-shade"></div>
     <div class="map-controls">
@@ -1711,10 +1747,39 @@
 <script>
   const PROXY_BASE = 'https://notion-proxy-na-kryishe-production.up.railway.app';
 
+  // ── Блокировка прокрутки страницы под окнами ──
+  // Страница блокируется, только если открыто настоящее окно (ВИП, пространства, меню, бронь,
+  // афиша мероприятия) или выезжающая панель. Раньше проверка искала любой элемент с классом
+  // is-open, в том числе панель брони внутри скрытого окна ВИП, и после закрытия окна крестиком
+  // страница оставалась заблокированной до перезагрузки.
+  const SCROLL_LOCK_SEL = '#vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open, #event.is-open, #navDrawer.open';
+  let bodyLocked = false;
+  let lockedScrollY = 0;
+  function syncScrollLock() {
+    const need = !!document.querySelector(SCROLL_LOCK_SEL);
+    const body = document.body;
+    if (need && !bodyLocked) {
+      lockedScrollY = window.scrollY || window.pageYOffset || 0;
+      body.style.top = (-lockedScrollY) + 'px';
+      body.classList.add('overlay-open');
+      bodyLocked = true;
+    } else if (!need && bodyLocked) {
+      bodyLocked = false;
+      body.classList.remove('overlay-open');
+      body.style.top = '';
+      const root = document.documentElement;
+      const prevBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto'; // без плавной прокрутки, иначе страница «едет» с самого верха
+      window.scrollTo(0, lockedScrollY);
+      root.style.scrollBehavior = prevBehavior;
+    }
+  }
+
   // ── Header scroll state ──
   const headerEl = document.getElementById('siteHeader');
   const heroBgEl = document.querySelector('#hero .hero-bg');
   window.addEventListener('scroll', () => {
+    if (bodyLocked) return; // под открытым окном страница зафиксирована, прокрутка там не настоящая
     headerEl.classList.toggle('scrolled', window.scrollY > 30);
     // лёгкий параллакс фона hero
     if (heroBgEl) {
@@ -2195,11 +2260,7 @@
     drawer.classList.toggle('open', open);
     if (backdrop) backdrop.classList.toggle('open', open);
     if (toggleBtn) toggleBtn.classList.toggle('active', open);
-    if (open) {
-      document.body.classList.add('overlay-open');
-    } else if (!document.querySelector('.is-open')) {
-      document.body.classList.remove('overlay-open');
-    }
+    syncScrollLock();
   }
 
   // ── Полноэкранные оверлеи VIP / Пространства ──
@@ -2207,7 +2268,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('is-open');
-    document.body.classList.add('overlay-open');
+    syncScrollLock();
     el.scrollTop = 0;
     // Оверлей брони стола — всегда открываем с чистой формой, а не с прошлым "Заявка принята".
     if (id === 'booking') resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
@@ -2216,7 +2277,9 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('is-open');
-    if (!document.querySelector('.is-open')) document.body.classList.remove('overlay-open');
+    // панель брони ВИП лежит внутри окна ВИП: закрываем её вместе с окном
+    if (id === 'vip') closeVipBooking();
+    syncScrollLock();
   }
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
@@ -2777,7 +2840,6 @@
     if (!e.persisted) return;
 
     document.querySelectorAll('.is-open').forEach(el => el.classList.remove('is-open'));
-    document.body.classList.remove('overlay-open');
 
     const navDrawerEl = document.getElementById('navDrawer');
     const navBackdropEl = document.getElementById('navBackdrop');
@@ -2789,6 +2851,7 @@
     resetBookingUI('eventsBookingForm', 'eventsBookingSuccess', 'eventsBookingError', 'evSubmitBtn');
 
     closeOverlay('event');
+    syncScrollLock();
   });
 
 </script>
