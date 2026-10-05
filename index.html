@@ -899,12 +899,13 @@
   }
   .qty-input::-webkit-inner-spin-button, .qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-  .contact-method { display: flex; gap: 10px; }
+  .contact-method { display: flex; gap: 10px; position: relative; }
   .contact-method label {
     flex: 1; text-align: center; border: 1px solid var(--border); border-radius: 10px;
     padding: 11px; font-size: 13px; color: var(--text-sub); cursor: pointer; transition: 0.15s;
   }
-  .contact-method input { display: none; }
+  /* радиокнопки спрятаны визуально, но остаются доступными с клавиатуры (раньше display:none) */
+  .contact-method input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
   .contact-method input:checked + label { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
   .booking-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
@@ -1034,6 +1035,23 @@
     .header-actions { gap: 4px; }
     .header-actions .btn { padding-left: 16px; padding-right: 16px; }
   }
+
+  /* ── «5+» под полем числа гостей ── */
+  .qty-hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 8px; }
+  .qty-hint[hidden] { display: none; }
+
+  /* ── Кнопка «Повторить» при сбое загрузки меню и афиши ── */
+  .retry-btn { margin-top: 18px; }
+
+  /* ── Доступность: видимый фокус при работе с клавиатуры (мышь и касание его не показывают) ── */
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .form-input:focus-visible, .form-textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .qty-field:has(:focus-visible) { box-shadow: 0 0 0 2px var(--accent-line); }
+  .qty-btn:focus-visible, .qty-input:focus-visible { outline: none; }
+  .qty-btn:focus-visible { background: var(--accent-soft); color: var(--accent); }
+  .contact-method input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* сами окна получают фокус программно, рамка вокруг всего экрана не нужна */
+  [tabindex="-1"]:focus { outline: none; }
 </style>
 </head>
 <body>
@@ -1044,7 +1062,7 @@
 
   <header id="siteHeader">
     <div class="wrap">
-      <a href="#hero" aria-label="На Крыше">
+      <a href="#hero" aria-label="На Крыше" onclick="return navTo('hero')">
         <img class="logo-img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAdUAAAW4CAYAAADnnFlgAAAzgElEQVR4nO3dP2+c97nv60cHpziHnGkHGHYSjkTsDbLY5ABiN9CwFMFpxUTdRoJtrnew30dkIGm9YrcSlFIK1CkHsoEDu3ECJJ0JqKXklqewneU4okSKX87z576ubmVhrTxwQn74zPzu+3fjf0ynDXA5/+//9+Ss7We4Dl+9+qb5X//zf99o+zmgr/6Pth8AAIZCVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUgX/6v9f+r7YfAXpNVOGS5ou9s7af4br8t//+/zTj8fpx288BfSWqcElHvz5s+xGu1YOHh79r+xmgr0QVLuHO5q2zndlW249xrY4eLtt+BOgtUYVLOHo47LfUpmma0WitOVjuD/YjbrhOogoXNN2YnN0/XLT9GCvxm0+O2n4E6CVRhQs6WO63/QgrM51Omt3ZtrdVuCRRhQsYj9ePq33X6G0VLk9U4QLmi73fjUZrbT/GSu3M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" alt="На Крыше">
       </a>
       <div class="header-info">
@@ -1056,7 +1074,7 @@
       </div>
       <div class="header-actions">
         <a href="#booking" class="btn btn-primary" onclick="openOverlay('booking'); return false;">Забронировать</a>
-        <button class="nav-toggle" id="navToggleBtn" onclick="toggleNavDrawer(!document.getElementById('navDrawer').classList.contains('open'))" aria-label="Меню">
+        <button class="nav-toggle" id="navToggleBtn" onclick="toggleNavDrawer(!document.getElementById('navDrawer').classList.contains('open'))" aria-label="Меню" aria-expanded="false" aria-controls="navDrawer">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line class="nt-l1" x1="3" y1="6" x2="21" y2="6"/><line class="nt-l2" x1="3" y1="12" x2="21" y2="12"/><line class="nt-l3" x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
@@ -1064,7 +1082,7 @@
   </header>
 
   <div class="nav-backdrop" id="navBackdrop" onclick="toggleNavDrawer(false)"></div>
-  <div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer" id="navDrawer" role="dialog" aria-modal="true" aria-label="Меню сайта" tabindex="-1" inert>
     <div class="nav-drawer-inner">
       <div class="nav-drawer-book">
         <div class="nav-drawer-eyebrow">Бронь стола</div>
@@ -1088,17 +1106,17 @@
       <div class="nav-drawer-nav">
         <div class="nav-drawer-eyebrow">Навигация</div>
         <div class="nav-drawer-links">
-          <a href="#about" onclick="toggleNavDrawer(false)">О нас</a>
-          <a href="#spaces" onclick="toggleNavDrawer(false); openOverlay('spaces'); return false;">Пространства</a>
-          <a href="#vip" onclick="toggleNavDrawer(false); openOverlay('vip'); return false;">ВИП-Комнаты</a>
-          <a href="#menu" onclick="toggleNavDrawer(false); openOverlay('menu'); return false;">Меню</a>
-          <a href="#events" onclick="toggleNavDrawer(false)">Афиша</a>
+          <a href="#about" onclick="return navTo('about')">О нас</a>
+          <a href="#spaces" onclick="return navOpen('spaces')">Пространства</a>
+          <a href="#vip" onclick="return navOpen('vip')">ВИП-Комнаты</a>
+          <a href="#menu" onclick="return navOpen('menu')">Меню</a>
+          <a href="#events" onclick="return navTo('events')">Афиша</a>
           <a href="career.html">Карьера</a>
         </div>
       </div>
 
       <div class="nav-drawer-foot">
-        <a href="#booking" class="btn btn-outline btn-full" onclick="toggleNavDrawer(false); openOverlay('booking'); return false;">Бронь стола онлайн</a>
+        <a href="#booking" class="btn btn-outline btn-full" onclick="return navOpen('booking')">Бронь стола онлайн</a>
       </div>
     </div>
   </div>
@@ -1126,8 +1144,8 @@
   </section>
 
   <!-- ── VIP (полноэкранный оверлей-слайдер) ─────── -->
-  <section id="vip">
-    <div class="overlay-brand">На Крыше · ВИП</div>
+  <section id="vip" role="dialog" aria-modal="true" aria-label="ВИП-комнаты" tabindex="-1">
+    <div class="overlay-brand" aria-hidden="true">На Крыше · ВИП</div>
     <button type="button" class="overlay-close" onclick="closeOverlay('vip')" aria-label="Закрыть">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
     </button>
@@ -1202,7 +1220,7 @@
     </div>
 
     <!-- ── Отдельный блок брони VIP (внутри оверлея, общую форму не трогает) ── -->
-    <div class="vip-booking" id="vipBooking">
+    <div class="vip-booking" id="vipBooking" role="dialog" aria-modal="true" aria-label="Заявка на бронь ВИП-комнаты" tabindex="-1">
       <div class="vip-booking-card card">
         <button type="button" class="vip-booking-back" onclick="closeVipBooking()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -1237,7 +1255,7 @@
             <label class="form-label">Количество гостей</label>
             <div class="qty-field">
               <button type="button" class="qty-btn" data-qty-step="-1" aria-label="Меньше">−</button>
-              <input type="number" class="qty-input" id="vipGuests" min="1" max="5" value="4" inputmode="numeric">
+              <input type="number" class="qty-input" id="vipGuests" min="1" max="5" value="4" inputmode="numeric" aria-label="Количество гостей">
               <button type="button" class="qty-btn" data-qty-step="1" aria-label="Больше">+</button>
             </div>
           </div>
@@ -1270,8 +1288,8 @@
   </section>
 
   <!-- ── ПРОСТРАНСТВА (полноэкранный оверлей-слайдер) ── -->
-  <section id="spaces">
-    <div class="overlay-brand">На Крыше · Пространства</div>
+  <section id="spaces" role="dialog" aria-modal="true" aria-label="Пространства" tabindex="-1">
+    <div class="overlay-brand" aria-hidden="true">На Крыше · Пространства</div>
     <button type="button" class="overlay-close" onclick="closeOverlay('spaces')" aria-label="Закрыть">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
     </button>
@@ -1327,8 +1345,8 @@
   </section>
 
   <!-- ── МЕНЮ (полноэкранный оверлей, живые данные из Notion) ── -->
-  <section id="menu">
-    <div class="overlay-brand">На Крыше · Меню</div>
+  <section id="menu" role="dialog" aria-modal="true" aria-label="Меню" tabindex="-1">
+    <div class="overlay-brand" aria-hidden="true">На Крыше · Меню</div>
     <button type="button" class="overlay-close" onclick="closeOverlay('menu')" aria-label="Закрыть">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
     </button>
@@ -1516,15 +1534,15 @@
   </section>
 
   <!-- ── МЕРОПРИЯТИЕ (полноэкранный оверлей, как страница события на kaifuso.rest) ── -->
-  <section id="event">
-    <div class="overlay-brand">На Крыше · Афиша</div>
+  <section id="event" role="dialog" aria-modal="true" aria-label="Мероприятие" tabindex="-1">
+    <div class="overlay-brand" aria-hidden="true">На Крыше · Афиша</div>
     <button type="button" class="overlay-close" onclick="closeOverlay('event')" aria-label="Закрыть">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
     </button>
 
     <div class="wrap ev-page">
       <div class="ev-crumbs">
-        <a href="#events" onclick="closeOverlay('event'); return true;">Афиша</a>
+        <a href="#events" onclick="return navTo('events')">Афиша</a>
         <span>/</span>
         <span id="evCrumbName"></span>
       </div>
@@ -1564,9 +1582,10 @@
             <label class="form-label">Количество гостей</label>
             <div class="qty-field">
               <button type="button" class="qty-btn" data-qty-step="-1" aria-label="Меньше">−</button>
-              <input type="number" class="qty-input" id="evGuests" min="1" value="2" inputmode="numeric">
+              <input type="text" class="qty-input" id="evGuests" min="1" max="5" value="2" inputmode="numeric" pattern="[0-9+]*" maxlength="2" autocomplete="off" aria-label="Количество гостей" data-plus-at="5" data-plus-hint="evGuestsMore">
               <button type="button" class="qty-btn" data-qty-step="1" aria-label="Больше">+</button>
             </div>
+            <p class="qty-hint" id="evGuestsMore" hidden>Бронь придёт как на 5 гостей — точное число администратор уточнит при подтверждении.</p>
           </div>
 
           <div class="form-group">
@@ -1610,8 +1629,8 @@
 
 
   <!-- ── БРОНИРОВАНИЕ (полноэкранный оверлей) ─────────── -->
-  <section id="booking">
-    <div class="overlay-brand">На Крыше · Бронирование</div>
+  <section id="booking" role="dialog" aria-modal="true" aria-label="Бронирование стола" tabindex="-1">
+    <div class="overlay-brand" aria-hidden="true">На Крыше · Бронирование</div>
     <button type="button" class="overlay-close" onclick="closeOverlay('booking')" aria-label="Закрыть">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
     </button>
@@ -1677,9 +1696,10 @@
               <label class="form-label">Количество гостей</label>
               <div class="qty-field">
                 <button type="button" class="qty-btn" data-qty-step="-1" aria-label="Меньше">−</button>
-                <input type="number" class="qty-input" id="bkGuests" min="1" value="2" inputmode="numeric">
+                <input type="text" class="qty-input" id="bkGuests" min="1" max="5" value="2" inputmode="numeric" pattern="[0-9+]*" maxlength="2" autocomplete="off" aria-label="Количество гостей" data-plus-at="5" data-plus-hint="bkGuestsMore">
                 <button type="button" class="qty-btn" data-qty-step="1" aria-label="Больше">+</button>
               </div>
+              <p class="qty-hint" id="bkGuestsMore" hidden>Бронь придёт как на 5 гостей — точное число администратор уточнит при подтверждении.</p>
             </div>
 
             <div class="form-group">
@@ -1755,7 +1775,9 @@
   const SCROLL_LOCK_SEL = '#vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open, #event.is-open, #navDrawer.open';
   let bodyLocked = false;
   let lockedScrollY = 0;
+  let lastUnlock = null; // куда вернули страницу при снятии блокировки (нужно после «Назад», см. слои ниже)
   function syncScrollLock() {
+    if (layerBatchDepth) return; // внутри пакета правок слоёв блокировку пересчитаем один раз в конце
     const need = !!document.querySelector(SCROLL_LOCK_SEL);
     const body = document.body;
     if (need && !bodyLocked) {
@@ -1765,6 +1787,7 @@
       bodyLocked = true;
     } else if (!need && bodyLocked) {
       bodyLocked = false;
+      lastUnlock = { y: lockedScrollY, t: Date.now() };
       body.classList.remove('overlay-open');
       body.style.top = '';
       const root = document.documentElement;
@@ -1832,22 +1855,54 @@
     });
   }
 
-  async function loadMenu() {
+  // Запрос с ожиданием не дольше 12 секунд: сервер на Railway иногда просыпается долго, а зависший
+  // запрос без конца оставлял бы гостя перед пустой заглушкой.
+  async function fetchJson(url, ms = 12000) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+      const res = await fetch(url, { signal: ctrl.signal });
+      if (!res.ok) throw new Error('bad response');
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  // Сообщение о сбое с кнопкой «Повторить» (обработчик — один, на документе, по data-retry)
+  function retryBlockHtml(message, kind, style) {
+    return `<div class="menu-empty"${style ? ` style="${style}"` : ''}>${message}<br><button type="button" class="btn btn-outline retry-btn" data-retry="${kind}">Повторить</button></div>`;
+  }
+
+  let menuState = 'loading'; // loading | ok | failed
+  let menuBusy = false;
+  let menuSkeletonHtml = null;
+  async function loadMenu(attempt = 0) {
     const grid = document.getElementById('menuGrid');
     if (!grid) return;
+    if (attempt === 0) {
+      if (menuBusy) return;
+      menuBusy = true;
+      if (menuSkeletonHtml === null) menuSkeletonHtml = grid.innerHTML;
+      else grid.innerHTML = menuSkeletonHtml; // повтор: снова показываем «загружаем»
+      menuState = 'loading';
+    }
     try {
-      const res = await fetch(`${PROXY_BASE}/api/menu`);
-      if (!res.ok) throw new Error('bad response');
-      const items = await res.json();
+      const items = await fetchJson(`${PROXY_BASE}/api/menu`);
       if (!Array.isArray(items) || !items.length) throw new Error('empty menu');
       menuItemsData = items;
       populateMenuTeaserPhotos(items);
       renderMenuTabs();
       renderMenuGrid();
+      menuState = 'ok';
+      menuBusy = false;
     } catch {
+      // сервер мог просыпаться или не ответить с первого раза — пробуем ещё дважды, и только потом говорим об ошибке
+      if (attempt < 2) { setTimeout(() => loadMenu(attempt + 1), 1500 * (attempt + 1)); return; }
+      menuState = 'failed';
+      menuBusy = false;
       const tabsEl = document.getElementById('menuTabs');
       if (tabsEl) tabsEl.innerHTML = '';
-      grid.innerHTML = '<div class="menu-empty">Меню сейчас недоступно — актуальную карту можно посмотреть у нас в зале.</div>';
+      grid.innerHTML = retryBlockHtml('Меню сейчас недоступно — актуальную карту можно посмотреть у нас в зале.', 'menu');
     }
   }
 
@@ -1917,13 +1972,23 @@
   const EVENT_MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   let eventsData = [];
 
+  let eventsState = 'loading'; // loading | ok | failed
+  let eventsBusy = false;
+  let eventsSkeletonHtml = null;
   async function loadEvents(attempt = 0) {
     const grid = document.getElementById('eventsGrid');
     if (!grid) return;
+    if (attempt === 0) {
+      if (eventsBusy) return;
+      eventsBusy = true;
+      if (eventsSkeletonHtml === null) eventsSkeletonHtml = grid.innerHTML;
+      else grid.innerHTML = eventsSkeletonHtml;
+      eventsState = 'loading';
+    }
     try {
-      const res = await fetch(`${PROXY_BASE}/api/events`);
-      if (!res.ok) throw new Error('bad response');
-      const events = await res.json();
+      const events = await fetchJson(`${PROXY_BASE}/api/events`);
+      eventsState = 'ok';
+      eventsBusy = false;
       if (!Array.isArray(events) || !events.length) {
         grid.innerHTML = '<div class="menu-empty" style="flex:1;">Пока мероприятий нет<br>Следите за обновлениями — анонсы появятся здесь</div>';
         return;
@@ -1933,7 +1998,9 @@
     } catch {
       // сервер мог просыпаться или не ответить с первого раза — пробуем ещё дважды, и только потом говорим об ошибке
       if (attempt < 2) { setTimeout(() => loadEvents(attempt + 1), 1500 * (attempt + 1)); return; }
-      grid.innerHTML = '<div class="menu-empty" style="flex:1;">Не получилось загрузить афишу<br>Обновите страницу через минуту</div>';
+      eventsState = 'failed';
+      eventsBusy = false;
+      grid.innerHTML = retryBlockHtml('Не получилось загрузить афишу', 'events', 'flex:1;');
     }
   }
 
@@ -2193,7 +2260,7 @@
       const rawDate = panel.dataset.eventDate || '';
       const dateISO = rawDate.slice(0, 10);
       const time = rawDate.includes('T') ? rawDate.slice(11, 16) : '';
-      const guests = document.getElementById('evGuests').value;
+      const guests = guestsFieldValue('evGuests');
       const contactMethod = document.querySelector('input[name="evContactMethod"]:checked')?.value || '';
       const rawComment = document.getElementById('evComment').value.trim();
       const comment = [contactMethod ? `Связь: ${contactMethod}` : '', rawComment].filter(Boolean).join('. ');
@@ -2233,6 +2300,18 @@
 
   loadEvents();
 
+  // Кнопка «Повторить» и возвращение интернета: если меню или афиша не загрузились, пробуем снова
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest ? e.target.closest('[data-retry]') : null;
+    if (!btn) return;
+    if (btn.dataset.retry === 'menu') loadMenu(0);
+    else if (btn.dataset.retry === 'events') loadEvents(0);
+  });
+  window.addEventListener('online', () => {
+    if (menuState === 'failed') loadMenu(0);
+    if (eventsState === 'failed') loadEvents(0);
+  });
+
   // ── Map lock/unlock + center ──
   const mapSectionEl = document.getElementById('map-section');
   const mapLockBtn = document.getElementById('mapLockBtn');
@@ -2251,50 +2330,280 @@
     mapCenterBtn.addEventListener('click', () => { mapFrame.src = mapFrameSrc; });
   }
 
-  // ── Выезжающая панель навигации (дектоп + мобилка) ──
-  function toggleNavDrawer(open) {
-    const drawer = document.getElementById('navDrawer');
-    const backdrop = document.getElementById('navBackdrop');
-    const toggleBtn = document.getElementById('navToggleBtn');
-    if (!drawer) return;
-    drawer.classList.toggle('open', open);
-    if (backdrop) backdrop.classList.toggle('open', open);
-    if (toggleBtn) toggleBtn.classList.toggle('active', open);
+  // ── Слои: выезжающая панель, окна (ВИП, пространства, меню, бронь, мероприятие) и панель брони ВИП ──
+  // Каждый открытый слой — запись в истории браузера. Поэтому «Назад» (кнопка, жест на телефоне,
+  // Alt+←) закрывает верхний слой, а не уводит со всего сайта. Крестик, Esc и тап по фону закрывают
+  // слой и убирают его запись из истории (history.go). Адрес окна: #menu, #booking, #vip, #spaces —
+  // по такой ссылке (из QR-кода, из мессенджера) окно открывается сразу.
+  // Правило записей: в записи истории лежит полный список открытых слоёв (state.stack), записей
+  // столько, сколько слоёв: [] → ['menu'] → …; ['vip'] → ['vip','vipbook'].
+  const OVERLAY_IDS = ['vip', 'spaces', 'menu', 'booking', 'event'];
+  const LINKABLE_OVERLAYS = ['vip', 'spaces', 'menu', 'booking'];
+  let layerBatchDepth = 0;
+  let curStack = [];          // что записано в текущей записи истории
+  let histPending = false;    // ждём popstate после нашего history.go
+  let histTimer = 0;
+  const histWaiters = [];
+  const layerOpeners = {};    // кто открыл слой: туда вернётся фокус при закрытии
+
+  const $id = (id) => document.getElementById(id);
+  const hasCls = (el, c) => !!el && el.classList.contains(c);
+  const isOverlayOpen = (id) => hasCls($id(id), 'is-open');
+  const isDrawerOpen = () => hasCls($id('navDrawer'), 'open');
+  const isVipPanelOpen = () => hasCls($id('vipBooking'), 'is-open');
+  const sameStack = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+
+  function domStack() {
+    const s = [];
+    if (isDrawerOpen()) s.push('drawer');
+    const ov = OVERLAY_IDS.find(isOverlayOpen);
+    if (ov) { s.push(ov); if (ov === 'vip' && isVipPanelOpen()) s.push('vipbook'); }
+    return s;
+  }
+  function stackUrl(stack) {
+    const ov = stack.find((x) => LINKABLE_OVERLAYS.includes(x));
+    return ov ? '#' + ov : undefined; // у выезжающей панели и окна мероприятия адрес не меняем
+  }
+
+  // Приводит историю браузера к тому, что открыто на экране.
+  function historySync() {
+    if (layerBatchDepth || histPending) return;
+    const T = domStack();
+    if (sameStack(T, curStack)) return;
+    try {
+      if (T.length < curStack.length) {
+        // закрыли слой: убираем его запись; ответа (popstate) ждём, пока он не придёт — новые записи не добавляем
+        histPending = true;
+        clearTimeout(histTimer);
+        histTimer = setTimeout(() => {
+          if (!histPending) return;
+          histPending = false;
+          curStack = domStack();
+          flushHistWaiters();
+        }, 1000);
+        history.go(-(curStack.length - T.length));
+        return;
+      }
+      if (T.length > curStack.length) {
+        for (let n = curStack.length + 1; n <= T.length; n++) {
+          const st = T.slice(0, n);
+          history.pushState({ na: 1, stack: st }, '', stackUrl(st));
+        }
+      } else {
+        history.replaceState({ na: 1, stack: T }, '', stackUrl(T));
+      }
+      curStack = T;
+    } catch (_) {
+      histPending = false;
+      curStack = T;
+    }
+  }
+  function whenHistoryIdle(fn) { if (histPending) histWaiters.push(fn); else fn(); }
+  function flushHistWaiters() { histWaiters.splice(0).forEach((fn) => { try { fn(); } catch (_) {} }); }
+
+  // Браузер сам возвращает страницу на то место, где мы её оставили, но на iPhone он при этом
+  // иногда промахивается из-за зафиксированной страницы: перепроверяем и возвращаем сами.
+  function restoreScrollAfterPop() {
+    if (bodyLocked || !lastUnlock || Date.now() - lastUnlock.t > 2500) return;
+    const y = lastUnlock.y;
+    lastUnlock = null;
+    requestAnimationFrame(() => {
+      if (bodyLocked || Math.abs(window.scrollY - y) <= 2) return;
+      const root = document.documentElement;
+      const prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, y);
+      root.style.scrollBehavior = prev;
+    });
+  }
+
+  window.addEventListener('popstate', (e) => {
+    const st = e.state && e.state.na ? e.state : null;
+    curStack = st && Array.isArray(st.stack) ? st.stack.slice() : [];
+    if (histPending) {
+      // ответ на наш history.go: экран уже закрыт, остаётся свериться и выполнить отложенное
+      histPending = false;
+      clearTimeout(histTimer);
+      historySync();
+      // браузер возвращает прокрутку чуть позже самого события, поэтому отложенные действия (например,
+      // «доехать до афиши») выполняем после небольшой паузы, иначе он перебьёт их
+      if (histWaiters.length) setTimeout(flushHistWaiters, 80);
+      else restoreScrollAfterPop();
+      return;
+    }
+    applyStack(curStack); // «Назад»/«Вперёд» от гостя: приводим экран к записи
+  });
+
+  // Привести экран к списку слоёв (без записи в историю).
+  function applyStack(T) {
+    layerBatchDepth++;
+    try {
+      const wantDrawer = T.includes('drawer');
+      const wantOv = T.find((x) => OVERLAY_IDS.includes(x)) || null;
+      const wantPanel = T.includes('vipbook');
+      if (!wantPanel) setVipPanel(false);
+      OVERLAY_IDS.forEach((id) => { if (id !== wantOv) setOverlay(id, false); });
+      if (!wantDrawer) setDrawer(false);
+      if (wantOv) setOverlay(wantOv, true);
+      if (wantPanel) setVipPanel(true);
+      if (wantDrawer) setDrawer(true);
+      refreshInert();
+    } finally {
+      layerBatchDepth--;
+    }
     syncScrollLock();
   }
 
-  // ── Полноэкранные оверлеи VIP / Пространства ──
+  // Пока открыт слой, всё остальное на странице недоступно для клавиатуры и программ экрана
+  function setInert(el, on) { if (!el) return; if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); }
+  function refreshInert() {
+    const ov = OVERLAY_IDS.find(isOverlayOpen) || null;
+    const drawerOpen = isDrawerOpen();
+    Array.from(document.body.children).forEach((el) => {
+      if (/^(SCRIPT|STYLE|NOSCRIPT)$/.test(el.tagName)) return;
+      let on = false;
+      if (el.id === 'navDrawer') on = !drawerOpen || !!ov;
+      else if (ov) on = el.id !== ov;
+      else if (drawerOpen) on = !(el.id === 'siteHeader' || el.id === 'navBackdrop');
+      setInert(el, on);
+    });
+    // за панелью брони ВИП остаётся слайдер комнат; крестик окна доступен всегда
+    setInert($id('vipSlider'), ov === 'vip' && isVipPanelOpen());
+  }
+
+  function rememberOpener(key) {
+    const a = document.activeElement;
+    layerOpeners[key] = a && a !== document.body && a !== document.documentElement ? a : null;
+  }
+  function restoreOpener(key) {
+    const el = layerOpeners[key];
+    delete layerOpeners[key];
+    if (el && document.contains(el) && !el.closest('[inert]') && el.getClientRects().length) {
+      try { el.focus({ preventScroll: true }); } catch (_) {}
+    }
+  }
+  function focusLayer(el) { if (el) { try { el.focus({ preventScroll: true }); } catch (_) {} } }
+
+  function setDrawer(open) {
+    const drawer = $id('navDrawer');
+    if (!drawer || isDrawerOpen() === open) return;
+    if (open) rememberOpener('drawer');
+    drawer.classList.toggle('open', open);
+    const backdrop = $id('navBackdrop');
+    if (backdrop) backdrop.classList.toggle('open', open);
+    const toggleBtn = $id('navToggleBtn');
+    if (toggleBtn) { toggleBtn.classList.toggle('active', open); toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    refreshInert();
+    if (open) focusLayer(drawer); else restoreOpener('drawer');
+  }
+  function setOverlay(id, open) {
+    const el = $id(id);
+    if (!el || isOverlayOpen(id) === open) return;
+    if (open) rememberOpener(id);
+    el.classList.toggle('is-open', open);
+    if (!open && id === 'vip') setVipPanel(false); // панель брони ВИП лежит внутри окна ВИП
+    refreshInert();
+    if (open) focusLayer(el); else restoreOpener(id);
+  }
+  function setVipPanel(open) {
+    const panel = $id('vipBooking');
+    if (!panel || isVipPanelOpen() === open) return;
+    if (open) rememberOpener('vipbook');
+    panel.classList.toggle('is-open', open);
+    refreshInert();
+    if (open) focusLayer(panel); else restoreOpener('vipbook');
+  }
+
+  // Несколько правок слоёв подряд (например, закрыть панель и открыть окно) сводим в одну запись истории.
+  // Порядок важен: сначала запись в историю (страница ещё стоит на своём месте), потом блокировка прокрутки.
+  function layerBatch(fn) {
+    layerBatchDepth++;
+    try { fn(); } finally { layerBatchDepth--; }
+    if (!layerBatchDepth) { historySync(); syncScrollLock(); }
+  }
+
+  // ── Выезжающая панель навигации (дектоп + мобилка) ──
+  function toggleNavDrawer(open) {
+    layerBatch(() => setDrawer(!!open));
+  }
+
+  // ── Полноэкранные окна ──
   function openOverlay(id) {
-    const el = document.getElementById(id);
+    const el = $id(id);
     if (!el) return;
-    el.classList.add('is-open');
-    syncScrollLock();
-    el.scrollTop = 0;
-    // Оверлей брони стола — всегда открываем с чистой формой, а не с прошлым "Заявка принята".
-    if (id === 'booking') resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
+    layerBatch(() => {
+      OVERLAY_IDS.forEach((o) => { if (o !== id) setOverlay(o, false); }); // одно окно за раз
+      setOverlay(id, true);
+      el.scrollTop = 0;
+      // Окно брони стола — всегда открываем с чистой формой, а не с прошлым "Заявка принята".
+      if (id === 'booking') resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
+    });
+    // если меню не загрузилось раньше, при открытии пробуем ещё раз
+    if (id === 'menu' && menuState === 'failed') loadMenu(0);
   }
   function closeOverlay(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.remove('is-open');
-    // панель брони ВИП лежит внутри окна ВИП: закрываем её вместе с окном
-    if (id === 'vip') closeVipBooking();
-    syncScrollLock();
+    layerBatch(() => setOverlay(id, false));
+  }
+  // из выезжающей панели: закрыть её и открыть окно одной записью истории
+  function navOpen(id) {
+    layerBatch(() => { setDrawer(false); openOverlay(id); });
+    return false;
+  }
+  // из выезжающей панели и окна мероприятия: закрыть слои и доехать до раздела страницы
+  function navTo(id) {
+    layerBatch(() => { setDrawer(false); OVERLAY_IDS.forEach((o) => setOverlay(o, false)); });
+    whenHistoryIdle(() => { const t = $id(id); if (t) t.scrollIntoView(); });
+    return false;
+  }
+
+  // ── Клавиатура: Esc закрывает верхний слой, Tab не уходит за окно ──
+  const FOCUSABLE_SEL = 'a[href], button, input, select, textarea, summary, [tabindex]';
+  function trapRoots() {
+    const ov = OVERLAY_IDS.find(isOverlayOpen);
+    if (ov) {
+      if (ov === 'vip' && isVipPanelOpen()) return [document.querySelector('#vip > .overlay-close'), $id('vipBooking')];
+      return [$id(ov)];
+    }
+    if (isDrawerOpen()) return [$id('siteHeader'), $id('navDrawer')];
+    return null;
+  }
+  function trapTab(e) {
+    const roots = trapRoots();
+    if (!roots) return;
+    const list = [];
+    const add = (n) => {
+      if (n.tabIndex < 0 || n.disabled || !n.getClientRects().length) return;
+      if (getComputedStyle(n).visibility === 'hidden') return;
+      list.push(n);
+    };
+    roots.forEach((r) => {
+      if (!r) return;
+      if (r.matches(FOCUSABLE_SEL)) add(r);
+      r.querySelectorAll(FOCUSABLE_SEL).forEach(add);
+    });
+    const first = list[0];
+    const last = list[list.length - 1];
+    const a = document.activeElement;
+    if (!first) { e.preventDefault(); focusLayer(roots[roots.length - 1]); return; }
+    const inside = roots.some((r) => r && r.contains(a));
+    const onFrame = roots.includes(a); // сам экран окна (он получает фокус при открытии)
+    if (!inside) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+    else if (e.shiftKey && (a === first || onFrame)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
   }
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') { trapTab(e); return; }
     if (e.key !== 'Escape') return;
-    const navDrawerEl = document.getElementById('navDrawer');
-    if (navDrawerEl && navDrawerEl.classList.contains('open')) {
-      toggleNavDrawer(false);
-      return;
-    }
+    if (isDrawerOpen()) { toggleNavDrawer(false); return; }
     // сначала закрываем форму брони VIP, если она открыта, и только потом сам оверлей
-    const vipBookingPanel = document.getElementById('vipBooking');
-    if (vipBookingPanel && vipBookingPanel.classList.contains('is-open')) {
-      vipBookingPanel.classList.remove('is-open');
-      return;
-    }
-    document.querySelectorAll('#vip.is-open, #spaces.is-open, #menu.is-open, #booking.is-open, #event.is-open').forEach(el => closeOverlay(el.id));
+    if (isVipPanelOpen()) { closeVipBooking(); return; }
+    OVERLAY_IDS.filter(isOverlayOpen).forEach(closeOverlay);
+  });
+
+  // Адрес вручную поменяли на #menu и т.п. (ссылка внутри страницы, строка адреса)
+  window.addEventListener('hashchange', () => {
+    const id = (location.hash || '').slice(1);
+    if (LINKABLE_OVERLAYS.includes(id) && !isOverlayOpen(id)) openOverlay(id);
   });
 
   // ── Полноэкранный слайдер (используется и в VIP, и в «Пространствах») ──
@@ -2376,12 +2685,11 @@
     // Всегда открываем с чистой формой — иначе после успешной брони при повторном
     // открытии этой же комнаты (или другой) всё ещё висит "Заявка принята".
     resetBookingUI('vipBookingForm', 'vipBookingSuccess', 'vipBookingError', 'vipSubmitBtn', 'vipDate');
-    panel.classList.add('is-open');
+    layerBatch(() => setVipPanel(true));
     panel.scrollTop = 0;
   }
   function closeVipBooking() {
-    const panel = document.getElementById('vipBooking');
-    if (panel) panel.classList.remove('is-open');
+    layerBatch(() => setVipPanel(false));
   }
 
   // ── Phone mask (та же логика, что в гостевом приложении) ──
@@ -2664,16 +2972,21 @@
     const plusBtn = field.querySelector('[data-qty-step="1"]');
     const min = input.min !== '' ? parseInt(input.min, 10) : 1;
     const max = input.max !== '' ? parseInt(input.max, 10) : Infinity;
+    // «5+»: с этого числа в поле пишется «5+», а под полем появляется пояснение
+    const plusAt = input.dataset.plusAt ? parseInt(input.dataset.plusAt, 10) : 0;
+    const hintEl = input.dataset.plusHint ? document.getElementById(input.dataset.plusHint) : null;
 
     function clamp(v) { return Math.min(max, Math.max(min, v)); }
+    function show(v) { input.value = (plusAt && v >= plusAt) ? plusAt + '+' : String(v); }
     function updateDisabled() {
       const v = parseInt(input.value, 10);
       minusBtn.classList.toggle('is-disabled', !isNaN(v) && v <= min);
       plusBtn.classList.toggle('is-disabled', !isNaN(v) && v >= max);
+      if (hintEl) hintEl.hidden = !(plusAt && !isNaN(v) && v >= plusAt);
     }
     function step(delta) {
       const current = parseInt(input.value, 10);
-      input.value = clamp((isNaN(current) ? min : current) + delta);
+      show(clamp((isNaN(current) ? min : current) + delta));
       input.dispatchEvent(new Event('change', { bubbles: true }));
       updateDisabled();
     }
@@ -2682,10 +2995,21 @@
     input.addEventListener('input', updateDisabled);
     input.addEventListener('blur', () => {
       const v = parseInt(input.value, 10);
-      input.value = clamp(isNaN(v) ? min : v);
+      show(clamp(isNaN(v) ? min : v));
       updateDisabled();
     });
+    // после сброса формы (новое открытие окна) значение возвращается к «2», пояснение нужно спрятать
+    if (input.form) input.form.addEventListener('reset', () => setTimeout(updateDisabled, 0));
     updateDisabled();
+  }
+
+  // Что уходит на сервер: число от 1 до 4 или «5+» (сервер принимает «5+» как бронь на 5 гостей
+  // с пометкой администратору). Значение считаем заново, а не берём из поля как есть: гость мог
+  // нажать Enter, не уходя из поля, и тогда «7» не успело бы превратиться в «5+».
+  function guestsFieldValue(id) {
+    const n = parseInt(document.getElementById(id).value, 10);
+    if (isNaN(n) || n < 1) return '1';
+    return n >= 5 ? '5+' : String(n);
   }
 
   setupQtyStepper('bkGuests');
@@ -2694,6 +3018,7 @@
 
   function showFormError(id, msg) {
     const el = document.getElementById(id);
+    el.setAttribute('role', 'alert');
     el.textContent = msg;
     el.classList.add('show');
   }
@@ -2721,7 +3046,7 @@
 
     const dateISO = document.getElementById('bkDate').value;
     const time = document.getElementById('bkTime').value;
-    const guests = document.getElementById('bkGuests').value;
+    const guests = guestsFieldValue('bkGuests');
     const contactMethod = document.querySelector('input[name="contactMethod"]:checked')?.value || '';
     const rawComment = document.getElementById('bkComment').value.trim();
     const comment = [contactMethod ? `Связь: ${contactMethod}` : '', rawComment].filter(Boolean).join('. ');
@@ -2839,20 +3164,34 @@
   window.addEventListener('pageshow', (e) => {
     if (!e.persisted) return;
 
+    // закрываем слои по правилам (фокус, inert), затем всё остальное открытое — выпадающие списки даты и времени
+    histPending = false;
+    clearTimeout(histTimer);
+    applyStack([]);
     document.querySelectorAll('.is-open').forEach(el => el.classList.remove('is-open'));
-
-    const navDrawerEl = document.getElementById('navDrawer');
-    const navBackdropEl = document.getElementById('navBackdrop');
-    if (navDrawerEl) navDrawerEl.classList.remove('open');
-    if (navBackdropEl) navBackdropEl.classList.remove('open');
 
     resetBookingUI('bookingForm', 'bookingSuccess', 'bookingError', 'bkSubmitBtn', 'bkDate');
     resetBookingUI('vipBookingForm', 'vipBookingSuccess', 'vipBookingError', 'vipSubmitBtn', 'vipDate');
     resetBookingUI('eventsBookingForm', 'eventsBookingSuccess', 'eventsBookingError', 'evSubmitBtn');
 
-    closeOverlay('event');
     syncScrollLock();
+    historySync(); // запись истории, оставшуюся от закрытого слоя, убираем
   });
+
+  // ── Начальное состояние по адресу: #menu, #booking, #vip, #spaces открывают окно сразу ──
+  // Запись, с которой открыта страница, делаем «чистой» (без #окна), а окно кладём поверх новой записью:
+  // тогда крестик и «Назад» возвращают на главную, а не уводят с сайта.
+  (function initLayersFromUrl() {
+    const hashId = (location.hash || '').slice(1);
+    const linkable = LINKABLE_OVERLAYS.includes(hashId);
+    try {
+      const base = location.pathname + location.search;
+      if ((history.state && history.state.na) || linkable) {
+        history.replaceState(null, '', linkable ? base : base + location.hash);
+      }
+    } catch (_) {}
+    if (linkable) openOverlay(hashId);
+  })();
 
 </script>
 </body>
