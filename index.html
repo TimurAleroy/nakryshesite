@@ -2015,7 +2015,7 @@
     if (dateFieldId) {
       const dateEl = document.getElementById(dateFieldId);
       if (dateEl) {
-        const today = new Date().toISOString().split('T')[0];
+        const today = mskTodayISO();
         dateEl.min = today;
         dateEl.value = today;
       }
@@ -2285,6 +2285,10 @@
   // ── VIP-бронь: отдельный блок внутри оверлея (общую форму не трогает) ──
   // Гость выбирает дату вечера: 00:30 «на пятое» — это ночь с пятого на шестое, то есть календарно уже шестое.
   // Раньше уходила выбранная дата как есть, и такая бронь попадала на предыдущий вечер.
+  // «Сегодня» по Москве (UTC+3): toISOString() даёт дату по Гринвичу, и с 00:00 до 03:00 по Москве это вчера.
+  function mskTodayISO() {
+    return new Date(Date.now() + 3 * 3600 * 1000).toISOString().slice(0, 10);
+  }
   function bookingCalDate(dateISO, time) {
     if (!dateISO || !/^\d{2}:\d{2}$/.test(time || '') || Number(time.slice(0, 2)) >= 6) return dateISO;
     const d = new Date(dateISO + 'T00:00:00Z');
@@ -2436,7 +2440,7 @@
 
   // ── Минимальная дата бронирования — сегодня ──
   const bkDateInput = document.getElementById('bkDate');
-  bkDateInput.min = new Date().toISOString().split('T')[0];
+  bkDateInput.min = mskTodayISO();
   bkDateInput.value = bkDateInput.min;
 
   function formatDateLocal(isoDateStr) {
@@ -2684,7 +2688,7 @@
   // ── Отдельная форма брони VIP ──
   const vipDateInput = document.getElementById('vipDate');
   if (vipDateInput) {
-    vipDateInput.min = new Date().toISOString().split('T')[0];
+    vipDateInput.min = mskTodayISO();
     vipDateInput.value = vipDateInput.min;
     setupDatePicker('vipDate');
     setupTimePicker('vipTime');
