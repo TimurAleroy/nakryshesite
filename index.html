@@ -2145,6 +2145,15 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, phone, date: dateStr, dateISO, time, guests, comment, eventName })
         });
+        if (res.status === 409 || res.status === 400) {
+          const d = await res.json().catch(() => ({}));
+          if (d.message) {
+            showFormError('eventsBookingError', d.message);
+            btn.disabled = false;
+            btn.textContent = originalText;
+            return;
+          }
+        }
         if (!res.ok) throw new Error('bad response');
 
         eventsBookingFormEl.style.display = 'none';
