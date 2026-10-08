@@ -356,7 +356,8 @@
   }
   .hero-tagline {
     font-family: 'Jost', sans-serif; font-weight: 400;
-    font-size: clamp(26px, 3.8vw, 40px); color: var(--text); max-width: 720px; margin: 0 auto 40px; line-height: 1.4;
+    font-size: clamp(30px, 4.6vw, 58px); color: var(--text); max-width: 1200px; margin: 0 auto 44px; line-height: 1.18;
+    text-transform: uppercase; letter-spacing: 0.08em; text-wrap: balance;
   }
   .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   .hero-scroll {
@@ -434,6 +435,8 @@
   .fs-slide-title { font-family: 'Jost', sans-serif; font-weight: 400; font-size: clamp(34px, 6.4vw, 76px); line-height: 1.05; margin-bottom: 16px; }
   .fs-slide-text { color: var(--text-sub); font-size: 14.5px; line-height: 1.75; max-width: 460px; }
   .fs-slide-cta { margin-top: 30px; }
+  /* у ВИП-комнат нет описания: кнопка идёт сразу под номером, отступ тот же, что был под текстом */
+  #vip .fs-slide-title + .fs-slide-cta { margin-top: 14px; }
 
   /* бейджи слайда (вместимость и т.п.) — правый верхний угол, под крестиком */
   .fs-badges { position: absolute; top: 76px; right: 20px; z-index: 3; display: flex; gap: 10px; }
@@ -1163,7 +1166,6 @@
           <div class="fs-slide-content">
             <div class="fs-slide-label">ВИП-комната</div>
             <h3 class="fs-slide-title">1</h3>
-            <p class="fs-slide-text">Отдельная комната для компании до&nbsp;5 человек — свой экран, кальян и официант, который ведёт весь вечер.</p>
             <button type="button" class="btn btn-primary fs-slide-cta" onclick="bookVip(1)">Забронировать</button>
           </div>
         </div>
@@ -1178,7 +1180,6 @@
           <div class="fs-slide-content">
             <div class="fs-slide-label">ВИП-комната</div>
             <h3 class="fs-slide-title">2</h3>
-            <p class="fs-slide-text">Отдельная комната для компании до&nbsp;5 человек — свой экран, кальян и официант, который ведёт весь вечер.</p>
             <button type="button" class="btn btn-primary fs-slide-cta" onclick="bookVip(2)">Забронировать</button>
           </div>
         </div>
@@ -1193,7 +1194,6 @@
           <div class="fs-slide-content">
             <div class="fs-slide-label">ВИП-комната</div>
             <h3 class="fs-slide-title">3</h3>
-            <p class="fs-slide-text">Отдельная комната для компании до&nbsp;5 человек — свой экран, кальян и официант, который ведёт весь вечер.</p>
             <button type="button" class="btn btn-primary fs-slide-cta" onclick="bookVip(3)">Забронировать</button>
           </div>
         </div>
