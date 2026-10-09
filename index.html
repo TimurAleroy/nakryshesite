@@ -674,7 +674,7 @@
   }
   .event-card:hover { border-color: var(--accent-line); }
   .event-poster { position: relative; background: #140a03; overflow: hidden; }
-  .event-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .event-poster img, .event-poster video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .event-poster-ph {
     position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
     background:
@@ -743,7 +743,7 @@
     border: 1px solid var(--border); aspect-ratio: 16 / 9;
   }
   .ev-poster.is-tall { aspect-ratio: 4 / 5; max-width: 560px; }
-  .ev-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .ev-poster img, .ev-poster video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .ev-poster .event-poster-ph .ph-day { font-size: 120px; }
 
   .ev-about { margin-top: 64px; }
@@ -2004,9 +2004,7 @@
       const pill = dateLabel
         ? `<div class="event-pill"><span>${dateLabel}</span>${time ? `<span class="spark">✦</span><span>Начало в ${time}</span>` : ''}</div>`
         : '';
-      const poster = e.poster
-        ? `<img src="${escapeHtml(e.poster)}" alt="${escapeHtml(e.name || '')}" loading="lazy" onerror="this.remove()">`
-        : '';
+      const poster = eventMediaHTML(e);
       return `<article class="reveal event-card" style="transition-delay:${(i * 0.1).toFixed(2)}s">
         <div class="event-poster">
           <div class="event-poster-ph">
@@ -2161,7 +2159,15 @@
         <div class="ph-month">${p.monthShort}</div>
         ${e.format ? `<div class="ph-format">${escapeHtml(e.format)}</div>` : ''}
       </div>
-      ${e.poster ? `<img src="${escapeHtml(e.poster)}" alt="${escapeHtml(e.name || '')}" loading="lazy" onerror="this.remove()">` : ''}`;
+      ${eventMediaHTML(e)}`;
+  }
+  // Постер: фото или короткое видео (без звука, по кругу)
+  function eventMediaHTML(e) {
+    if (!e.poster) return '';
+    if (e.posterType === 'video') {
+      return `<video src="${escapeHtml(e.poster)}#t=0.1" muted loop playsinline autoplay preload="metadata" aria-label="${escapeHtml(e.name || '')}" onerror="this.remove()"></video>`;
+    }
+    return `<img src="${escapeHtml(e.poster)}" alt="${escapeHtml(e.name || '')}" loading="lazy" onerror="this.remove()">`;
   }
 
   function openEventDetail(i) {
@@ -2177,6 +2183,13 @@
     const poster = document.getElementById('evPoster');
     poster.classList.remove('is-tall');
     poster.innerHTML = eventPosterHTML(ev);
+    const vid = poster.querySelector('video');
+    if (vid) {
+      vid.muted = true;
+      const fitV = () => { if (vid.videoHeight > vid.videoWidth) poster.classList.add('is-tall'); };
+      vid.readyState >= 1 ? fitV() : vid.addEventListener('loadedmetadata', fitV, { once: true });
+      const pr = vid.play(); if (pr && pr.catch) pr.catch(() => {});
+    }
     const img = poster.querySelector('img');
     if (img) {
       const fit = () => { if (img.naturalHeight > img.naturalWidth) poster.classList.add('is-tall'); };
