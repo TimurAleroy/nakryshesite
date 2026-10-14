@@ -703,6 +703,8 @@
     padding: 13px 22px; border-radius: 999px; border: 1px solid var(--border); background: rgba(244,226,209,0.05);
     color: var(--text); font: inherit; font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s;
   }
+  /* Если у вечера нет ни формата, ни описания, кнопка прижимается к низу карточки, как у остальных */
+  .event-title + .event-more { margin-top: auto; }
   .event-more:hover { border-color: var(--accent-line); color: var(--accent); background: var(--accent-soft); }
 
   @media (max-width: 760px) {
