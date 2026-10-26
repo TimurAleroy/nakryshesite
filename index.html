@@ -1761,7 +1761,7 @@
   </section>
 
 <script>
-  const PROXY_BASE = 'https://notion-proxy-na-kryishe-production.up.railway.app';
+  const PROXY_BASE = 'https://notion-proxy-eu-timuraleroy.waw0.amvera.tech';
 
   // ── Блокировка прокрутки страницы под окнами ──
   // Страница блокируется, только если открыто настоящее окно (ВИП, пространства, меню, бронь,
@@ -1843,7 +1843,7 @@
     return `${n.toLocaleString('ru-RU')} ₽`;
   }
 
-  // Запрос с ожиданием не дольше 12 секунд: сервер на Railway иногда просыпается долго, а зависший
+  // Запрос с ожиданием не дольше 12 секунд: сервер иногда отвечает долго, а зависший
   // запрос без конца оставлял бы гостя перед пустой заглушкой.
   async function fetchJson(url, ms = 12000) {
     const ctrl = new AbortController();
