@@ -175,9 +175,10 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 220;
     padding: 30px 0; transition: background 0.25s, padding 0.25s, border-color 0.25s, backdrop-filter 0.25s;
     border-bottom: 1px solid transparent;
-    /* Шапка сплошная, цвета карточек #20120A (--bg-card) — и наверху страницы, и при скролле
-       (2.11: раньше наверху была прозрачной, при скролле — цвета фона #100906). */
-    background: var(--bg-card);
+    /* Наверху страницы шапка прозрачная — фон hero уже размыт целиком
+       (единая ретушь), своя тонировка/блюр у шапки давали видимую линию
+       на границе. При скролле (.scrolled) — сплошная заливка цвета карточек #20120A (--bg-card; 2.11, раньше #100906). */
+    background: transparent;
   }
   header.scrolled {
     background: var(--bg-card); padding: 18px 0; border-bottom-color: var(--border);
