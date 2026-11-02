@@ -63,10 +63,12 @@
     position: relative;
   }
 
-  /* тонкое зерно поверх всего сайта — убирает "плоское" ощущение цифрового фона */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  /* тонкое зерно поверх всего сайта — убирает "плоское" ощущение цифрового фона.
+     Это настоящий слой, а не body::before, и он начинается на 12px ниже верха экрана: iPhone (Safari 26) красит область
+     под строкой состояния цветом закреплённой шапки, которую находит в точке чуть ниже верхнего края. Зерно на весь экран
+     лежало поверх шапки, Safari шапку не находил, и под часами был виден текст страницы. */
+  .grain {
+    position: fixed; top: 12px; left: 0; right: 0; bottom: 0; z-index: 999; pointer-events: none;
     opacity: 0.05; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
@@ -891,9 +893,9 @@
      оно остаётся на первом экране («Забронировать стол») и в меню («Бронь стола онлайн»). */
   .header-call { display: none; }
   @media (max-width: 1180px) {
-    /* Сплошная шапка продолжается вверх, под строку состояния: на iPhone страница едет под ней, и без этого
-       над шапкой при прокрутке был виден текст. Наверху страницы шапка прозрачна, и продолжение тоже (background: inherit). */
-    header::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 160px; background: inherit; pointer-events: none; }
+    /* iPhone (Safari 26): цвет под строкой состояния берётся у закреплённой шапки. Он меняется сразу, без плавного перехода,
+       иначе Safari может «снять» цвет посреди перехода. Шапка при этом остаётся одним сплошным цветом без размытия. */
+    header { transition: padding 0.25s, border-color 0.25s; }
   }
   @media (max-width: 860px) {
     .header-actions { gap: 10px; }
@@ -910,6 +912,8 @@
 </style>
 </head>
 <body>
+
+  <div class="grain" aria-hidden="true"></div>
 
   <div class="ambient-glow" aria-hidden="true">
     <span class="glow-spot"></span>
