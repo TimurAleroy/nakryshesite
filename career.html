@@ -886,6 +886,27 @@
   @media (max-width: 560px) {
     .career-form-card { padding: 22px; }
   }
+  /* ── ШАПКА НА ТЕЛЕФОНЕ ───────────────────────
+     Телефон: логотип · круглая кнопка «позвонить» · круглое меню. «Забронировать» из шапки убрано:
+     оно остаётся на первом экране («Забронировать стол») и в меню («Бронь стола онлайн»). */
+  .header-call { display: none; }
+  @media (max-width: 1180px) {
+    /* Сплошная шапка продолжается вверх, под строку состояния: на iPhone страница едет под ней, и без этого
+       над шапкой при прокрутке был виден текст. Наверху страницы шапка прозрачна, и продолжение тоже (background: inherit). */
+    header::before { content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 160px; background: inherit; pointer-events: none; }
+  }
+  @media (max-width: 860px) {
+    .header-actions { gap: 10px; }
+    .header-actions .header-book { display: none; }
+    .header-call, .nav-toggle {
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid rgba(244,226,209,0.16); background: rgba(244,226,209,0.04);
+      color: var(--text); transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+    .header-call:active, .nav-toggle:active { background: rgba(244,226,209,0.1); border-color: rgba(244,226,209,0.3); }
+    .header-call:focus-visible { outline-offset: 2px; }
+  }
 </style>
 </head>
 <body>
@@ -907,6 +928,7 @@
         </a>
       </div>
       <div class="header-actions">
+        <a href="tel:+70000000000" class="header-call" aria-label="Позвонить"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
         <button class="nav-toggle" id="navToggleBtn" onclick="toggleNavDrawer(!document.getElementById('navDrawer').classList.contains('open'))" aria-label="Меню">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line class="nt-l1" x1="3" y1="6" x2="21" y2="6"/><line class="nt-l2" x1="3" y1="12" x2="21" y2="12"/><line class="nt-l3" x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
