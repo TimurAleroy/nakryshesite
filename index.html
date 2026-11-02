@@ -182,8 +182,12 @@
        на границе. При скролле (.scrolled) — сплошная заливка цвета карточек #20120A (--bg-card; 2.11, раньше #100906). */
     background: transparent;
   }
+  /* При прокрутке шапка тонированная на всех экранах (телефон, планшет, компьютер одинаково): тот же цвет #20120A (--bg-card),
+     но чуть прозрачнее — страница под ней слабо проступает. Прозрачность не ниже 0.8: на iPhone (Safari 26) цвет под строкой
+     состояния берётся у шапки, и слишком прозрачная шапка его не отдаёт. Размытие (backdrop-filter) не ставим нигде: из-за него
+     Safari перестаёт считать шапку одним цветом. */
   header.scrolled {
-    background: var(--bg-card); padding: 18px 0; border-bottom-color: var(--border);
+    background: rgba(32, 18, 10, 0.86); padding: 18px 0; border-bottom-color: var(--border);
     backdrop-filter: none; -webkit-backdrop-filter: none;
   }
   /* grid, не flex: с flex:1 у .header-info средний блок центрировался только
