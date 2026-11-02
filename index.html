@@ -8,7 +8,7 @@
      цветом по умолчанию (обычно белым), а не цветом самого сайта — из-за этого
      на телефоне казалось, что фон "другого цвета", хотя сама страница везде
      рисуется одинаково. Цвет — тот же --bg, что у html ниже. -->
-<meta name="theme-color" content="#1E1004">
+<meta name="theme-color" content="#100906">
 <title>На Крыше</title>
 <!-- Фавикон — геометрия вторичного лого (мачта + полый треугольник,
      та же, что у декоративных стрелок и hero-scroll выше), на тёмной
@@ -24,7 +24,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #1E1004;
+    /* 02.11.2026: фон почти чёрный с тёплым коричневым оттенком (#100906), как в приложениях; карточки и акценты прежние.
+       Вернуть прежний вид: --bg: #1E1004, theme-color #1E1004 и подложки rgba(16,9,6,…) вместо rgba(16,9,6,…). */
+    --bg: #100906;
     --bg-card: #20120A;
     --bg-card-hover: #2A1710;
     --accent: #B87333;
@@ -397,7 +399,7 @@
   .overlay-close {
     position: fixed; top: 18px; left: 50%; margin-left: -21px; z-index: 305;
     width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: rgba(30,16,4,0.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
+    background: rgba(16,9,6,0.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
     cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.2s;
   }
   .overlay-close:hover { border-color: var(--accent); background: rgba(184,115,51,0.2); transform: rotate(90deg); }
@@ -443,7 +445,7 @@
   .fs-badge {
     min-width: 54px; height: 54px; padding: 0 12px; border-radius: 100px;
     display: flex; align-items: center; justify-content: center; gap: 5px;
-    background: rgba(30,16,4,0.5); border: 1px solid rgba(244,226,209,0.22);
+    background: rgba(16,9,6,0.5); border: 1px solid rgba(244,226,209,0.22);
     font-size: 13px; color: var(--text); letter-spacing: 0.5px;
   }
   .fs-badge svg { opacity: 0.75; }
@@ -484,7 +486,7 @@
   .fs-arrow {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
     width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: rgba(30,16,4,0.5); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
+    background: rgba(16,9,6,0.5); border: 1px solid rgba(244,226,209,0.25); color: var(--text);
     cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.2s;
   }
   .fs-arrow:hover { border-color: var(--accent); background: rgba(184,115,51,0.18); }
@@ -588,7 +590,7 @@
   .film-arrow {
     position: absolute; top: 50%; z-index: 2; transform: translateY(-50%);
     width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(244,226,209,0.18);
-    background: rgba(30,16,4,0.45); color: var(--text); cursor: pointer;
+    background: rgba(16,9,6,0.45); color: var(--text); cursor: pointer;
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, border-color 0.2s, opacity 0.25s;
@@ -949,11 +951,11 @@
   #map-section.unlocked .map-shield { display: none; }
   #map-section .map-tint {
     position: absolute; inset: 0; pointer-events: none;
-    background: rgba(30,16,4,0.24);
+    background: rgba(16,9,6,0.24);
   }
   #map-section .map-shade {
     position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(180deg, var(--bg) 0%, rgba(30,16,4,0.06) 16%, rgba(30,16,4,0.06) 68%, var(--bg) 100%);
+    background: linear-gradient(180deg, var(--bg) 0%, rgba(16,9,6,0.06) 16%, rgba(16,9,6,0.06) 68%, var(--bg) 100%);
   }
 
   #map-section .map-controls {
