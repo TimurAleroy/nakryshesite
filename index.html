@@ -52,6 +52,30 @@
     * { scrollbar-width: thin; scrollbar-color: rgba(184,115,51,0.55) transparent; }
   }
 
+  /* Прокрутка самой страницы на компьютере. Настоящая полоса браузера занимала 10px справа и показывала под собой
+     тёмный фон страницы: рядом со светлой шапкой и первым экраном это выглядело как чёрная полоса с медным бегунком.
+     Поэтому на устройствах с мышью системную полосу страницы прячем (колесо, клавиши и тачпад работают как раньше)
+     и рисуем вместо неё тонкую медную линию-указатель, которая ничего не сдвигает и не занимает места.
+     На телефонах и планшетах без мыши ничего не меняется. Окна с собственной прокруткой (списки, листы) остаются
+     со своими полосами. Линию двигает небольшой скрипт в конце страницы; без скрипта она просто не видна. */
+  .scroll-line { display: none; }
+  @media (hover: hover) and (pointer: fine) {
+    html { scrollbar-width: none; }
+    html::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    .scroll-line {
+      display: block; position: fixed; top: 0; right: 0; bottom: 0; width: 3px; z-index: 1000;
+      pointer-events: none; opacity: 0; transition: opacity .4s ease;
+    }
+    .scroll-line.is-ready { opacity: .35; }
+    .scroll-line.is-ready.on { opacity: 1; }
+    .scroll-line i {
+      display: block; width: 100%; height: 0; border-radius: 3px 0 0 3px;
+      background: rgba(205,140,79,0.9); will-change: transform;
+    }
+    body.overlay-open .scroll-line { opacity: 0 !important; }
+  }
+  @media (prefers-reduced-motion: reduce) { .scroll-line { transition: none; } }
+
   /* фон переехал на html (часть 17): у body есть position:relative без своего z-index, а это по правилам
      порядка отрисовки CSS кладёт собственный фон body ПОВЕРХ слоёв с отрицательным z-index (как у .ambient-glow) —
      поэтому непрозрачный фон держит html (самый нижний холст), а у body фона нет, и живой медный слой под ним виден.
@@ -1203,6 +1227,7 @@
 <body>
 
   <div class="grain" aria-hidden="true"></div>
+  <div class="scroll-line" id="scrollLine" aria-hidden="true"><i></i></div>
 
   <div class="ambient-glow" aria-hidden="true">
     <span class="glow-spot"></span>
@@ -3611,6 +3636,41 @@
     new IntersectionObserver((es) => es.forEach((e) => bar.classList.toggle('is-away', e.isIntersecting)), { threshold: 0.2 }).observe(map);
   })();
 
+</script>
+<script>
+/* Указатель прокрутки страницы на компьютере (см. .scroll-line в стилях). Высота бегунка = доля видимой части,
+   положение = как далеко прокручено. Показывается ярче при прокрутке и приглушается через секунду. */
+(function () {
+  try {
+    var el = document.getElementById('scrollLine');
+    if (!el || !window.matchMedia || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    var thumb = el.firstElementChild, raf = 0, hideT = 0;
+    function paint() {
+      raf = 0;
+      var body = document.body;
+      if (body.classList.contains('overlay-open')) return;          // окно открыто, страница заморожена
+      var vh = window.innerHeight, total = document.documentElement.scrollHeight, max = total - vh;
+      if (max <= 4) { el.classList.remove('is-ready', 'on'); return; }  // прокручивать нечего
+      var h = Math.max(36, Math.round(vh * vh / total));
+      var y = Math.round(Math.min(1, Math.max(0, (window.pageYOffset || 0) / max)) * (vh - h));
+      thumb.style.height = h + 'px';
+      thumb.style.transform = 'translate3d(0,' + y + 'px,0)';
+      el.classList.add('is-ready');
+    }
+    function schedule() { if (!raf) raf = requestAnimationFrame(paint); }
+    function poke() {
+      schedule();
+      el.classList.add('on');
+      clearTimeout(hideT);
+      hideT = setTimeout(function () { el.classList.remove('on'); }, 1000);
+    }
+    window.addEventListener('scroll', poke, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.documentElement);
+    window.addEventListener('load', schedule);
+    schedule();
+  } catch (e) { /* указатель — украшение, странице он не нужен */ }
+})();
 </script>
 </body>
 </html>
