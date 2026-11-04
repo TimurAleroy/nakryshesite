@@ -167,6 +167,75 @@
   .btn-full { width: 100%; }
   .btn[disabled] { opacity: 0.6; cursor: default; transform: none; box-shadow: none; }
 
+
+  /* ── КАРТА ГОСТЯ: секция на странице, пункт меню, нижняя панель на телефоне, блок после заявки ──
+     Карта оформляется только в Telegram (бот nakryshevld_bot, ссылка вида ?start=card_<откуда>): сайт не может проверить номер,
+     а Telegram подтверждает его сам и бесплатно. Метка после card_ говорит воронке, с какого места сайта пришёл гость:
+     sec — секция на странице, mnu — меню, bar — нижняя панель, bk — блок после заявки на бронь. */
+  #guest-card { padding: 100px 0 120px; }
+  .gc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); grid-template-areas: "text visual" "action visual"; column-gap: 72px; align-items: center; }
+  .gc-text { grid-area: text; align-self: end; }
+  .gc-visual { grid-area: visual; display: flex; justify-content: center; }
+  .gc-action { grid-area: action; align-self: start; margin-top: 32px; }
+  .gc-text .sec-sub { max-width: 520px; }
+  .gc-note { margin-top: 14px; font-size: 12px; line-height: 1.6; color: var(--text-muted); max-width: 420px; }
+  .gc-cta { gap: 10px; }
+  .gc-card {
+    position: relative; overflow: hidden; isolation: isolate; width: 100%; max-width: 440px; aspect-ratio: 1.75 / 1; box-sizing: border-box; padding: 22px 24px;
+    border-radius: 22px; border: 1px solid transparent; display: flex; align-items: stretch; justify-content: space-between; gap: 20px;
+    background-image: linear-gradient(135deg, #34190c 0%, #20120A 55%, #1a0e07 100%), linear-gradient(135deg, rgba(244,226,209,0.34) 0%, rgba(244,226,209,0.14) 45%, rgba(244,226,209,0.10) 100%);
+    background-origin: border-box; background-clip: padding-box, border-box; box-shadow: 0 22px 48px rgba(0,0,0,0.5);
+  }
+  .gc-card::before { content: ''; position: absolute; top: -30%; left: -15%; width: 80%; height: 120%; background: radial-gradient(circle, rgba(184,115,51,0.32) 0%, rgba(184,115,51,0.12) 40%, transparent 75%); z-index: -1; }
+  .gc-card-body { flex: 1; min-width: 0; display: flex; align-items: flex-end; }
+  .gc-card-mark { flex: none; align-self: center; height: 100%; width: auto; }
+  .gc-card-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+  .gc-mini {
+    position: relative; overflow: hidden; flex-shrink: 0; width: 96px; height: 61px; border-radius: 11px; border: 1px solid transparent;
+    background-image: linear-gradient(135deg, #34190c, #20120A), linear-gradient(135deg, rgba(244,226,209,0.34), rgba(244,226,209,0.12) 50%, rgba(244,226,209,0.10));
+    background-origin: border-box; background-clip: padding-box, border-box;
+  }
+  .gc-mini::before { content: ''; position: absolute; left: -12%; top: -20%; width: 80%; height: 90%; background: radial-gradient(circle, rgba(184,115,51,0.35), transparent 70%); }
+  .gc-mini img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 76%; width: auto; }
+  .nav-drawer-links a.nav-card-link { display: flex; align-items: center; justify-content: space-between; }
+  .nav-card-link .icon-mark { color: var(--accent); margin-right: 4px; flex-shrink: 0; }
+  .nav-drawer.open .nav-drawer-links a:nth-child(7) { animation-delay: 1.54s; }
+  /* блок «Карта гостя» в окне «Заявка принята» */
+  .bs-card { text-align: left; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--border); }
+  .bs-card-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 14px; }
+  .bs-card-row { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .bs-card-row strong { display: block; font-size: 16px; font-weight: 400; line-height: 1.25; margin-bottom: 4px; }
+  .bs-card-row span { font-size: 12.5px; line-height: 1.5; color: var(--text-sub); }
+  .bs-card .btn { width: 100%; }
+  .bs-card .gc-note { max-width: none; margin-top: 16px; }
+  /* нижняя панель на телефоне: карта гостя слева, бронь справа (звонок остаётся в шапке) */
+  .m-bar { display: none; }
+  @media (max-width: 1180px) {
+    .gc-grid { column-gap: 48px; }
+  }
+  @media (max-width: 760px) {
+    #guest-card { padding: 72px 0 80px; }
+    .gc-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "visual" "action"; }
+    .gc-text { align-self: auto; }
+    .gc-visual { margin-top: 26px; }
+    .gc-action { margin-top: 26px; }
+    .gc-action .btn { width: 100%; }
+    .m-bar {
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; align-items: center; gap: 10px;
+      padding: 40px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(to top, rgba(16,9,6,0.96) 0%, rgba(16,9,6,0.82) 48%, rgba(16,9,6,0) 100%);
+      pointer-events: none; transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .m-bar > * { pointer-events: auto; }
+    .m-bar.is-away { transform: translateY(110%); opacity: 0; }
+    .m-bar.is-away > * { pointer-events: none; }
+    .m-bar-card {
+      flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: rgba(32,18,10,0.94); border: 1px solid rgba(184,115,51,0.55); color: #CD8C4F; box-shadow: 0 8px 22px -8px rgba(0,0,0,0.7);
+    }
+    .m-bar .btn { flex: 1; min-width: 0; height: 56px; padding: 0 16px; font-size: 13.5px; }
+  }
+
   /* ── ЛОГОТИП (настоящий файл, не перерисовка) ── */
   .logo-img { display: block; height: 56px; width: auto; }
   .hero-logo-img { display: block; height: 240px; width: auto; margin: 0 auto 26px; }
@@ -336,7 +405,7 @@
     margin-top: 18px; padding-top: 2px;
     opacity: 0; transform: translateY(14px); will-change: transform, opacity;
   }
-  .nav-drawer.open .nav-drawer-foot { animation: navLinkIn 0.5s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: 1.54s; }
+  .nav-drawer.open .nav-drawer-foot { animation: navLinkIn 0.5s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: 1.62s; }
   .nav-drawer-foot .btn { width: 100%; }
 
   @media (max-width: 400px) {
@@ -1151,6 +1220,7 @@
           <a href="#vip" onclick="return navOpen('vip')">ВИП-Комнаты</a>
           <a href="#menu" onclick="return navOpen('menu')">Меню</a>
           <a href="#events" onclick="return navTo('events')">Афиша</a>
+          <a href="https://t.me/nakryshevld_bot?start=card_mnu" target="_blank" rel="noopener" class="nav-card-link" onclick="toggleNavDrawer(false)"><span>Карта гостя</span><svg class="icon-mark" style="--mark-rot:45deg" width="16" height="20" viewBox="0 0 24 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><line x1="12" y1="2" x2="12" y2="15"/><path d="M12 15 L6 29 L18 29 Z"/></svg></a>
           <a href="career.html">Карьера</a>
         </div>
       </div>
@@ -1515,6 +1585,29 @@
     </div>
   </section>
 
+  <!-- ── КАРТА ГОСТЯ ──────────────────────────── -->
+  <section id="guest-card">
+    <div class="wrap">
+      <div class="gc-grid">
+        <div class="reveal gc-text">
+          <div class="sec-label">Карта гостя</div>
+          <h2 class="sec-heading">Одна карта на все вечера</h2>
+          <p class="sec-sub">Оформите карту за минуту: она будет с вами на каждом визите.</p>
+        </div>
+        <div class="reveal gc-visual">
+          <div class="gc-card" role="img" aria-label="Карта гостя На Крыше">
+            <div class="gc-card-body"><span class="gc-card-label">Карта гостя</span></div>
+            <img class="gc-logo gc-card-mark" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+          </div>
+        </div>
+        <div class="reveal gc-action">
+          <a href="https://t.me/nakryshevld_bot?start=card_sec" target="_blank" rel="noopener" class="btn btn-primary gc-cta"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5 21 3z"/></svg> Оформить в Telegram</a>
+          <p class="gc-note">Откроется Telegram. Номер подтверждает он сам: без SMS и паролей.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── МЕНЮ (тизер на странице) ─────────────── -->
   <section id="menu-teaser">
     <div class="wrap">
@@ -1755,6 +1848,15 @@
             </div>
             <h3>Заявка принята</h3>
             <p>Мы свяжемся с вами в ближайшее время, чтобы подтвердить бронь.</p>
+            <div class="bs-card">
+              <div class="bs-card-label">Карта гостя</div>
+              <div class="bs-card-row">
+                <div class="gc-mini" aria-hidden="true"><img class="gc-logo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""></div>
+                <div><strong>Оформите, пока ждёте</strong><span>Одна карта на все визиты</span></div>
+              </div>
+              <a href="https://t.me/nakryshevld_bot?start=card_bk" target="_blank" rel="noopener" class="btn btn-primary"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5 21 3z"/></svg> Оформить в Telegram</a>
+              <p class="gc-note">Откроется Telegram: останется нажать «Подтвердить номер». Без SMS и паролей.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1791,6 +1893,12 @@
       </button>
     </div>
   </section>
+
+  <!-- Нижняя панель на телефоне: карта гостя слева, бронь справа. На последнем экране (карта на странице) уезжает вниз -->
+  <div class="m-bar" id="mBar">
+    <a href="https://t.me/nakryshevld_bot?start=card_bar" target="_blank" rel="noopener" class="m-bar-card" aria-label="Карта гостя"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><line x1="2.5" y1="10" x2="21.5" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg></a>
+    <a href="#booking" class="btn btn-primary" onclick="openOverlay('booking'); return false;">Забронировать стол</a>
+  </div>
 
 <script>
   const PROXY_BASE = 'https://notion-proxy-eu-timuraleroy.waw0.amvera.tech';
@@ -3223,6 +3331,15 @@
       }
     } catch (_) {}
     if (linkable) openOverlay(hashId);
+  })();
+
+  // ── Карта гостя: на картах наш полный вертикальный логотип (без надписи рядом), нижняя панель уезжает на экране с картой ──
+  (function initGuestCard() {
+    const src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPsAAAIwCAMAAAB3HO3KAAAAkFBMVEUAAAD768z57uXk0bazoIz29bF0Z1+xsWr66cq1tbXItZ6JdGf56cqlYmH//3+wnYlnUEdtODeHcmT/AADztbPLt6DHs52diXl5Y1luZzOhjHutmob//wCbiHfZyK3/f39ONzJaRD3l0rd/AH8/LSkA//8AAH8AAP8Af38A/wB/f79/v79//3+//7//AP//fwBgYyqnAAAAMHRSTlMA/gz63QQlA2EE6q2pBwKmXw5TAQaNYZ2VD9hrAWCZAlVRaAJEAQIBAgEEBAIEAQLRHcXxAAANQElEQVR42u3d6YKqOhYF4JBIKLBSgOKhLMuazr235+73f7uGGnRvZAYx4lr/zoDymUAGhghxuXhCL4LvJEKKW0pmV853JOywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDDjvssMMOO+ywww477LDDbp/dS/yvJEmfzWUiv7f3B9ldlPu0+bj7ya8epS7kYfM7KZ672s3BvhP+9HbnkKD7xq64O24vxUPXrdPDxovsT5NHXc4uyZcr/Q/vhuxS7I4bO6FIbsoeELvSRt+MXYuV47CCd2/GLsWC2QOh/34jdqO1w7OfvIm/lF2KsGAPbsUekz7dT1ZC34Rdkn7NsX8jb+RcF5zYVSS3N2D35N45zdPEBX8Z+wMp9uVhF1Q87RF/EbsWEfnaxaX6Nxex035NSvp3av7nOi22x3quab9+Kf2Z233SrwnZeC6Ye7lL+q2RNvSPq7WZtd0n/Zq8IyvZn5M522N6gO/EP7PDn/RvI+HN2O6R41t99mbouGbKju30dk2KPf1s0LU+Nvfqfbr+zeR2j/RrHK11cfoqnW62enI7r+Du9+9x7N5P2LGd2v4qDT2xfZexjBUpeG+m9oQU+7FBk+xvtZylXWtSwjvx05HRtOCXwszS7ool7ddsj38fTj9xN7Gd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';
+    document.querySelectorAll('.gc-logo').forEach((i) => { i.src = src; });
+    const bar = document.getElementById('mBar'), map = document.getElementById('map-section');
+    if (!bar || !map || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver((es) => es.forEach((e) => bar.classList.toggle('is-away', e.isIntersecting)), { threshold: 0.2 }).observe(map);
   })();
 
 </script>
