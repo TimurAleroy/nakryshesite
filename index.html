@@ -186,7 +186,7 @@
   #guest-card { padding: 100px 0 120px; }
   .gc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); grid-template-areas: "text visual" "action visual"; column-gap: 72px; align-items: center; }
   .gc-text { grid-area: text; align-self: end; }
-  .gc-visual { grid-area: visual; display: flex; justify-content: center; }
+  .gc-visual { grid-area: visual; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .gc-action { grid-area: action; align-self: start; margin-top: 32px; }
   .gc-text .sec-sub { max-width: 520px; }
   .gc-note { margin-top: 14px; font-size: 12px; line-height: 1.6; color: var(--text-muted); max-width: 420px; }
@@ -197,12 +197,27 @@
     background-image: linear-gradient(135deg, #34190c 0%, #20120A 55%, #1a0e07 100%), linear-gradient(135deg, rgba(244,226,209,0.34) 0%, rgba(244,226,209,0.14) 45%, rgba(244,226,209,0.10) 100%);
     background-origin: border-box; background-clip: padding-box, border-box; box-shadow: 0 22px 48px rgba(0,0,0,0.5);
   }
-  .gc-card::before { content: ''; position: absolute; top: -30%; left: -15%; width: 80%; height: 120%; background: radial-gradient(circle, rgba(184,115,51,0.32) 0%, rgba(184,115,51,0.12) 40%, transparent 75%); z-index: -1; }
+  .gc-card::before { content: ''; position: absolute; top: -45%; left: -20%; width: 90%; height: 150%; background: radial-gradient(closest-side, rgba(184,115,51,0.32) 0%, rgba(184,115,51,0.12) 53%, transparent 100%); z-index: -1; }
   .gc-card-body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; }
   .gc-card-mark { flex: none; height: 104px; width: auto; }
   .gc-card-qr { flex: none; align-self: center; width: clamp(104px, 32vw, 132px); aspect-ratio: 1; border-radius: 10px; overflow: hidden; line-height: 0; }
   .gc-card-qr svg { width: 100%; height: 100%; display: block; }
   .gc-card-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+  /* оборот карты */
+  .gc-flip { width: 100%; max-width: 440px; perspective: 1400px; -webkit-perspective: 1400px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; border-radius: 22px; }
+  .gc-flip:active { cursor: grabbing; }
+  .gc-flip:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  .gc-flip-in { position: relative; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .gc-flip-in.drag { transition: none; }
+  .gc-flip .gc-face { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+  .gc-flip .gc-back { position: absolute; inset: 0; width: auto; max-width: none; transform: rotateY(180deg); flex-direction: column; align-items: center; justify-content: center; gap: 22px; text-align: center; }
+  .gc-back-t { font-family: 'Jost', sans-serif; font-size: clamp(14px, 4.4vw, 21px); font-weight: 500; letter-spacing: 0.22em; text-indent: 0.22em; line-height: 1.75; text-transform: uppercase; color: var(--text); }
+  .gc-back-rule { width: 64px; height: 1px; background: var(--accent); opacity: 0.55; }
+  .gc-flip-hint { margin-top: 16px; font-size: 12px; letter-spacing: 0.3px; color: var(--text-muted); text-align: center; transition: opacity 0.4s; }
+  .gc-flip-hint.gone { opacity: 0; }
+  .gc-hint-mouse { display: none; }
+  @media (hover: hover) and (pointer: fine) { .gc-hint-touch { display: none; } .gc-hint-mouse { display: inline; } }
+  @media (prefers-reduced-motion: reduce) { .gc-flip-in { transition: none; } }
   .gc-mini {
     position: relative; overflow: hidden; flex-shrink: 0; width: 96px; height: 61px; border-radius: 11px; border: 1px solid transparent;
     background-image: linear-gradient(135deg, #34190c, #20120A), linear-gradient(135deg, rgba(244,226,209,0.34), rgba(244,226,209,0.12) 50%, rgba(244,226,209,0.10));
@@ -235,19 +250,22 @@
     .gc-action { margin-top: 26px; }
     .gc-action .btn { width: 100%; }
     .m-bar {
-      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; align-items: center; gap: 10px;
-      padding: 40px 20px calc(24px + env(safe-area-inset-bottom, 0px));
-      background: linear-gradient(to top, rgba(16,9,6,0.96) 0%, rgba(16,9,6,0.82) 48%, rgba(16,9,6,0) 100%);
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; align-items: center; justify-content: flex-end; gap: 10px;
+      padding: 0 20px calc(20px + env(safe-area-inset-bottom, 0px));
       pointer-events: none; transition: transform 0.3s ease, opacity 0.3s ease;
     }
     .m-bar > * { pointer-events: auto; }
     .m-bar.is-away { transform: translateY(110%); opacity: 0; }
     .m-bar.is-away > * { pointer-events: none; }
+    /* значок карты — в том же стиле, что круглый значок «Позвонить» в шапке (44 px, тонкая светлая рамка, светлый значок); фон плотнее, потому что кнопка плавает над страницей */
     .m-bar-card {
-      flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      background: rgba(32,18,10,0.94); border: 1px solid rgba(184,115,51,0.55); color: #CD8C4F; box-shadow: 0 8px 22px -8px rgba(0,0,0,0.7);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1px solid rgba(244,226,209,0.16); background: rgba(16,9,6,0.86); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      color: var(--text); box-shadow: 0 8px 22px -8px rgba(0,0,0,0.7); transition: color 0.2s, border-color 0.2s, background 0.2s;
     }
-    .m-bar .btn { flex: 1; min-width: 0; height: 56px; padding: 0 16px; font-size: 13.5px; }
+    .m-bar-card:active { background: rgba(244,226,209,0.14); border-color: rgba(244,226,209,0.3); }
+    .m-bar-card:focus-visible { outline-offset: 2px; }
   }
 
   /* ── ЛОГОТИП (настоящий файл, не перерисовка) ── */
@@ -1609,13 +1627,24 @@
           <p class="sec-sub">Оформите карту за минуту: она будет с вами на каждом визите.</p>
         </div>
         <div class="reveal gc-visual">
-          <div class="gc-card" role="img" aria-label="Карта гостя На Крыше">
-            <div class="gc-card-body">
-              <img class="gc-logo gc-card-mark" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
-              <span class="gc-card-label">Карта гостя</span>
+          <!-- Карту можно покрутить: нажать, потянуть мышью или провести пальцем. На обороте — «Добро пожаловать домой» -->
+          <div class="gc-flip" id="gcFlip" tabindex="0" role="button" aria-label="Карта гостя На Крыше. Нажмите или проведите по карте, чтобы перевернуть">
+            <div class="gc-flip-in" id="gcFlipIn" data-flipped="false">
+              <div class="gc-card gc-face" id="gcFront" aria-label="Карта гостя На Крыше, QR-код">
+                <div class="gc-card-body">
+                  <img class="gc-logo gc-card-mark" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
+                  <span class="gc-card-label">Карта гостя</span>
+                </div>
+                <div class="gc-card-qr" id="gcQr"></div>
+              </div>
+              <div class="gc-card gc-face gc-back" id="gcBack" aria-hidden="true">
+                <div class="gc-back-rule"></div>
+                <div class="gc-back-t">Добро пожаловать<br>домой</div>
+                <div class="gc-back-rule"></div>
+              </div>
             </div>
-            <div class="gc-card-qr" id="gcQr"></div>
           </div>
+          <div class="gc-flip-hint" id="gcFlipHint"><span class="gc-hint-touch">Проведите по карте или нажмите на неё</span><span class="gc-hint-mouse">Нажмите на карту или потяните её</span></div>
         </div>
         <div class="reveal gc-action">
           <a href="https://t.me/nakryshevld_bot?start=card_sec" target="_blank" rel="noopener" class="btn btn-primary gc-cta"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5 21 3z"/></svg> Оформить в Telegram</a>
@@ -1913,8 +1942,7 @@
 
   <!-- Нижняя панель на телефоне: карта гостя слева, бронь справа. На последнем экране (карта на странице) уезжает вниз -->
   <div class="m-bar" id="mBar">
-    <a href="https://t.me/nakryshevld_bot?start=card_bar" target="_blank" rel="noopener" class="m-bar-card" aria-label="Карта гостя"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><line x1="2.5" y1="10" x2="21.5" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg></a>
-    <a href="#booking" class="btn btn-primary" onclick="openOverlay('booking'); return false;">Забронировать стол</a>
+    <a href="https://t.me/nakryshevld_bot?start=card_bar" target="_blank" rel="noopener" class="m-bar-card" aria-label="Карта гостя"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><line x1="2.5" y1="10" x2="21.5" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg></a>
   </div>
 
 <script>
@@ -3369,6 +3397,53 @@
     document.querySelectorAll('.gc-logo').forEach((i) => { i.src = src; });
     // QR на карте-образце: ведёт в бота за картой (с телефона наводите камеру, с телефона же нажимаете кнопку ниже)
     const gq = document.getElementById('gcQr'); if (gq) gq.innerHTML = qrPlateSvg('https://t.me/nakryshevld_bot?start=card_sec');
+    // Оборот карты: нажать, потянуть мышью или провести пальцем. Вертикальный жест остаётся прокруткой страницы.
+    (function () {
+      const wrap = document.getElementById('gcFlip'), inner = document.getElementById('gcFlipIn'), hint = document.getElementById('gcFlipHint');
+      if (!wrap || !inner) return;
+      let rot = 0, d = null, hinted = false;
+      const paint = (deg) => { inner.style.transform = 'rotateY(' + deg + 'deg)'; };
+      const settle = () => { rot = ((Math.round(rot / 180) * 180) % 360 + 360) % 360; inner.classList.add('drag'); paint(rot); void inner.offsetWidth; inner.classList.remove('drag'); };
+      const mark = () => {
+        const back = Math.round(rot / 180) % 2 !== 0;
+        inner.dataset.flipped = String(back);
+        const f = document.getElementById('gcFront'), b = document.getElementById('gcBack');
+        if (f) f.setAttribute('aria-hidden', String(back)); if (b) b.setAttribute('aria-hidden', String(!back));
+        if (!hinted) { hinted = true; if (hint) hint.classList.add('gone'); }
+      };
+      const turn = (dir) => { rot += dir * 180; inner.classList.remove('drag'); paint(rot); mark(); };
+      inner.addEventListener('transitionend', (e) => { if (e.target === inner && e.propertyName === 'transform') settle(); });
+      wrap.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        d = { id: e.pointerId, x: e.clientX, y: e.clientY, t: Date.now(), moved: false, w: wrap.offsetWidth || 320, dx: 0 };
+      });
+      wrap.addEventListener('pointermove', (e) => {
+        if (!d || e.pointerId !== d.id) return;
+        const dx = e.clientX - d.x, dy = e.clientY - d.y;
+        if (!d.moved) {
+          if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+          if (Math.abs(dy) > Math.abs(dx)) { d = null; return; }
+          d.moved = true; settle(); inner.classList.add('drag'); try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+        d.dx = dx;
+        paint(rot + Math.max(-180, Math.min(180, -dx / d.w * 180)));
+      });
+      const end = (e, cancelled) => {
+        if (!d || e.pointerId !== d.id) return;
+        const m = d; d = null;
+        if (!m.moved) { if (!cancelled) turn(1); return; }          // просто нажали — переворачиваем
+        try { wrap.releasePointerCapture(e.pointerId); } catch (_) {}
+        const fast = Math.abs(m.dx) > 30 && Math.abs(m.dx) / Math.max(1, Date.now() - m.t) > 0.45;
+        const flip = !cancelled && (Math.abs(m.dx) / m.w > 0.28 || fast);
+        inner.classList.remove('drag');
+        if (flip) { rot += m.dx < 0 ? 180 : -180; mark(); }
+        paint(rot);
+        if (!flip) settle();
+      };
+      wrap.addEventListener('pointerup', (e) => end(e, false));
+      wrap.addEventListener('pointercancel', (e) => end(e, true));
+      wrap.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); turn(1); } });
+    })();
     const bar = document.getElementById('mBar'), map = document.getElementById('map-section');
     if (!bar || !map || !('IntersectionObserver' in window)) return;
     new IntersectionObserver((es) => es.forEach((e) => bar.classList.toggle('is-away', e.isIntersecting)), { threshold: 0.2 }).observe(map);
