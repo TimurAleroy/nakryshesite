@@ -1216,11 +1216,12 @@
   }
 
   /* ── Картинки и видео из Jarvis («Сервис → Сайт»): слой поверх зашитой картинки, плавно проявляется ── */
-  .site-ml { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+  .site-ml { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; opacity: 0; transition: opacity .6s ease; pointer-events: none; isolation: isolate; }
   .site-ml.in { opacity: 1; }
   .site-ml-m { position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat; transform-origin: center; }
   video.site-ml-m { width: 100%; height: 100%; object-fit: cover; background: none; }
   .site-ml-v { position: absolute; inset: 0; }
+  .site-ml-w { position: absolute; inset: 0; mix-blend-mode: soft-light; display: none; }
   @media (prefers-reduced-motion: reduce) { .site-ml { transition: none; } }
 </style>
 </head>
@@ -2049,19 +2050,27 @@
       : null;
 
     function tune(layer, m) {
-      const med = layer.firstElementChild, veil = layer.lastElementChild;
+      const med = layer.firstElementChild, veil = layer.lastElementChild, warm = layer.querySelector('.site-ml-w');
       const blur = Math.min(20, Math.max(0, num(m.blur, 0))), br = Math.min(130, Math.max(50, num(m.bright, 100))) / 100;
+      const ct = Math.min(150, Math.max(60, num(m.contrast, 100))) / 100, sa = Math.min(200, Math.max(0, num(m.sat, 100))) / 100;
+      const wm = Math.min(40, Math.max(-40, num(m.warm, 0)));
       const vl = Math.min(80, Math.max(0, num(m.veil, 0))) / 100;
       const fx = Math.min(100, Math.max(0, num(m.fx, 50))), fy = Math.min(100, Math.max(0, num(m.fy, 50)));
       const f = [];
       if (br !== 1) f.push('brightness(' + br + ')');
+      if (ct !== 1) f.push('contrast(' + ct + ')');
+      if (sa !== 1) f.push('saturate(' + sa + ')');
       if (blur) f.push('blur(' + blur + 'px)');
       med.style.filter = f.length ? f.join(' ') : 'none';
       med.style.transform = blur ? 'scale(' + (1 + blur * 2.2 / Math.max(160, layer.offsetWidth || 600)).toFixed(3) + ')' : '';
       if (med.tagName === 'VIDEO') med.style.objectPosition = fx + '% ' + fy + '%'; else med.style.backgroundPosition = fx + '% ' + fy + '%';
+      // тёплота: янтарный (плюс) или холодный (минус) слой поверх кадра, под затемнением
+      if (warm) {
+        if (wm) { warm.style.display = 'block'; warm.style.background = wm > 0 ? 'rgb(255,140,40)' : 'rgb(60,130,255)'; warm.style.opacity = (Math.abs(wm) / 40 * 0.55).toFixed(3); }
+        else warm.style.display = 'none';
+      }
       veil.style.background = vl ? 'rgba(14,8,3,' + vl + ')' : 'none';
-    }
-    function build(m) {
+    }    function build(m) {
       const layer = document.createElement('div');
       layer.className = 'site-ml';
       layer.setAttribute('data-k', m.type + '|' + m.url);
@@ -2072,19 +2081,45 @@
         med.setAttribute('muted', ''); med.setAttribute('playsinline', ''); med.setAttribute('aria-hidden', 'true'); med.tabIndex = -1;
       } else med = document.createElement('div');
       med.className = 'site-ml-m';
+      const warm = document.createElement('i');
+      warm.className = 'site-ml-w';
       const veil = document.createElement('i');
       veil.className = 'site-ml-v';
-      layer.appendChild(med); layer.appendChild(veil);
+      layer.appendChild(med); layer.appendChild(warm); layer.appendChild(veil);
       return layer;
+    }
+    // Ретушь стандартной картинки (своего фото на месте нет): поверх зашитой картинки кладём слой с её же копией и той же ретушью.
+    // Своя картинка в Jarvis при этом не нужна, а сама зашитая остаётся под слоем и возвращается, как только ретушь убрана.
+    function applyStd(el, cur, st) {
+      const bg = getComputedStyle(el).backgroundImage;
+      if (!bg || bg === 'none') { if (cur) cur.remove(); return; }
+      if (cur && cur.getAttribute('data-k') === 'std') { tune(cur, st); return; }
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      const nl = build({ type: 'image' });
+      nl.setAttribute('data-k', 'std');
+      nl.firstElementChild.style.backgroundImage = bg;
+      el.appendChild(nl);
+      tune(nl, st);
+      requestAnimationFrame(() => {
+        if (!nl.isConnected) return;
+        nl.classList.add('in');
+        if (cur) setTimeout(() => cur.remove(), 800);
+      });
     }
     function applyMedia(c) {
       const md = (c && c.media) || {};
+      const sd = c && c.std && typeof c.std === 'object' ? c.std : {};
       document.querySelectorAll('[data-sm]').forEach((el) => {
         const m = md[el.getAttribute('data-sm')];
         let cur = null;
         for (const ch of el.children) if (ch.classList && ch.classList.contains('site-ml')) cur = ch;
         const ok = m && typeof m === 'object' && typeof m.url === 'string' && SAFE_URL.test(m.url) && (m.type === 'image' || (m.type === 'video' && !reduceMotion && !saveData));
-        if (!ok) { if (cur) cur.remove(); return; }
+        if (!ok) {
+          const st = sd[el.getAttribute('data-sm')];
+          if (!m && st && typeof st === 'object') return applyStd(el, cur, st);   // своего фото нет — только ретушь стандартной картинки
+          if (cur) cur.remove();
+          return;
+        }
         const key = m.type + '|' + m.url;
         if (cur && cur.getAttribute('data-k') === key) { tune(cur, m); return; }
         if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
