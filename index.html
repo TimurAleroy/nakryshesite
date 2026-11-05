@@ -228,7 +228,7 @@
   .gc-card-qr svg { width: 100%; height: 100%; display: block; }
   .gc-card-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
   /* оборот карты */
-  .gc-flip { width: 100%; max-width: 440px; perspective: 1400px; -webkit-perspective: 1400px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; border-radius: 22px; position: relative; --gc-t: 4px; }
+  .gc-flip { width: 100%; max-width: 440px; perspective: 1400px; -webkit-perspective: 1400px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; border-radius: 22px; position: relative; --gc-t: 3px; }
   .gc-flip:active { cursor: grabbing; }
   .gc-flip:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
   .gc-flip-in { position: relative; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); }
@@ -238,8 +238,8 @@
   .gc-back-t { font-family: 'Jost', sans-serif; font-size: clamp(14px, 4.4vw, 21px); font-weight: 500; letter-spacing: 0.22em; text-indent: 0.22em; line-height: 1.75; text-transform: uppercase; color: var(--text); }
   .gc-back-rule { width: 64px; height: 1px; background: var(--accent); opacity: 0.55; }
   @media (prefers-reduced-motion: reduce) { .gc-flip-in { transition: none; } }
-  /* Глубина карты. Лицо и оборот разнесены по оси Z на толщину карты (--gc-t * 2), между ними стопка тонких срезов .gc-edge i:
-     при повороте на ребро видна настоящая кромка (светлая фаска по краям, тёмная середина), а не бумажная линия.
+  /* Глубина карты. Лицо и оборот разнесены по оси Z на толщину карты (--gc-t * 2 = 6px), между ними стопка тонких срезов .gc-edge i:
+     при повороте на ребро видна настоящая кромка цвета самой карты (тёмно-коричневая, у лица чуть светлее, как её тонкая рамка).
      Свет и тень считает скрипт по реальному углу карты: блик ходит по лицу, грань темнеет к ребру, тень сужается. */
   .gc-tilt { position: relative; z-index: 1; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .gc-flip .gc-card { box-shadow: none; }
@@ -247,13 +247,12 @@
   .gc-edge { position: absolute; inset: 0; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; pointer-events: none; }
   .gc-edge i {
     position: absolute; inset: 0; border-radius: 22px; transform: translateZ(var(--z));
-    background-image: linear-gradient(180deg, rgba(255,236,214,0.30) 0%, transparent 9%, transparent 91%, rgba(0,0,0,0.38) 100%),
+    background-image: linear-gradient(180deg, rgba(244,226,209,0.12) 0%, transparent 9%, transparent 91%, rgba(0,0,0,0.30) 100%),
                       linear-gradient(90deg, var(--l) 0%, var(--m) 5%, var(--m) 95%, var(--d) 100%);
   }
-  .gc-edge i:nth-child(1), .gc-edge i:nth-child(8) { --l: #f0c79a; --m: #c18a58; --d: #8a5630; }
-  .gc-edge i:nth-child(2), .gc-edge i:nth-child(7) { --l: #c8935c; --m: #9a6538; --d: #62391c; }
-  .gc-edge i:nth-child(3), .gc-edge i:nth-child(6) { --l: #946036; --m: #6e4322; --d: #3e2210; }
-  .gc-edge i:nth-child(4), .gc-edge i:nth-child(5) { --l: #6e4423; --m: #512f16; --d: #2a160a; }
+  .gc-edge i:nth-child(1), .gc-edge i:nth-child(6) { --l: #3a2a20; --m: #2c1b11; --d: #1d0f08; }
+  .gc-edge i:nth-child(2), .gc-edge i:nth-child(5) { --l: #2f1f15; --m: #25150c; --d: #190c06; }
+  .gc-edge i:nth-child(3), .gc-edge i:nth-child(4) { --l: #2a1a10; --m: #20120A; --d: #150a05; }
   .gc-flip .gc-card::after {
     content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
     background-image: linear-gradient(104deg, transparent 26%, rgba(255,236,214,0.12) 42%, rgba(255,236,214,0.07) 52%, transparent 68%),
@@ -1661,7 +1660,7 @@
             <div class="gc-shadow" aria-hidden="true"></div>
             <div class="gc-tilt" id="gcTilt">
             <div class="gc-flip-in" id="gcFlipIn" data-flipped="false">
-              <div class="gc-edge" aria-hidden="true"><i style="--z:-3.5px"></i><i style="--z:-2.5px"></i><i style="--z:-1.5px"></i><i style="--z:-0.5px"></i><i style="--z:0.5px"></i><i style="--z:1.5px"></i><i style="--z:2.5px"></i><i style="--z:3.5px"></i></div>
+              <div class="gc-edge" aria-hidden="true"><i style="--z:-2.5px"></i><i style="--z:-1.5px"></i><i style="--z:-0.5px"></i><i style="--z:0.5px"></i><i style="--z:1.5px"></i><i style="--z:2.5px"></i></div>
               <div class="gc-card gc-face" id="gcFront" aria-label="Карта гостя На Крыше, QR-код">
                 <div class="gc-card-body">
                   <img class="gc-logo gc-card-mark" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
