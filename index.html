@@ -228,20 +228,47 @@
   .gc-card-qr svg { width: 100%; height: 100%; display: block; }
   .gc-card-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
   /* оборот карты */
-  .gc-flip { width: 100%; max-width: 440px; perspective: 1400px; -webkit-perspective: 1400px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; border-radius: 22px; }
+  .gc-flip { width: 100%; max-width: 440px; perspective: 1400px; -webkit-perspective: 1400px; touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; outline: none; border-radius: 22px; position: relative; --gc-t: 4px; }
   .gc-flip:active { cursor: grabbing; }
   .gc-flip:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
   .gc-flip-in { position: relative; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1); }
   .gc-flip-in.drag { transition: none; }
   .gc-flip .gc-face { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
-  .gc-flip .gc-back { position: absolute; inset: 0; width: auto; max-width: none; transform: rotateY(180deg); flex-direction: column; align-items: center; justify-content: center; gap: 22px; text-align: center; }
+  .gc-flip .gc-back { position: absolute; inset: 0; width: auto; max-width: none; transform: rotateY(180deg) translateZ(var(--gc-t)); flex-direction: column; align-items: center; justify-content: center; gap: 22px; text-align: center; }
   .gc-back-t { font-family: 'Jost', sans-serif; font-size: clamp(14px, 4.4vw, 21px); font-weight: 500; letter-spacing: 0.22em; text-indent: 0.22em; line-height: 1.75; text-transform: uppercase; color: var(--text); }
   .gc-back-rule { width: 64px; height: 1px; background: var(--accent); opacity: 0.55; }
-  .gc-flip-hint { margin-top: 16px; font-size: 12px; letter-spacing: 0.3px; color: var(--text-muted); text-align: center; transition: opacity 0.4s; }
-  .gc-flip-hint.gone { opacity: 0; }
-  .gc-hint-mouse { display: none; }
-  @media (hover: hover) and (pointer: fine) { .gc-hint-touch { display: none; } .gc-hint-mouse { display: inline; } }
   @media (prefers-reduced-motion: reduce) { .gc-flip-in { transition: none; } }
+  /* Глубина карты. Лицо и оборот разнесены по оси Z на толщину карты (--gc-t * 2), между ними стопка тонких срезов .gc-edge i:
+     при повороте на ребро видна настоящая кромка (светлая фаска по краям, тёмная середина), а не бумажная линия.
+     Свет и тень считает скрипт по реальному углу карты: блик ходит по лицу, грань темнеет к ребру, тень сужается. */
+  .gc-tilt { position: relative; z-index: 1; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .gc-flip .gc-card { box-shadow: none; }
+  .gc-flip #gcFront { transform: translateZ(var(--gc-t)); }
+  .gc-edge { position: absolute; inset: 0; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; pointer-events: none; }
+  .gc-edge i {
+    position: absolute; inset: 0; border-radius: 22px; transform: translateZ(var(--z));
+    background-image: linear-gradient(180deg, rgba(255,236,214,0.30) 0%, transparent 9%, transparent 91%, rgba(0,0,0,0.38) 100%),
+                      linear-gradient(90deg, var(--l) 0%, var(--m) 5%, var(--m) 95%, var(--d) 100%);
+  }
+  .gc-edge i:nth-child(1), .gc-edge i:nth-child(8) { --l: #f0c79a; --m: #c18a58; --d: #8a5630; }
+  .gc-edge i:nth-child(2), .gc-edge i:nth-child(7) { --l: #c8935c; --m: #9a6538; --d: #62391c; }
+  .gc-edge i:nth-child(3), .gc-edge i:nth-child(6) { --l: #946036; --m: #6e4322; --d: #3e2210; }
+  .gc-edge i:nth-child(4), .gc-edge i:nth-child(5) { --l: #6e4423; --m: #512f16; --d: #2a160a; }
+  .gc-flip .gc-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background-image: linear-gradient(104deg, transparent 26%, rgba(255,236,214,0.12) 42%, rgba(255,236,214,0.07) 52%, transparent 68%),
+                      linear-gradient(rgba(14,7,3,var(--gc-dim, 0)), rgba(14,7,3,var(--gc-dim, 0)));
+    background-size: 250% 100%, 100% 100%; background-repeat: no-repeat;
+    background-position: calc(var(--gc-g, 0.5) * 100%) 0, 0 0;
+  }
+  .gc-flip #gcFront { --gc-g: var(--gc-gf, 0.5); --gc-dim: var(--gc-df, 0); }
+  .gc-flip .gc-back { --gc-g: var(--gc-gb, 0.5); --gc-dim: var(--gc-db, 0); }
+  .gc-shadow {
+    position: absolute; inset: 0; z-index: 0; border-radius: 22px; pointer-events: none;
+    background: rgba(0,0,0,0.62); filter: blur(23px); opacity: var(--gc-so, 1);
+    transform: translate3d(var(--gc-shx, 0px), 24px, 0) scale(0.97, 0.94) scaleX(var(--gc-sx, 1));
+  }
+  @media (prefers-reduced-motion: reduce) { .gc-tilt { transition: none; } }
   .gc-mini {
     position: relative; overflow: hidden; flex-shrink: 0; width: 96px; height: 61px; border-radius: 11px; border: 1px solid transparent;
     background-image: linear-gradient(135deg, #34190c, #20120A), linear-gradient(135deg, rgba(244,226,209,0.34), rgba(244,226,209,0.12) 50%, rgba(244,226,209,0.10));
@@ -274,7 +301,7 @@
     .gc-action { margin-top: 26px; }
     .gc-action .btn { width: 100%; }
     .m-bar {
-      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; align-items: center; justify-content: flex-end; gap: 10px;
+      display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 150; align-items: center; justify-content: flex-start; gap: 10px;
       padding: 0 20px calc(20px + env(safe-area-inset-bottom, 0px));
       pointer-events: none; transition: transform 0.3s ease, opacity 0.3s ease;
     }
@@ -734,6 +761,10 @@
 
   /* ── КОНТАКТЫ (внутри «О нас») ─────────────── */
   .about-contacts { margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--border); }
+  /* Контакты стоят отдельной секцией после афиши: верхняя линия отделяет их от карточек афиши */
+  #contacts { padding: 0 0 120px; }
+  #contacts .about-contacts { margin-top: 0; }
+  @media (max-width: 760px) { #contacts { padding-bottom: 80px; } }
 
   /* ── МЕНЮ (тизер) ─────────────────────────────── */
   #menu-teaser { padding: 140px 0; background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -1166,7 +1197,8 @@
     .hero-actions { flex-direction: column; width: 100%; }
     .hero-actions .btn { width: 100%; }
     .hero-logo-img { height: 190px; }
-    .quick-info-row { flex-direction: column; gap: 20px; }
+    .quick-info-row { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .quick-info-right { text-align: left; }
     .quick-info-item { border-left: none !important; padding: 0 !important; }
     .gallery-photo { height: 220px; }
   }
@@ -1611,43 +1643,6 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
         </button>
       </div>
-
-      <div class="about-contacts reveal">
-        <div class="sec-label">Контакты</div>
-        <div class="quick-info-row">
-          <div class="quick-info-left">
-            <div class="quick-info-line">
-              <a href="tel:+70000000000" data-site-tel class="quick-info-pair">
-                <span class="quick-info-label">Телефон:</span>
-                <span class="quick-info-value" data-st="contacts.phone">+7 (000) 000-00-00</span>
-              </a>
-              <div class="quick-info-socials">
-                <a href="https://t.me/nakryshevld_bot" target="_blank" rel="noopener" class="social-icon" aria-label="Telegram">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 L3 10.5 L10 13 L12.5 20 L15 14.5 L21 3Z"/><path d="M10 13 L21 3"/></svg>
-                </a>
-                <a href="https://instagram.com/nakryshe_vld" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor" stroke="none"/></svg>
-                </a>
-              </div>
-            </div>
-            <div class="quick-info-line">
-              <div class="quick-info-pair">
-                <span class="quick-info-label">Режим работы:</span>
-                <span class="quick-info-value" data-st="contacts.hours">Ежедневно, 13:00 – 01:00</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="quick-info-right">
-            <a href="https://yandex.ru/maps/?text=Владикавказ, ул. Весенняя 19Б" data-site-map target="_blank" rel="noopener" class="quick-info-address-link">
-              <span class="quick-info-address" data-site-addr="br">ул. Весенняя 19Б,<br>Владикавказ</span>
-            </a>
-            <a href="https://yandex.ru/maps/?text=Владикавказ, ул. Весенняя 19Б" data-site-map target="_blank" rel="noopener" class="quick-info-map-link">
-              Смотреть на карте
-            </a>
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -1663,7 +1658,10 @@
         <div class="reveal gc-visual">
           <!-- Карту можно покрутить: нажать, потянуть мышью или провести пальцем. На обороте — «Добро пожаловать домой» -->
           <div class="gc-flip" id="gcFlip" tabindex="0" role="button" aria-label="Карта гостя На Крыше. Нажмите или проведите по карте, чтобы перевернуть">
+            <div class="gc-shadow" aria-hidden="true"></div>
+            <div class="gc-tilt" id="gcTilt">
             <div class="gc-flip-in" id="gcFlipIn" data-flipped="false">
+              <div class="gc-edge" aria-hidden="true"><i style="--z:-3.5px"></i><i style="--z:-2.5px"></i><i style="--z:-1.5px"></i><i style="--z:-0.5px"></i><i style="--z:0.5px"></i><i style="--z:1.5px"></i><i style="--z:2.5px"></i><i style="--z:3.5px"></i></div>
               <div class="gc-card gc-face" id="gcFront" aria-label="Карта гостя На Крыше, QR-код">
                 <div class="gc-card-body">
                   <img class="gc-logo gc-card-mark" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
@@ -1677,8 +1675,8 @@
                 <div class="gc-back-rule"></div>
               </div>
             </div>
+            </div>
           </div>
-          <div class="gc-flip-hint" id="gcFlipHint"><span class="gc-hint-touch">Проведите по карте или нажмите на неё</span><span class="gc-hint-mouse">Нажмите на карту или потяните её</span></div>
         </div>
         <div class="reveal gc-action">
           <a href="https://t.me/nakryshevld_bot?start=card_sec" target="_blank" rel="noopener" class="btn btn-primary gc-cta"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5 21 3z"/></svg> Оформить в Telegram</a>
@@ -1731,6 +1729,48 @@
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ── КОНТАКТЫ (после афиши): телефон, соцсети, режим работы, адрес ───────────── -->
+  <section id="contacts">
+    <div class="wrap">
+      <div class="about-contacts reveal">
+        <div class="sec-label">Контакты</div>
+        <div class="quick-info-row">
+          <div class="quick-info-left">
+            <div class="quick-info-line">
+              <a href="tel:+70000000000" data-site-tel class="quick-info-pair">
+                <span class="quick-info-label">Телефон:</span>
+                <span class="quick-info-value" data-st="contacts.phone">+7 (000) 000-00-00</span>
+              </a>
+              <div class="quick-info-socials">
+                <a href="https://t.me/nakryshevld_bot" target="_blank" rel="noopener" class="social-icon" aria-label="Telegram">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 L3 10.5 L10 13 L12.5 20 L15 14.5 L21 3Z"/><path d="M10 13 L21 3"/></svg>
+                </a>
+                <a href="https://instagram.com/nakryshe_vld" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor" stroke="none"/></svg>
+                </a>
+              </div>
+            </div>
+            <div class="quick-info-line">
+              <div class="quick-info-pair">
+                <span class="quick-info-label">Режим работы:</span>
+                <span class="quick-info-value" data-st="contacts.hours">Ежедневно, 13:00 – 01:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-info-right">
+            <a href="https://yandex.ru/maps/?text=Владикавказ, ул. Весенняя 19Б" data-site-map target="_blank" rel="noopener" class="quick-info-address-link">
+              <span class="quick-info-address" data-site-addr="br">ул. Весенняя 19Б,<br>Владикавказ</span>
+            </a>
+            <a href="https://yandex.ru/maps/?text=Владикавказ, ул. Весенняя 19Б" data-site-map target="_blank" rel="noopener" class="quick-info-map-link">
+              Смотреть на карте
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -3621,17 +3661,55 @@
     const gq = document.getElementById('gcQr'); if (gq) gq.innerHTML = qrPlateSvg('https://t.me/nakryshevld_bot?start=card_sec');
     // Оборот карты: нажать, потянуть мышью или провести пальцем. Вертикальный жест остаётся прокруткой страницы.
     (function () {
-      const wrap = document.getElementById('gcFlip'), inner = document.getElementById('gcFlipIn'), hint = document.getElementById('gcFlipHint');
+      const wrap = document.getElementById('gcFlip'), inner = document.getElementById('gcFlipIn');
       if (!wrap || !inner) return;
-      let rot = 0, d = null, hinted = false;
-      const paint = (deg) => { inner.style.transform = 'rotateY(' + deg + 'deg)'; };
+      let rot = 0, d = null;
+      const tilt = document.getElementById('gcTilt');
+      const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const RAD = Math.PI / 180, norm = (a) => ((a % 360) + 540) % 360 - 180;
+      const Matrix = window.DOMMatrix || window.WebKitCSSMatrix;
+      let ty = 0, raf = 0, until = 0;
+      // Свет и тень по углу карты: блик ходит по лицу, грань темнеет к ребру, тень сужается и уезжает в сторону
+      const light = (deg) => {
+        const a = norm(deg), f = a, b = norm(a - 180);
+        const pos = (x) => (0.5 - Math.max(-1, Math.min(1, x / 75)) * 0.36).toFixed(3);
+        const dim = (x) => Math.max(0, 0.6 * (1 - Math.cos(x * RAD))).toFixed(3);
+        inner.style.setProperty('--gc-gf', pos(f)); inner.style.setProperty('--gc-gb', pos(b));
+        inner.style.setProperty('--gc-df', dim(f)); inner.style.setProperty('--gc-db', dim(b));
+        const c = Math.abs(Math.cos(a * RAD));
+        wrap.style.setProperty('--gc-sx', Math.max(0.035, c).toFixed(3));
+        wrap.style.setProperty('--gc-shx', (Math.sin(a * RAD) * 18).toFixed(1) + 'px');
+        wrap.style.setProperty('--gc-so', (0.55 + 0.45 * c).toFixed(3));
+      };
+      // Пока карта едет по CSS-переходу, берём настоящий угол из её матрицы в каждом кадре, чтобы свет не отставал
+      const follow = () => {
+        raf = 0;
+        try {
+          const t = getComputedStyle(inner).transform;
+          const m = t && t !== 'none' && Matrix ? new Matrix(t) : null;
+          light((m ? Math.atan2(m.m31, m.m11) / RAD : 0) + ty);
+        } catch (_) {}
+        if (performance.now() < until) raf = requestAnimationFrame(follow);
+      };
+      const paint = (deg) => {
+        inner.style.transform = 'rotateY(' + deg + 'deg)';
+        if (inner.classList.contains('drag')) { light(deg + ty); return; }   // тянем пальцем: переходов нет, угол известен
+        until = performance.now() + 900;
+        if (!raf) raf = requestAnimationFrame(follow);
+      };
+      // Лёгкий наклон под мышью: карта «живая» и в покое, толщина и свет видны сразу
+      const setTilt = (nx, ny) => {
+        if (!tilt || calm) return;
+        ty = nx * 7;
+        tilt.style.transform = nx || ny ? 'rotateX(' + (-ny * 5).toFixed(2) + 'deg) rotateY(' + ty.toFixed(2) + 'deg)' : '';
+        if (!raf && !inner.classList.contains('drag')) light(rot + ty);
+      };
       const settle = () => { rot = ((Math.round(rot / 180) * 180) % 360 + 360) % 360; inner.classList.add('drag'); paint(rot); void inner.offsetWidth; inner.classList.remove('drag'); };
       const mark = () => {
         const back = Math.round(rot / 180) % 2 !== 0;
         inner.dataset.flipped = String(back);
         const f = document.getElementById('gcFront'), b = document.getElementById('gcBack');
         if (f) f.setAttribute('aria-hidden', String(back)); if (b) b.setAttribute('aria-hidden', String(!back));
-        if (!hinted) { hinted = true; if (hint) hint.classList.add('gone'); }
       };
       const turn = (dir) => { rot += dir * 180; inner.classList.remove('drag'); paint(rot); mark(); };
       inner.addEventListener('transitionend', (e) => { if (e.target === inner && e.propertyName === 'transform') settle(); });
@@ -3640,12 +3718,16 @@
         d = { id: e.pointerId, x: e.clientX, y: e.clientY, t: Date.now(), moved: false, w: wrap.offsetWidth || 320, dx: 0 };
       });
       wrap.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'mouse' && (!d || !d.moved)) {
+          const r = wrap.getBoundingClientRect();
+          setTilt(Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2)), Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2)));
+        }
         if (!d || e.pointerId !== d.id) return;
         const dx = e.clientX - d.x, dy = e.clientY - d.y;
         if (!d.moved) {
           if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
           if (Math.abs(dy) > Math.abs(dx)) { d = null; return; }
-          d.moved = true; settle(); inner.classList.add('drag'); try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
+          d.moved = true; setTilt(0, 0); settle(); inner.classList.add('drag'); try { wrap.setPointerCapture(e.pointerId); } catch (_) {}
         }
         d.dx = dx;
         paint(rot + Math.max(-180, Math.min(180, -dx / d.w * 180)));
@@ -3662,9 +3744,11 @@
         paint(rot);
         if (!flip) settle();
       };
+      wrap.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') setTilt(0, 0); });
       wrap.addEventListener('pointerup', (e) => end(e, false));
       wrap.addEventListener('pointercancel', (e) => end(e, true));
       wrap.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); turn(1); } });
+      light(0);
     })();
     const bar = document.getElementById('mBar'), map = document.getElementById('map-section');
     if (!bar || !map || !('IntersectionObserver' in window)) return;
