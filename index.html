@@ -37,13 +37,23 @@
       });
       return out;
     };
-    // главный экран: своё фото начинаем грузить сразу, не дожидаясь конца страницы
+    // главный экран: своё фото или видео начинаем грузить сразу, не дожидаясь конца страницы (на телефоне она докачивается несколько секунд).
+    // Видео: отдельный элемент <video> без места на странице; основной скрипт потом берёт его себе (H.vid) и не качает второй раз
     H.warm = function (d) {
       try {
         var hm = d && d.media && d.media['hero.bg'];
-        if (hm && hm.type === 'image' && H.slots['hero.bg'] && H.warmed !== hm.url) {
+        if (!hm || !H.slots['hero.bg'] || H.warmed === hm.url) return;
+        if (hm.type === 'image') {
           H.warmed = hm.url;
           var im = new Image(); try { im.fetchPriority = 'high'; } catch (e) {} im.src = hm.url;
+        } else if (hm.type === 'video' && !reduce && !save) {   // «меньше движения» и экономия трафика: видео не качаем, как и основной скрипт
+          H.warmed = hm.url;
+          if (H.vid) { try { H.vid.el.removeAttribute('src'); H.vid.el.load(); } catch (e) {} H.vid = null; }   // адрес сменился: старый не докачиваем
+          var v = document.createElement('video');
+          v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+          v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+          v.src = hm.url;
+          H.vid = { el: v, url: hm.url };
         }
       } catch (e) {}
     };
@@ -2190,7 +2200,9 @@
       layer.setAttribute('data-k', m.type + '|' + m.url);
       let med;
       if (m.type === 'video') {
-        med = document.createElement('video');
+        // тот же ролик уже качается из <head> (HOLD.vid): берём этот элемент, второй раз не качаем
+        if (HOLD && HOLD.vid && HOLD.vid.url === m.url) { med = HOLD.vid.el; HOLD.vid = null; }
+        else med = document.createElement('video');
         med.muted = true; med.loop = true; med.playsInline = true; med.autoplay = true; med.preload = 'auto';
         med.setAttribute('muted', ''); med.setAttribute('playsinline', ''); med.setAttribute('aria-hidden', 'true'); med.tabIndex = -1;
       } else med = document.createElement('div');
@@ -2256,8 +2268,10 @@
         if (m.type === 'video') {
           med.addEventListener('loadeddata', show, { once: true });
           med.addEventListener('error', fail, { once: true });
-          med.src = m.url;
+          if (med.src !== m.url) med.src = m.url;     // взятый из <head> элемент уже качает этот адрес
           if (vio) vio.observe(med);
+          // пока страница докачивалась, ролик мог уже загрузиться (или сломаться): событий больше не будет
+          if (med.error) fail(); else if (med.readyState >= 2) show();
         } else {
           const im = new Image();
           im.onload = () => { med.style.backgroundImage = 'url("' + m.url + '")'; show(); };
@@ -2539,7 +2553,7 @@
       const pill = dateLabel
         ? `<div class="event-pill"><span>${dateLabel}</span>${time ? `<span class="spark">✦</span><span>Начало в ${time}</span>` : ''}</div>`
         : '';
-      const poster = eventMediaHTML(e);
+      const poster = eventMediaHTML(e, true);
       return `<article class="reveal event-card" style="transition-delay:${(i * 0.1).toFixed(2)}s">
         <div class="event-poster">
           <div class="event-poster-ph">
@@ -2562,8 +2576,31 @@
       </article>`;
     }).join('');
     observeReveal(grid.querySelectorAll('.reveal'));
+    armPosterVideos(grid);
     grid.scrollLeft = 0;
     updateEventsNav();
+  }
+
+  // Видео в афише не качаем при открытии сайта: ролик весит несколько МБ и на телефоне отбирал канал у главного видео.
+  // Адрес лежит в data-lazy; когда карточка подъезжает к экрану (запас 300 px), ролик подгружается и играет, ушла — пауза.
+  let posterIO = null;
+  function wakePoster(v) {
+    if (!v.getAttribute('src')) v.src = v.getAttribute('data-lazy') + '#t=0.1';
+    v.muted = true;
+    const p = v.play(); if (p && p.catch) p.catch(() => {});
+  }
+  function armPosterVideos(root) {
+    const list = root.querySelectorAll('video[data-lazy]');
+    if (!list.length) return;
+    if (!('IntersectionObserver' in window)) { list.forEach(wakePoster); return; }
+    if (!posterIO) {
+      posterIO = new IntersectionObserver((es) => es.forEach((e) => {
+        const v = e.target;
+        if (!v.isConnected) { posterIO.unobserve(v); return; }
+        if (e.isIntersecting) wakePoster(v); else if (v.getAttribute('src')) v.pause();
+      }), { rootMargin: '300px', threshold: 0.01 });
+    }
+    list.forEach((v) => posterIO.observe(v));
   }
 
   // ── Фотолента атмосферы в «О нас»: стрелки листают по одному кадру и прячутся
@@ -2687,18 +2724,21 @@
       time: raw.includes('T') ? raw.slice(11, 16) : ''
     };
   }
-  function eventPosterHTML(e) {
+  function eventPosterHTML(e, lazy) {
     const p = eventDateParts(e.date);
     return `<div class="event-poster-ph">
         <div class="ph-day">${p.day}</div>
         <div class="ph-month">${p.monthShort}</div>
         ${e.format ? `<div class="ph-format">${escapeHtml(e.format)}</div>` : ''}
       </div>
-      ${eventMediaHTML(e)}`;
+      ${eventMediaHTML(e, lazy)}`;
   }
-  // Постер: фото или короткое видео (без звука, по кругу)
-  function eventMediaHTML(e) {
+  // Постер: фото или короткое видео (без звука, по кругу). lazy: видео подгружается, когда подъедет к экрану (armPosterVideos)
+  function eventMediaHTML(e, lazy) {
     if (!e.poster) return '';
+    if (e.posterType === 'video' && lazy) {
+      return `<video data-lazy="${escapeHtml(e.poster)}" muted loop playsinline preload="none" aria-label="${escapeHtml(e.name || '')}" onerror="this.remove()"></video>`;
+    }
     if (e.posterType === 'video') {
       return `<video src="${escapeHtml(e.poster)}#t=0.1" muted loop playsinline autoplay preload="metadata" aria-label="${escapeHtml(e.name || '')}" onerror="this.remove()"></video>`;
     }
@@ -2758,13 +2798,14 @@
     document.getElementById('evOthers').innerHTML = others.map(({ e, j }) => {
       const q = eventDateParts(e.date);
       return `<button type="button" class="ev-other" onclick="openEventDetail(${j})">
-        <div class="event-poster">${eventPosterHTML(e)}</div>
+        <div class="event-poster">${eventPosterHTML(e, true)}</div>
         <div class="ev-other-body">
           ${q.dateLabel ? `<div class="event-pill"><span>${q.dateLabel}</span>${q.time ? `<span class="spark">✦</span><span>${q.time}</span>` : ''}</div>` : ''}
           <div class="ev-other-title">${escapeHtml(e.name || '')}</div>
         </div>
       </button>`;
     }).join('');
+    armPosterVideos(document.getElementById('evOthers'));
 
     openOverlay('event');
   }
