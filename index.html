@@ -9,6 +9,47 @@
      на телефоне казалось, что фон "другого цвета", хотя сама страница везде
      рисуется одинаково. Цвет — тот же --bg, что у html ниже. -->
 <meta name="theme-color" content="#100906">
+<!-- Свои фото и видео из Jarvis («Сервис → Сайт»): пока они грузятся, зашитая стандартная картинка на их месте не рисуется.
+     Раньше при каждой перезагрузке на долю секунды мелькали стандартные картинки, потом поверх них проявлялись свои.
+     Этот маленький скрипт стоит до всей страницы: по запомненному в браузере ответу (nk_site_v1) он заранее знает, где есть
+     своё фото, и прячет зашитую картинку именно там (останется тёмный фон). Если запомненного ответа нет (первый заход),
+     места придерживаются до ответа сервера, но не дольше 1,5 секунды. Зашитая картинка возвращается, если своё фото не
+     загрузилось, грузится дольше 5 секунд, на месте его уже нет в Jarvis или видео человеку не включить («меньше движения»,
+     экономия трафика). Дальше этим управляет скрипт «САЙТ ИЗ JARVIS» ниже (window.__smHold). -->
+<script>
+(function () {
+  try {
+    var H = window.__smHold = { slots: {}, failed: {}, all: false, armed: false };
+    var st = document.createElement('style'); st.id = 'smHold';
+    var SAFE = /^https?:\/\/[^\s'"()<>\\]+\/api\/media\/[0-9a-f-]{36}$/i;
+    var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var save = !!(navigator.connection && navigator.connection.saveData);
+    var c = null;
+    try { var raw = localStorage.getItem('nk_site_v1'); c = raw ? JSON.parse(raw) : null; } catch (e) { c = null; }
+    if (c && typeof c === 'object') {
+      var md = c.media && typeof c.media === 'object' ? c.media : {};
+      Object.keys(md).forEach(function (k) {
+        var m = md[k];
+        if (!/^[a-z0-9._-]+$/i.test(k) || !m || typeof m !== 'object' || typeof m.url !== 'string' || !SAFE.test(m.url)) return;
+        if (m.type === 'image' || (m.type === 'video' && !reduce && !save)) H.slots[k] = m.type + '|' + m.url;
+      });
+      // главный экран: своё фото начинаем грузить сразу, не дожидаясь конца страницы
+      var hm = md['hero.bg'];
+      if (hm && hm.type === 'image' && H.slots['hero.bg']) { var im = new Image(); try { im.fetchPriority = 'high'; } catch (e) {} im.src = hm.url; }
+    } else H.all = true;
+    H.render = function () {
+      var css = H.all ? '[data-sm]' : Object.keys(H.slots).filter(function (k) { return H.failed[k] !== H.slots[k]; }).map(function (k) { return '[data-sm="' + k + '"]'; }).join(',');
+      st.textContent = css ? css + '{background-image:none!important}' : '';
+    };
+    H.render();
+    document.head.appendChild(st);
+    // первый заход: ответа сервера нет — места придерживаем недолго
+    if (H.all) setTimeout(function () { if (H.all) { H.all = false; H.render(); } }, 1500);
+    // страховка: если основной скрипт так и не запустился, ничего не держим
+    setTimeout(function () { if (!H.armed) { H.all = false; H.slots = {}; H.render(); } }, 8000);
+  } catch (e) { /* без этого скрипта сайт просто работает как раньше */ }
+})();
+</script>
 <title>На Крыше</title>
 <!-- Фавикон — геометрия вторичного лого (мачта + полый треугольник,
      та же, что у декоративных стрелок и hero-scroll выше), на тёмной
@@ -2030,6 +2071,11 @@
     const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     const saveData = !!(navigator.connection && navigator.connection.saveData);
     const SAFE_URL = /^https?:\/\/[^\s'"()<>\\]+\/api\/media\/[0-9a-f-]{36}$/i;
+    // Придержанные места (ранний скрипт в <head>): пока своё фото не показано, зашитая картинка под ним не рисуется
+    const HOLD = window.__smHold || null;
+    if (HOLD) HOLD.armed = true;
+    function holdSync(want) { if (!HOLD) return; HOLD.all = false; HOLD.slots = want; HOLD.render(); }          // want: место → «тип|адрес»
+    function holdFail(slot, key) { if (!HOLD) return; HOLD.failed[slot] = key; HOLD.render(); }                  // не загрузилось: вернуть зашитую
     const num = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
 
     function setRich(el, text) {            // **жирный** без разбора HTML: только текстовые узлы и <strong>
@@ -2148,11 +2194,15 @@
     function applyMedia(c) {
       const md = (c && c.media) || {};
       const sd = c && c.std && typeof c.std === 'object' ? c.std : {};
+      const okM = (m) => m && typeof m === 'object' && typeof m.url === 'string' && SAFE_URL.test(m.url) && (m.type === 'image' || (m.type === 'video' && !reduceMotion && !saveData));
+      // до разбора мест: какие места теперь со своим фото (их зашитую картинку держим), остальные отпускаем
+      holdSync(Object.keys(md).reduce((a, k) => { if (okM(md[k])) a[k] = md[k].type + '|' + md[k].url; return a; }, {}));
       document.querySelectorAll('[data-sm]').forEach((el) => {
-        const m = md[el.getAttribute('data-sm')];
+        const slot = el.getAttribute('data-sm');
+        const m = md[slot];
         let cur = null;
         for (const ch of el.children) if (ch.classList && ch.classList.contains('site-ml')) cur = ch;
-        const ok = m && typeof m === 'object' && typeof m.url === 'string' && SAFE_URL.test(m.url) && (m.type === 'image' || (m.type === 'video' && !reduceMotion && !saveData));
+        const ok = okM(m);
         if (!ok) {
           const st = sd[el.getAttribute('data-sm')];
           if (!m && st && typeof st === 'object') return applyStd(el, cur, st);   // своего фото нет — только ретушь стандартной картинки
@@ -2165,20 +2215,24 @@
         const nl = build(m), med = nl.firstElementChild;
         el.appendChild(nl);
         tune(nl, m);
+        let shown = false;
+        const giveUp = setTimeout(() => { if (!shown) holdFail(slot, key); }, 5000);   // дольше 5 секунд — показываем зашитую, своё проявится поверх
+        const fail = () => { clearTimeout(giveUp); holdFail(slot, key); nl.remove(); };
         const show = () => {
           if (!nl.isConnected) return;
+          shown = true; clearTimeout(giveUp);
           nl.classList.add('in');
           if (cur) setTimeout(() => cur.remove(), 800);
         };
         if (m.type === 'video') {
           med.addEventListener('loadeddata', show, { once: true });
-          med.addEventListener('error', () => nl.remove(), { once: true });
+          med.addEventListener('error', fail, { once: true });
           med.src = m.url;
           if (vio) vio.observe(med);
         } else {
           const im = new Image();
           im.onload = () => { med.style.backgroundImage = 'url("' + m.url + '")'; show(); };
-          im.onerror = () => nl.remove();
+          im.onerror = fail;
           im.src = m.url;
         }
       });
@@ -2205,7 +2259,7 @@
         const raw = JSON.stringify(d);
         if (raw !== last) { last = raw; apply(d); try { localStorage.setItem(LS, raw); } catch (e) { /* память браузера может быть закрыта */ } }
       } catch (e) { /* остаются запомненные (или зашитые) надписи и картинки */ }
-      finally { if (timer) clearTimeout(timer); }
+      finally { if (timer) clearTimeout(timer); if (HOLD && HOLD.all) { HOLD.all = false; HOLD.render(); } }
     })();
   })();
 
