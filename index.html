@@ -13,40 +13,68 @@
      Раньше при каждой перезагрузке на долю секунды мелькали стандартные картинки, потом поверх них проявлялись свои.
      Этот маленький скрипт стоит до всей страницы: по запомненному в браузере ответу (nk_site_v1) он заранее знает, где есть
      своё фото, и прячет зашитую картинку именно там (останется тёмный фон). Если запомненного ответа нет (первый заход),
-     места придерживаются до ответа сервера, но не дольше 1,5 секунды. Зашитая картинка возвращается, если своё фото не
-     загрузилось, грузится дольше 5 секунд, на месте его уже нет в Jarvis или видео человеку не включить («меньше движения»,
-     экономия трафика). Дальше этим управляет скрипт «САЙТ ИЗ JARVIS» ниже (window.__smHold). -->
+     скрипт сам сразу спрашивает сервер, не дожидаясь, пока дочитается тяжёлая страница (на телефоне это несколько секунд),
+     и пока ответа нет, придерживает все места, но не дольше 8 секунд. Зашитая картинка возвращается, если своё фото не
+     загрузилось, грузится дольше 20 секунд, на месте его уже нет в Jarvis или видео человеку не включить («меньше движения»,
+     экономия трафика). Таймеры не бегут, пока страница докачивается: страховка «основной скрипт не запустился» считает
+     3 секунды после того, как страница дочитана. Дальше этим управляет скрипт «САЙТ ИЗ JARVIS» ниже (window.__smHold). -->
 <script>
 (function () {
   try {
-    var H = window.__smHold = { slots: {}, failed: {}, all: false, armed: false };
+    var H = window.__smHold = { slots: {}, failed: {}, all: false, armed: false, p: null, warmed: '' };
     var st = document.createElement('style'); st.id = 'smHold';
     var SAFE = /^https?:\/\/[^\s'"()<>\\]+\/api\/media\/[0-9a-f-]{36}$/i;
+    var API = 'https://notion-proxy-eu-timuraleroy.waw0.amvera.tech/api/site';   // тот же адрес, что PROXY_BASE ниже
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var save = !!(navigator.connection && navigator.connection.saveData);
-    var c = null;
-    try { var raw = localStorage.getItem('nk_site_v1'); c = raw ? JSON.parse(raw) : null; } catch (e) { c = null; }
-    if (c && typeof c === 'object') {
-      var md = c.media && typeof c.media === 'object' ? c.media : {};
+    // какие места теперь со своим фото или видео (по запомненному или свежему ответу): место → «тип|адрес»
+    H.want = function (d) {
+      var out = {}, md = d && typeof d === 'object' && d.media && typeof d.media === 'object' ? d.media : {};
       Object.keys(md).forEach(function (k) {
         var m = md[k];
         if (!/^[a-z0-9._-]+$/i.test(k) || !m || typeof m !== 'object' || typeof m.url !== 'string' || !SAFE.test(m.url)) return;
-        if (m.type === 'image' || (m.type === 'video' && !reduce && !save)) H.slots[k] = m.type + '|' + m.url;
+        if (m.type === 'image' || (m.type === 'video' && !reduce && !save)) out[k] = m.type + '|' + m.url;
       });
-      // главный экран: своё фото начинаем грузить сразу, не дожидаясь конца страницы
-      var hm = md['hero.bg'];
-      if (hm && hm.type === 'image' && H.slots['hero.bg']) { var im = new Image(); try { im.fetchPriority = 'high'; } catch (e) {} im.src = hm.url; }
-    } else H.all = true;
+      return out;
+    };
+    // главный экран: своё фото начинаем грузить сразу, не дожидаясь конца страницы
+    H.warm = function (d) {
+      try {
+        var hm = d && d.media && d.media['hero.bg'];
+        if (hm && hm.type === 'image' && H.slots['hero.bg'] && H.warmed !== hm.url) {
+          H.warmed = hm.url;
+          var im = new Image(); try { im.fetchPriority = 'high'; } catch (e) {} im.src = hm.url;
+        }
+      } catch (e) {}
+    };
+    var c = null;
+    try { var raw = localStorage.getItem('nk_site_v1'); c = raw ? JSON.parse(raw) : null; } catch (e) { c = null; }
+    if (c && typeof c === 'object') { H.slots = H.want(c); H.warm(c); } else H.all = true;
     H.render = function () {
       var css = H.all ? '[data-sm]' : Object.keys(H.slots).filter(function (k) { return H.failed[k] !== H.slots[k]; }).map(function (k) { return '[data-sm="' + k + '"]'; }).join(',');
       st.textContent = css ? css + '{background-image:none!important}' : '';
     };
     H.render();
     document.head.appendChild(st);
-    // первый заход: ответа сервера нет — места придерживаем недолго
-    if (H.all) setTimeout(function () { if (H.all) { H.all = false; H.render(); } }, 1500);
-    // страховка: если основной скрипт так и не запустился, ничего не держим
-    setTimeout(function () { if (!H.armed) { H.all = false; H.slots = {}; H.render(); } }, 8000);
+    var free = function () { if (H.all) { H.all = false; H.render(); } };
+    // запрос к серверу уходит сразу (основной скрипт возьмёт готовый ответ отсюда); первый заход: узнали, где есть своё фото
+    try {
+      var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+      var tm = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : 0;
+      H.p = fetch(API, ctl ? { cache: 'no-store', signal: ctl.signal } : { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('site ' + r.status); return r.json(); })
+        .then(function (d) { clearTimeout(tm); return d; }, function (e) { clearTimeout(tm); throw e; });
+      H.p.then(function (d) {
+        if (!H.all) return;   // уже есть запомненный ответ или основной скрипт всё разобрал
+        if (d && typeof d === 'object' && d.texts && typeof d.texts === 'object' && d.media && typeof d.media === 'object') { H.all = false; H.slots = H.want(d); H.warm(d); H.render(); }
+        else free();
+      }, free);
+    } catch (e) { H.p = null; free(); }
+    setTimeout(free, 8500);   // на случай, если ответ не пришёл и отмены запроса нет
+    // страховка: если основной скрипт так и не запустился, ничего не держим (считаем с момента, когда страница дочитана)
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(function () { if (!H.armed) { H.all = false; H.slots = {}; H.render(); } }, 3000);
+    });
   } catch (e) { /* без этого скрипта сайт просто работает как раньше */ }
 })();
 </script>
@@ -2217,7 +2245,7 @@
         el.appendChild(nl);
         tune(nl, m);
         let shown = false;
-        const giveUp = setTimeout(() => { if (!shown) holdFail(slot, key); }, 5000);   // дольше 5 секунд — показываем зашитую, своё проявится поверх
+        const giveUp = setTimeout(() => { if (!shown) holdFail(slot, key); }, m.type === 'video' ? 6000 : 20000);   // фото дольше 20 с, видео дольше 6 с — показываем зашитую, своё проявится поверх
         const fail = () => { clearTimeout(giveUp); holdFail(slot, key); nl.remove(); };
         const show = () => {
           if (!nl.isConnected) return;
@@ -2253,9 +2281,13 @@
       const ctl = typeof AbortController === 'function' ? new AbortController() : null;
       const timer = ctl ? setTimeout(() => ctl.abort(), 8000) : 0;
       try {
-        const res = await fetch(PROXY_BASE + '/api/site', { cache: 'no-store', ...(ctl ? { signal: ctl.signal } : {}) });
-        if (!res.ok) throw new Error('site ' + res.status);
-        const d = await res.json();
+        let d;
+        if (HOLD && HOLD.p) d = await HOLD.p;          // запрос уже ушёл из <head>, пока страница докачивалась
+        else {
+          const res = await fetch(PROXY_BASE + '/api/site', { cache: 'no-store', ...(ctl ? { signal: ctl.signal } : {}) });
+          if (!res.ok) throw new Error('site ' + res.status);
+          d = await res.json();
+        }
         if (!d || typeof d !== 'object' || !d.texts || typeof d.texts !== 'object' || !d.media || typeof d.media !== 'object') throw new Error('site shape');
         const raw = JSON.stringify(d);
         if (raw !== last) { last = raw; apply(d); try { localStorage.setItem(LS, raw); } catch (e) { /* память браузера может быть закрыта */ } }
