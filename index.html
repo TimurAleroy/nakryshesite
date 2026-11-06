@@ -47,9 +47,13 @@
         }
       } catch (e) {}
     };
+    // Карта гостя на сайте: открыта ли она гостям, сервер сообщает в ответе (cardOpen). До ответа верим запомненному.
+    H.card = function (d) {
+      try { if (d && typeof d === 'object' && d.texts && typeof d.texts === 'object') document.documentElement.classList.toggle('card-open', d.cardOpen === true); } catch (e) {}
+    };
     var c = null;
     try { var raw = localStorage.getItem('nk_site_v1'); c = raw ? JSON.parse(raw) : null; } catch (e) { c = null; }
-    if (c && typeof c === 'object') { H.slots = H.want(c); H.warm(c); } else H.all = true;
+    if (c && typeof c === 'object') { H.slots = H.want(c); H.warm(c); H.card(c); } else H.all = true;
     H.render = function () {
       var css = H.all ? '[data-sm]' : Object.keys(H.slots).filter(function (k) { return H.failed[k] !== H.slots[k]; }).map(function (k) { return '[data-sm="' + k + '"]'; }).join(',');
       st.textContent = css ? css + '{background-image:none!important}' : '';
@@ -64,6 +68,7 @@
       H.p = fetch(API, ctl ? { cache: 'no-store', signal: ctl.signal } : { cache: 'no-store' })
         .then(function (r) { if (!r.ok) throw new Error('site ' + r.status); return r.json(); })
         .then(function (d) { clearTimeout(tm); return d; }, function (e) { clearTimeout(tm); throw e; });
+      H.p.then(H.card, function () {});
       H.p.then(function (d) {
         if (!H.all) return;   // уже есть запомненный ответ или основной скрипт всё разобрал
         if (d && typeof d === 'object' && d.texts && typeof d.texts === 'object' && d.media && typeof d.media === 'object') { H.all = false; H.slots = H.want(d); H.warm(d); H.render(); }
@@ -276,6 +281,14 @@
      Карта оформляется только в Telegram (бот nakryshevld_bot, ссылка вида ?start=card_<откуда>): сайт не может проверить номер,
      а Telegram подтверждает его сам и бесплатно. Метка после card_ говорит воронке, с какого места сайта пришёл гость:
      sec — секция на странице, mnu — меню, bar — нижняя панель, bk — блок после заявки на бронь. */
+  /* Запуск карты по этапам: карта открывается гостям постепенно (в Jarvis: «Сервис → Запуск карты»). Пока сервер не сообщил
+     cardOpen: true, а скрипт не поставил на <html> класс card-open, карты на сайте нет совсем: ни секции, ни пункта меню,
+     ни значка в нижней панели, ни блока после заявки. Нет ответа и нет запомненного ответа — тоже скрыто. */
+  html:not(.card-open) #guest-card,
+  html:not(.card-open) .nav-card-link,
+  html:not(.card-open) .bs-card,
+  html:not(.card-open) #mBar { display: none !important; }
+  html:not(.card-open) .nav-drawer.open .nav-drawer-links a:nth-child(7) { animation-delay: 1.46s; }   /* «Карьера» встаёт на место скрытого пункта */
   #guest-card { padding: 100px 0 120px; }
   .gc-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); grid-template-areas: "text visual" "action visual"; column-gap: 72px; align-items: center; }
   .gc-text { grid-area: text; align-self: end; }
@@ -2267,6 +2280,7 @@
       });
     }
     function apply(c) {
+      try { if (HOLD && HOLD.card) HOLD.card(c); else if (c && c.texts) document.documentElement.classList.toggle('card-open', c.cardOpen === true); } catch (e) {}
       try { applyTexts(c); } catch (e) { console.warn('site texts', e); }
       try { applyMedia(c); } catch (e) { console.warn('site media', e); }
     }
