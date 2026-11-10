@@ -22,6 +22,21 @@
 (function () {
   try {
     var H = window.__smHold = { slots: {}, failed: {}, all: false, armed: false, p: null, warmed: '' };
+    // Диагностика: адрес сайта с ?dbg=1 показывает внизу экрана хронологию загрузки (её можно снять скриншотом с телефона).
+    // Без ?dbg=1 ничего не рисует и ничего не хранит. Записи делает window.__nkLog(текст), в том числе основной скрипт ниже.
+    var DBG = false; try { DBG = /[?&]dbg=1(&|$)/.test(location.search); } catch (e) {}
+    var dlog = [], dbox = null;
+    var L = window.__nkLog = DBG ? function (msg) {
+      try {
+        dlog.push(Math.round(performance.now()) + ' ' + String(msg).slice(0, 70));
+        if (!dbox && document.body) {
+          dbox = document.createElement('pre');
+          dbox.style.cssText = 'position:fixed;left:0;right:0;bottom:0;margin:0;padding:6px 8px;background:rgba(0,0,0,.9);color:#8f8;font:10.5px/1.35 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-all;z-index:2147483647;pointer-events:none';
+          document.body.appendChild(dbox);
+        }
+        if (dbox) dbox.textContent = dlog.slice(-26).join('\n');
+      } catch (e) {}
+    } : function () {};
     var st = document.createElement('style'); st.id = 'smHold';
     var SAFE = /^https?:\/\/[^\s'"()<>\\]+\/api\/media\/[0-9a-f-]{36}$/i;
     var API = 'https://notion-proxy-eu-timuraleroy.waw0.amvera.tech/api/site';   // тот же адрес, что PROXY_BASE ниже
@@ -60,14 +75,23 @@
     };
     H.render();
     document.head.appendChild(st);
+    if (DBG) {
+      var cn = navigator.connection || {};
+      L('ua ' + navigator.userAgent.slice(0, 66)); L('ua ' + navigator.userAgent.slice(66, 132));
+      L('scr ' + innerWidth + 'x' + innerHeight + ' dpr ' + devicePixelRatio + ' net ' + (cn.effectiveType || '-') + ' ' + (cn.downlink || '-') + 'Mb');
+      L('saveData ' + save + ' reduceMotion ' + reduce + ' cache ' + (c ? 'yes' : 'no'));
+      document.addEventListener('DOMContentLoaded', function () { L('DOMContentLoaded'); });
+      try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { L('fonts ready'); }); } catch (e) {}
+    }
     var free = function () { if (H.all) { H.all = false; H.render(); } };
     // запрос к серверу уходит сразу (основной скрипт возьмёт готовый ответ отсюда); первый заход: узнали, где есть своё фото
     try {
       var ctl = typeof AbortController === 'function' ? new AbortController() : null;
       var tm = ctl ? setTimeout(function () { ctl.abort(); }, 8000) : 0;
+      var tApi = performance.now();
       H.p = fetch(API, ctl ? { cache: 'no-store', signal: ctl.signal } : { cache: 'no-store' })
         .then(function (r) { if (!r.ok) throw new Error('site ' + r.status); return r.json(); })
-        .then(function (d) { clearTimeout(tm); return d; }, function (e) { clearTimeout(tm); throw e; });
+        .then(function (d) { clearTimeout(tm); L('api ok ' + Math.round(performance.now() - tApi) + 'ms'); return d; }, function (e) { clearTimeout(tm); L('api fail ' + (e && e.name) + ' ' + Math.round(performance.now() - tApi) + 'ms'); throw e; });
       H.p.then(H.card, function () {});
       H.p.then(function (d) {
         if (!H.all) return;   // уже есть запомненный ответ или основной скрипт всё разобрал
@@ -79,10 +103,10 @@
     // запасные картинки ниже первого экрана: качаем после того, как показалось главное видео, а если видео не ждём (его нет, «меньше
     // движения», экономия трафика) — сразу после загрузки страницы; страховка — через 8 с. Страницы без этого скрипта картинки не теряют:
     // класс bg-go ставится и по таймеру, а CSS без него просто прячет запасные.
-    var go = H.go = function () { if (!go.done) { go.done = true; try { document.documentElement.classList.add('bg-go'); document.dispatchEvent(new Event('nk-bg-go')); } catch (e) {} } };
+    var go = H.go = function () { if (!go.done) { go.done = true; L('bg-go (запасные картинки разрешены)'); try { document.documentElement.classList.add('bg-go'); document.dispatchEvent(new Event('nk-bg-go')); } catch (e) {} } };
     document.addEventListener('canplay', go, true);   // событие видео не всплывает, ловим при «погружении»
     var loaded = false, t00 = Date.now();
-    window.addEventListener('load', function () { loaded = true; });
+    window.addEventListener('load', function () { loaded = true; L('window load'); });
     var iv = setInterval(function () {
       if (go.done) return clearInterval(iv);
       var hv = H.all ? null : /^video\|/.test(H.slots['hero.bg'] || '');
@@ -105,9 +129,35 @@
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAADQElEQVR4nOyabUsUURTHz4ybuaL41C67a7tQ5KsCDdF8rMwoKp9WXU3LNXv4QH2BclclMYTAhExNIgpKJYVKsI8gvTAkMFzH44xcr7uzKDvnOjsyvxfLOXdmuOc/987ZuXeOI5DvgCQoiqIZEtr4K0lwXGDXWqd7ASTv2qF7ceJlxxc717XEhZTsJh4QoBt6OrAXD4anhsiH59A5L12JGxYNB1gcW4DZyMA9u9ZCC3t3BNL82U2GFrasgCVvvwYGb/FnQNmdQpacP3tIkkP7hwYB5ORk32ysR2Nm9tPGxj8QgYJTSFT8EHnxvKzsEhpLSz86up6BCCSQBaUgt6uotPSiZqPhdp8BAUggySCGwsICdmvQKCjIAzHYrxJmYwswG1uA2dgCzMYWYDa2ALOxBRwJgctuUQKynVmcJzmdThCDqPVAo7qY3Hdv1IEYRAloab7Fu60tt0EMQgRcu1rl83n4lmKfp77uCghAiIBwX5deYwgEQC8gcNaHI5DY3nC9JuAvBmroBYTDId2dDmx8+KAdqCEWkOU83dnRxNyv374vLi4ztyvUgicAKcQCOoL3cnNzmBuNjkWGXjMXDwVb7wIpxAKePu5l9tran6npj++m5tBgjf19nUAKpYC62spAYP8xHYyO4TeIWGx7aGScNZaUnK+pLgc6KAX0c4lyc/P/q9E3mj08Mr61tcUO6SbZlCET4PG4GhpqmTsx+X59/a9mozExMc0O4WuF1+sGIsgEPBno4bNnJDLGH305OLrfpSwT/qnRCMDkGOpsZi6mzl8rv/kTfq6s4iY7c3u62zIzTwEFNALa2w5kTz51MqLDcfn0DlBAIyDMJUdMmpg6E895OznD59OBR91AAcGCBtNiyYVzzHW5ilZXPh96FebTioqy+fklMAbBCLQHmyAleu8HwTAEIxDweyElvB4XGEY2XmcwO3f4hNHlw9wXMAZ+6Jb8+RmS4c+U1VXllRWXj35+bDuGL6oLC8sGb99uJZc/L8OitRKgbtdYfWPrBNRKWHf+gLpMVQuerFlxo4WtFjxZs2BFC9venTabE1G1yKOoQFqiRhYfW7wAVqWcVjLYbU3MNzpTiJUop0P5/aFd7wAAAP//PBJpcQAAAAZJREFUAwCfletFE6V/vwAAAABJRU5ErkJggg==">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 <meta name="description" content="На Крыше — лаундж-бар во Владикавказе. Авторский бар, кухня и кальян-карта на крыше над городом. Бронирование столов онлайн.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Шрифты свои (assets/fonts/), а не из Google Fonts. Раньше страница ждала стили шрифтов с чужого сервера, пока они не придут,
+     ничего не рисовалось, а на мобильном интернете это могло тянуться десятки секунд. Начертания те же: Jost и Inter 400–600
+     (переменные шрифты: один файл на все веса; лишние диапазоны браузер не качает, пока на странице нет таких букв).
+     Заранее грузятся только кириллица и латиница (в латинский набор входят цифры и знаки). Знак ₽ — отдельный маленький файл.
+     Лицензии (SIL OFL) лежат рядом с шрифтами. -->
+<link rel="preload" href="assets/fonts/jost-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/jost-cyrillic.woff2) format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/jost-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/jost-rub.woff2) format('woff2');
+    unicode-range: U+20BD; }
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/jost-latin-ext.woff2) format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BC, U+20BE-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/inter-cyrillic-ext.woff2) format('woff2');
+    unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/inter-cyrillic.woff2) format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/inter-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/inter-rub.woff2) format('woff2');
+    unicode-range: U+20BD; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(assets/fonts/inter-latin-ext.woff2) format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BC, U+20BE-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+</style>
 <style>
   :root {
     /* 02.11.2026: фон почти чёрный с тёплым коричневым оттенком (#100906), как в приложениях; карточки и акценты прежние.
@@ -2090,8 +2140,10 @@
          реально будут открывать сайт с рекламной ссылки — карта могла просто не
          начинать грузиться. Секция и так открыта только последним экраном страницы
          и до явного клика "Разблокировать карту" не перехватывает скролл/тач —
-         потери в производительности от отказа от lazy здесь незаметны. -->
-    <iframe id="mapFrame" src="https://yandex.ru/map-widget/v1/?ll=44.627692%2C43.042877&z=16&pt=44.627692,43.042877,pm2rdm" allowfullscreen title="На Крыше на карте"></iframe>
+         потери в производительности от отказа от lazy здесь незаметны.
+         10.11.2026: адрес карты лежит в data-src, а в src его ставит скрипт ниже (поиск «mapStarted») — после главного экрана или
+         через 12 с, не раньше: тяжёлая карта больше не отбирает мобильный канал у видео. Вернуть прежнее: src вместо data-src. -->
+    <iframe id="mapFrame" data-src="https://yandex.ru/map-widget/v1/?ll=44.627692%2C43.042877&z=16&pt=44.627692,43.042877,pm2rdm" allowfullscreen title="На Крыше на карте"></iframe>
     <!-- Невидимый слой: пока карта заблокирована, он принимает касания сам и отдаёт их странице.
          Одного pointer-events:none у iframe на iPhone мало, касание уходило в карту. -->
     <div class="map-shield" id="mapShield"></div>
@@ -2291,8 +2343,10 @@
         el.appendChild(nl);
         tune(nl, m);
         let shown = false;
-        const giveUp = setTimeout(() => { if (!shown) holdFail(slot, key); }, m.type === 'video' ? 6000 : 20000);   // фото дольше 20 с, видео дольше 6 с — показываем зашитую, своё проявится поверх
-        const fail = () => { clearTimeout(giveUp); holdFail(slot, key); nl.remove(); };
+        const L = window.__nkLog || (() => {});
+        const goRest = () => { try { if (HOLD && HOLD.go) HOLD.go(); } catch (e) {} };   // ждать видео больше незачем: запасные картинки ниже можно качать
+        const giveUp = setTimeout(() => { if (!shown) { L('giveUp ' + slot + ': ждали ' + (m.type === 'video' ? 4 : 20) + ' с, показываю картинку'); holdFail(slot, key); goRest(); } }, m.type === 'video' ? 4000 : 20000);   // фото дольше 20 с, видео дольше 4 с — показываем зашитую, своё проявится поверх
+        const fail = () => { clearTimeout(giveUp); holdFail(slot, key); goRest(); nl.remove(); };
         const show = () => {
           if (!nl.isConnected) return;
           shown = true; clearTimeout(giveUp);
@@ -2300,10 +2354,32 @@
           if (cur) setTimeout(() => cur.remove(), 800);
         };
         if (m.type === 'video') {
+          ['loadstart', 'loadedmetadata', 'loadeddata', 'canplay', 'playing', 'waiting', 'stalled', 'suspend'].forEach((ev) =>
+            med.addEventListener(ev, () => L('video ' + ev + ' ready' + med.readyState + ' net' + med.networkState)));
           med.addEventListener('loadeddata', show, { once: true });
-          med.addEventListener('error', fail, { once: true });
+          med.addEventListener('error', () => { L('video ERROR code ' + (med.error && med.error.code)); fail(); }, { once: true });
           med.src = m.url;
+          L('video src set (' + slot + ')');
           if (vio) vio.observe(med);
+          // Автозапуск видео телефон может запретить (на iPhone так делает режим «Экономия энергии»): тогда видео не придёт никогда,
+          // и ждать его незачем. Сразу показываем картинку, а видео включится по первому касанию экрана.
+          let tapArmed = false;
+          const kick = (why) => {
+            const p = med.play();
+            if (p && p.then) p.then(() => L('play ok (' + why + ')'), (e) => {
+              L('play refused (' + why + '): ' + (e && e.name));
+              if (e && e.name === 'NotAllowedError') {
+                if (!shown) { clearTimeout(giveUp); holdFail(slot, key); goRest(); }
+                if (!tapArmed) {
+                  tapArmed = true;
+                  const evs = ['touchend', 'pointerup', 'click'];
+                  const onTap = () => { evs.forEach((n) => document.removeEventListener(n, onTap, true)); kick('касание'); };
+                  evs.forEach((n) => document.addEventListener(n, onTap, true));
+                }
+              }
+            });
+          };
+          kick('авто');
         } else {
           const im = new Image();
           im.onload = () => { med.style.backgroundImage = 'url("' + m.url + '")'; show(); };
@@ -2906,8 +2982,26 @@
     });
   }
   if (mapCenterBtn && mapFrame) {
-    const mapFrameSrc = mapFrame.src;
+    const mapFrameSrc = mapFrame.getAttribute('data-src') || mapFrame.src;
     mapCenterBtn.addEventListener('click', () => { mapFrame.src = mapFrameSrc; });
+  }
+  // Карта Яндекса тяжёлая (несколько мегабайт). Раньше она начинала грузиться первой и делила мобильный канал с видео главного
+  // экрана. Теперь стартует, когда главный экран готов (видео показано или от него отказались) плюс 1,2 с; не дожидаясь этого —
+  // за 12 с после открытия страницы или когда к ней подъехали ближе чем на 1200 px. Включение по таймеру, а не только «ленивое»:
+  // во встроенных браузерах Telegram/Instagram/VK наблюдатель за прокруткой ненадёжен (см. прежнее замечание у карты).
+  if (mapFrame && mapFrame.getAttribute('data-src') && !mapFrame.getAttribute('src')) {
+    let mapStarted = false;
+    const startMap = (why) => {
+      if (mapStarted) return;
+      mapStarted = true;
+      try { mapFrame.src = mapFrame.getAttribute('data-src'); (window.__nkLog || (() => {}))('карта Яндекса: старт (' + why + ')'); } catch (e) {}
+    };
+    if (document.documentElement.classList.contains('bg-go')) setTimeout(() => startMap('после главного экрана'), 1200);
+    else document.addEventListener('nk-bg-go', () => setTimeout(() => startMap('после главного экрана'), 1200), { once: true });
+    setTimeout(() => startMap('таймер 12 с'), 12000);
+    if ('IntersectionObserver' in window && mapSectionEl) {
+      new IntersectionObserver((es, o) => { if (es.some((e) => e.isIntersecting)) { o.disconnect(); startMap('подъехали к карте'); } }, { rootMargin: '1200px 0px' }).observe(mapSectionEl);
+    }
   }
 
   // ── Слои: выезжающая панель, окна (ВИП, пространства, меню, бронь, мероприятие) и панель брони ВИП ──
