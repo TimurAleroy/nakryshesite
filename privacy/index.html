@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#100906">
 <title>Политика конфиденциальности — На Крыше</title>
-<meta name="description" content="Какие персональные данные «На Крыше» собирает на сайте и в гостевом приложении, зачем, как хранит и как вы можете ими распоряжаться.">
+<meta name="description" content="Политика в отношении обработки персональных данных «На Крыше»: какие данные собираются на сайте и в гостевом приложении, зачем, как хранятся и как вы можете ими распоряжаться.">
 <link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/jost-cyrillic.woff2) format('woff2');
@@ -32,6 +32,7 @@
   :root {
     --bg: #100906; --bg-card: #20120A; --accent: #B87333; --accent-soft: rgba(184,115,51,0.10); --accent-line: rgba(184,115,51,0.35);
     --text: #F4E2D1; --text-sub: #C9A880; --text-muted: #8A6A52; --border: rgba(244,226,209,0.08);
+    --no-w: 3.6em;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { background: var(--bg); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -54,48 +55,44 @@
   .pv-back:hover { border-color: var(--accent); color: #CD8C4F; background: var(--accent-soft); }
   .pv-back svg { flex-shrink: 0; }
 
-  .pv-head { padding: 64px 0 36px; }
+  .pv-head { padding: 64px 0 20px; }
   .pv-eyebrow { font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
-  h1 { font-family: 'Jost', sans-serif; font-weight: 400; letter-spacing: 0.3px; font-size: clamp(34px, 6vw, 56px); line-height: 1.08; margin-bottom: 22px; }
-  .pv-lead { font-size: 17px; line-height: 1.75; color: var(--text-sub); max-width: 640px; }
-  .pv-meta { margin-top: 22px; font-size: 13px; color: var(--text-muted); }
+  h1 { font-family: 'Jost', sans-serif; font-weight: 400; letter-spacing: 0.3px; font-size: clamp(34px, 6vw, 56px); line-height: 1.08; margin-bottom: 14px; }
+  .pv-sub { font-family: 'Jost', sans-serif; font-size: clamp(18px, 2.6vw, 24px); line-height: 1.35; color: var(--text-sub); margin-bottom: 16px; }
+  .pv-edition { font-size: 14px; color: var(--text-muted); }
 
-  .pv-toc { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 22px 26px; margin: 8px 0 8px; }
-  .pv-toc-t { font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
-  .pv-toc ol { list-style: none; columns: 2; column-gap: 32px; counter-reset: toc; }
-  .pv-toc li { counter-increment: toc; break-inside: avoid; padding-left: 0; margin-bottom: 0; }
-  .pv-toc li::before { content: none; }
-  .pv-toc a { display: block; padding: 6px 0; text-decoration: none; color: var(--text-sub); font-size: 14.5px; transition: color .2s; }
-  .pv-toc a::before { content: counter(toc) '.'; display: inline-block; min-width: 26px; color: var(--text-muted); }
-  .pv-toc a:hover { color: #CD8C4F; }
-
-  section { padding-top: 56px; scroll-margin-top: 16px; }
-  h2 { font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.3px; font-size: clamp(23px, 3.4vw, 30px); line-height: 1.2; margin-bottom: 18px; display: flex; gap: 14px; align-items: baseline; }
+  section { padding-top: 52px; scroll-margin-top: 16px; }
+  h2 { font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.3px; font-size: clamp(23px, 3.4vw, 30px); line-height: 1.2; margin-bottom: 20px; display: flex; gap: 14px; align-items: baseline; }
   h2 .n { flex-shrink: 0; min-width: 28px; color: var(--accent); font-weight: 400; }
-  p { color: rgba(244,226,209,0.84); font-size: 15.5px; line-height: 1.78; margin-bottom: 14px; max-width: 70ch; }
-  p strong { color: var(--text); font-weight: 500; }
-  ul { list-style: none; margin: 0 0 14px; max-width: 70ch; }
-  li { position: relative; padding-left: 22px; margin-bottom: 10px; color: rgba(244,226,209,0.84); font-size: 15.5px; line-height: 1.7; }
-  li::before { content: ''; position: absolute; left: 2px; top: 0.78em; width: 8px; height: 1px; background: var(--accent); }
-  li strong { color: var(--text); font-weight: 500; }
-  p a, li a, dd a { color: var(--text); text-decoration: underline; text-decoration-color: rgba(244,226,209,0.4); text-underline-offset: 3px; transition: color .2s, text-decoration-color .2s; }
-  p a:hover, li a:hover, dd a:hover { color: #CD8C4F; text-decoration-color: currentColor; }
+
+  /* пункты 1.1, 1.2 …: номер слева, текст справа */
+  .cl { display: grid; grid-template-columns: var(--no-w) minmax(0, 1fr); margin-bottom: 16px; max-width: 78ch; }
+  .cl .no { color: var(--text-muted); font-size: 14.5px; line-height: 1.78; font-variant-numeric: tabular-nums; }
+  .cl .tx { color: rgba(244,226,209,0.84); font-size: 15.5px; line-height: 1.78; min-width: 0; }
+  .cl .tx strong { color: var(--text); font-weight: 500; }
+  .tx a, li a, dd a { color: var(--text); text-decoration: underline; text-decoration-color: rgba(244,226,209,0.4); text-underline-offset: 3px; transition: color .2s, text-decoration-color .2s; }
+  .tx a:hover, li a:hover, dd a:hover { color: #CD8C4F; text-decoration-color: currentColor; }
   a:focus-visible { outline: 2px solid #CD8C4F; outline-offset: 3px; border-radius: 4px; }
 
-  .kv { margin: 0 0 18px; }
+  .in { margin-left: var(--no-w); }
+  ul { list-style: none; margin: 0 0 16px; max-width: 70ch; }
+  li { position: relative; padding-left: 22px; margin-bottom: 9px; color: rgba(244,226,209,0.84); font-size: 15.5px; line-height: 1.7; }
+  li::before { content: ''; position: absolute; left: 2px; top: 0.78em; width: 8px; height: 1px; background: var(--accent); }
+  li strong { color: var(--text); font-weight: 500; }
+  .cl + ul.in { margin-top: -6px; }
+
+  .kv { margin: 0; }
   .kv > div { display: grid; grid-template-columns: 1fr; gap: 2px; padding: 12px 0; border-top: 1px solid var(--border); }
   .kv > div:first-child { border-top: 0; padding-top: 0; }
   .kv dt { font-size: 12.5px; letter-spacing: 0.4px; color: var(--text-muted); }
   .kv dd { font-size: 15.5px; line-height: 1.7; color: rgba(244,226,209,0.9); }
-  @media (min-width: 720px) { .kv > div { grid-template-columns: 170px 1fr; gap: 20px; } }
-
   .kv dd ul { margin: 0; max-width: none; }
   .kv dd li { margin-bottom: 6px; }
   .kv dd li:last-child { margin-bottom: 0; }
+  @media (min-width: 720px) { .kv > div { grid-template-columns: 150px 1fr; gap: 20px; } }
 
-  .box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 24px 26px; margin-bottom: 14px; }
-  .box h3 { font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.3px; font-size: 20px; line-height: 1.3; margin-bottom: 16px; }
-  .box .kv { margin-bottom: 0; }
+  .box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 22px 26px; margin-bottom: 14px; }
+  .box h3 { font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.3px; font-size: 19px; line-height: 1.3; margin-bottom: 14px; }
 
   .todo { background: rgba(255,190,70,0.16); color: #FFD08A; border-radius: 6px; padding: 1px 7px; font-size: 0.92em; white-space: nowrap; }
 
@@ -104,21 +101,21 @@
   .pv-foot a:hover { color: #CD8C4F; }
 
   @media (max-width: 640px) {
+    :root { --no-w: 3em; }
     .pv-wrap { padding: 0 20px; }
     .pv-logo img { height: 44px; }
-    .pv-head { padding: 44px 0 28px; }
-    .pv-lead { font-size: 16px; }
-    .pv-toc { padding: 18px 20px; }
-    .pv-toc ol { columns: 1; }
-    section { padding-top: 44px; }
-    .box { padding: 20px 20px; }
+    .pv-head { padding: 44px 0 14px; }
+    section { padding-top: 42px; }
     h2 { gap: 10px; }
     h2 .n { min-width: 24px; }
+    .cl .no { font-size: 13.5px; }
+    .in.box { margin-left: 0; }
+    .box { padding: 20px 20px; }
   }
   @media print {
     body { background: #fff; color: #000; }
-    .pv-top, .pv-toc { display: none; }
-    p, li, .kv dd { color: #000; }
+    .pv-top { display: none; }
+    .cl .tx, .cl .no, li, .kv dd, .pv-sub, .pv-edition { color: #000; }
     h1, h2, .box h3 { color: #000; }
     .box { border-color: #bbb; background: #fff; }
     .todo { background: none; color: #000; }
@@ -141,177 +138,111 @@
     <div class="pv-head">
       <div class="pv-eyebrow">Документы</div>
       <h1>Политика конфиденциальности</h1>
-      <p class="pv-lead">Как «На Крыше» обращается с вашими персональными данными: что мы собираем, зачем, как храним и как вы можете ими распоряжаться.</p>
-      <div class="pv-meta">Редакция от 12 ноября 2026 года</div>
+      <div class="pv-sub">в отношении обработки персональных данных</div>
+      <div class="pv-edition">г. Владикавказ, редакция от 12 ноября 2026 года</div>
     </div>
+<section id="s1">
+<h2><span class="n">1</span>Общие положения</h2>
+<div class="cl"><span class="no">1.1.</span><div class="tx">Эта Политика составлена в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» (далее — Закон). Она объясняет, как и зачем обрабатываются персональные данные и какие меры принимаются для их защиты. Данные обрабатывает <strong><span class="todo">укажите: название оператора</span></strong>, ИНН <span class="todo">укажите: номер</span>, <span class="todo">укажите: ОГРН или ОГРНИП с номером</span>, адрес: <span class="todo">укажите: юридический адрес</span> (далее — Оператор). Заведение «На Крыше» находится по адресу: Владикавказ, ул. Весенняя 19Б.</div></div>
+<div class="cl"><span class="no">1.2.</span><div class="tx">Оператор уважает права и свободы человека при обработке его данных, в том числе право на неприкосновенность частной жизни, личную и семейную тайну.</div></div>
+<div class="cl"><span class="no">1.3.</span><div class="tx">Политика относится ко всей информации, которую Оператор получает о посетителях сайта, на котором она размещена (далее — Сайт), и о гостях, которые пользуются гостевым приложением «На Крыше» в Telegram: картой гостя, профилем и бронями (далее — Приложение).</div></div>
+<div class="cl"><span class="no">1.4.</span><div class="tx">Политика не распространяется на другие сайты и сервисы, на которые ведут ссылки с Сайта (карты, социальные сети, мессенджеры): у них свои правила. Данные сотрудников Оператор обрабатывает отдельно, по трудовому законодательству.</div></div>
+</section>
+<section id="s2">
+<h2><span class="n">2</span>Основные понятия, используемые в Политике</h2>
+<div class="cl"><span class="no">2.1.</span><div class="tx"><strong>Автоматизированная обработка</strong> — обработка данных с помощью компьютерной техники.</div></div>
+<div class="cl"><span class="no">2.2.</span><div class="tx"><strong>Блокирование</strong> — временная приостановка обработки данных, кроме случаев, когда она нужна, чтобы уточнить данные.</div></div>
+<div class="cl"><span class="no">2.3.</span><div class="tx"><strong>Сайт</strong> — страницы, материалы и программы, которые доступны в интернете по адресу, где размещена эта Политика.</div></div>
+<div class="cl"><span class="no">2.4.</span><div class="tx"><strong>Приложение</strong> — гостевое приложение «На Крыше» в Telegram: карта гостя, профиль, брони.</div></div>
+<div class="cl"><span class="no">2.5.</span><div class="tx"><strong>Информационная система персональных данных</strong> — базы данных с персональными данными и технические средства, которые обеспечивают их обработку.</div></div>
+<div class="cl"><span class="no">2.6.</span><div class="tx"><strong>Обезличивание</strong> — действия, после которых без дополнительной информации нельзя понять, кому принадлежат данные.</div></div>
+<div class="cl"><span class="no">2.7.</span><div class="tx"><strong>Обработка</strong> — любое действие с данными: сбор, запись, систематизация, накопление, хранение, уточнение, извлечение, использование, передача, обезличивание, блокирование, удаление, уничтожение.</div></div>
+<div class="cl"><span class="no">2.8.</span><div class="tx"><strong>Оператор</strong> — лицо, которое организует обработку данных и определяет её цели, состав данных и действия с ними.</div></div>
+<div class="cl"><span class="no">2.9.</span><div class="tx"><strong>Персональные данные</strong> — любая информация, которая прямо или косвенно относится к определённому человеку.</div></div>
+<div class="cl"><span class="no">2.10.</span><div class="tx"><strong>Пользователь</strong> — любой посетитель Сайта и любой гость, который пользуется Приложением.</div></div>
+<div class="cl"><span class="no">2.11.</span><div class="tx"><strong>Предоставление данных</strong> — передача данных определённому лицу или определённому кругу лиц.</div></div>
+<div class="cl"><span class="no">2.12.</span><div class="tx"><strong>Распространение данных</strong> — раскрытие данных неопределённому кругу лиц.</div></div>
+<div class="cl"><span class="no">2.13.</span><div class="tx"><strong>Трансграничная передача</strong> — передача данных на территорию другого государства иностранному органу власти, иностранному физическому или юридическому лицу.</div></div>
+<div class="cl"><span class="no">2.14.</span><div class="tx"><strong>Уничтожение</strong> — действия, после которых данные невозможно восстановить в системе, и (или) уничтожаются материальные носители данных.</div></div>
+<div class="cl"><span class="no">2.15.</span><div class="tx"><strong>Файлы cookie</strong> — небольшие файлы, которые сайт сохраняет в браузере посетителя.</div></div>
+</section>
+<section id="s3">
+<h2><span class="n">3</span>Цели обработки персональных данных</h2>
+<div class="cl"><span class="no">3.1.</span><div class="tx"><strong>Бронь.</strong> Принимать и подтверждать заявки на бронь стола, ВИП-комнаты или мероприятия, связываться с Пользователем, готовить стол или комнату.</div></div>
+<div class="cl"><span class="no">3.2.</span><div class="tx"><strong>Карьера.</strong> Рассматривать заявки на работу и связываться с кандидатами.</div></div>
+<div class="cl"><span class="no">3.3.</span><div class="tx"><strong>Приложение.</strong> Оформлять и вести карту гостя, подтверждать брони и напоминать о них, учитывать визиты и уровень карты, поздравлять с днём рождения.</div></div>
+<div class="cl"><span class="no">3.4.</span><div class="tx"><strong>Рассылки.</strong> Рассказывать об афише, событиях и предложениях заведения. Только с отдельного согласия по каждому каналу (Telegram, телефон). Отказаться можно в любой момент.</div></div>
+<div class="cl"><span class="no">3.5.</span><div class="tx"><strong>Работа и безопасность Сайта.</strong> Поддерживать работу Сайта и Приложения, защищать формы от спама и злоупотреблений. Счётчики посетителей и аналитика на Сайте не подключены.</div></div>
+<div class="cl"><span class="no">3.6.</span><div class="tx">Оператор не продаёт данные и не передаёт их рекламным сетям и другим компаниям для их рекламы.</div></div>
+</section>
+<section id="s4">
+<h2><span class="n">4</span>Основания, перечень данных и порядок обработки</h2>
+<div class="cl"><span class="no">4.1.</span><div class="tx">Оператор обрабатывает те данные, которые Пользователь сам вводит в формы Сайта или сообщает в Приложении, и данные, которые Telegram передаёт Приложению при открытии (имя, ник, идентификатор). Основания обработки: согласие Пользователя, которое он даёт, отправляя заявку или оформляя карту; исполнение брони, о которой он просит; требования закона. Технические данные Сайта Оператор обрабатывает в своих законных интересах, чтобы сайт работал безопасно.</div></div>
+<div class="cl"><span class="no">4.2.</span><div class="tx">Перечень данных по ситуациям:</div></div>
+<div class="box in"><h3>Заявка на бронь стола, ВИП-комнаты или мероприятия</h3><dl class="kv"><div><dt>Данные</dt><dd>Имя, номер телефона, дата и время, число гостей, удобный способ связи, комментарий (повод, пожелания)</dd></div><div><dt>Основание</dt><dd>Согласие и исполнение брони, о которой вы просите</dd></div></dl></div>
+<div class="box in"><h3>Заявка в разделе «Карьера»</h3><dl class="kv"><div><dt>Данные</dt><dd>Имя, телефон, возраст, желаемая должность, рассказ о себе и опыте</dd></div><div><dt>Основание</dt><dd>Согласие</dd></div></dl></div>
+<div class="box in"><h3>Приложение в Telegram</h3><dl class="kv"><div><dt>Данные</dt><dd><ul><li>Имя, ник и идентификатор в Telegram</li><li>Номер телефона, когда вы сами делитесь контактом</li><li>Дата рождения, если вы её указали</li><li>Ваши брони и визиты</li><li>Уровень карты и, по мере подключения кассовой системы, суммы счетов для его расчёта</li><li>Служебные пометки персонала о ваших предпочтениях (например, любимый напиток), чтобы встречать вас лучше</li></ul></dd></div><div><dt>Основание</dt><dd>Согласие</dd></div></dl></div>
+<div class="box in"><h3>Рассылки и сообщения</h3><dl class="kv"><div><dt>Данные</dt><dd>Контакт, на который вы согласились получать сообщения (Telegram или телефон), и ваши отметки о согласии по каждому каналу</dd></div><div><dt>Основание</dt><dd>Отдельное согласие на рассылки</dd></div></dl></div>
+<div class="box in"><h3>Технические данные при посещении Сайта</h3><dl class="kv"><div><dt>Данные</dt><dd>IP-адрес, тип устройства и браузера, дата и время запросов</dd></div><div><dt>Основание</dt><dd>Законный интерес Оператора в безопасной работе Сайта</dd></div></dl></div>
+<div class="cl"><span class="no">4.3.</span><div class="tx">Оператор не запрашивает паспортные данные, реквизиты банковских карт, сведения о здоровье, убеждениях и другие особые категории данных. Пожалуйста, не пишите их в поле «Комментарий».</div></div>
+<div class="cl"><span class="no">4.4.</span><div class="tx">Обработка строится на следующих принципах:</div></div>
+<ul class="in">
+  <li>законность и справедливость;</li>
+  <li>данные собираются только для заявленных целей и не используются для несовместимых с ними;</li>
+  <li>объём данных соответствует целям, лишнего Оператор не собирает;</li>
+  <li>базы данных, собранных для несовместимых целей, не объединяются;</li>
+  <li>данные должны быть точными, неполные и неточные Оператор исправляет или удаляет.</li>
+</ul>
+<div class="cl"><span class="no">4.5.</span><div class="tx"><strong>Cookie и память браузера.</strong> Сайт не использует cookie для аналитики и рекламы.</div></div>
+<ul class="in">
+  <li>В памяти браузера Сайт хранит отметку о том, что Пользователь принял уведомление о cookie (на 12 месяцев), и копию содержимого Сайта: меню, афишу, тексты. Благодаря ей страницы открываются быстрее. Личных данных там нет.</li>
+  <li>Встроенная карта загружается с серверов Яндекса. Яндекс может использовать собственные cookie и получать технические данные устройства по своим правилам.</li>
+  <li>Кнопки и ссылки на Telegram и социальные сети ведут на внешние сервисы. После перехода действуют их условия.</li>
+</ul>
+<div class="cl"><span class="no">4.6.</span><div class="tx">Cookie можно удалить или запретить в настройках браузера. Основные функции Сайта — меню, афиша, заявки — при этом продолжат работать.</div></div>
+<div class="cl"><span class="no">4.7.</span><div class="tx"><strong>Кто получает данные.</strong></div></div>
+<ul class="in">
+  <li><strong>Сотрудники заведения.</strong> Только те, кому это нужно для работы (администраторы, хостес, бармены), и в объёме их роли. Доступ выдаётся каждому лично и закрывается при увольнении или смене должности.</li>
+  <li><strong>Хостинг-провайдер.</strong> Российская компания, на серверах которой работают Сайт, Приложение и база данных. Она действует по поручению Оператора.</li>
+  <li><strong>Telegram.</strong> Приложение работает внутри мессенджера, а уведомления о новых заявках приходят администраторам в рабочий чат Telegram. Уведомление отправляется после того, как заявка записана в базу данных Оператора. Серверы Telegram могут находиться за пределами России.</li>
+  <li><strong>Яндекс.</strong> Показывает карту на Сайте (пункт 4.5).</li>
+  <li><strong>Государственные органы.</strong> Только когда этого требует закон.</li>
+</ul>
+<div class="cl"><span class="no">4.8.</span><div class="tx">Другим лицам Оператор передаёт данные только с согласия Пользователя.</div></div>
+<div class="cl"><span class="no">4.9.</span><div class="tx"><strong>Хранение и защита.</strong> Персональные данные граждан России записываются и хранятся в базах данных на серверах, расположенных на территории Российской Федерации. Резервные копии создаются автоматически. Для защиты данных Оператор делает следующее:</div></div>
+<ul class="in">
+  <li>соединение с Сайтом и Приложением защищено (HTTPS);</li>
+  <li>сотрудники входят по личным логинам, пароли хранятся только в виде, из которого их нельзя восстановить;</li>
+  <li>права разделены по ролям: каждый видит только то, что нужно для его задач;</li>
+  <li>доступ сотрудникам выдаёт и закрывает только владелец заведения.</li>
+</ul>
+<div class="cl"><span class="no">4.10.</span><div class="tx">Ни один сервис не может гарантировать абсолютную защиту. При инциденте Оператор действует в порядке, который установлен законом, включая уведомление Роскомнадзора.</div></div>
+<div class="cl"><span class="no">4.11.</span><div class="tx"><strong>Сроки хранения.</strong></div></div>
+<ul class="in">
+  <li><strong>Заявка на бронь:</strong> до 12 месяцев после даты, на которую Пользователь бронировал. Если у него есть карта гостя, визиты остаются в карточке.</li>
+  <li><strong>Карта гостя и профиль:</strong> пока Пользователь пользуется картой. После отзыва согласия или заявления об удалении данные удаляются или обезличиваются.</li>
+  <li><strong>Заявка о работе:</strong> до 6 месяцев после рассмотрения. Дольше только если кандидат попросит оставить её в кадровом резерве.</li>
+  <li><strong>Технические журналы:</strong> не дольше, чем нужно для безопасной работы Сайта.</li>
+</ul>
+<div class="cl"><span class="no">4.12.</span><div class="tx">Когда срок вышел или цель достигнута, данные удаляются или обезличиваются, кроме случаев, когда закон требует хранить их дольше.</div></div>
+</section>
+<section id="s5">
+<h2><span class="n">5</span>Права Пользователя и заключительные положения</h2>
+<div class="cl"><span class="no">5.1.</span><div class="tx">Пользователь вправе:</div></div>
+<ul class="in">
+  <li>узнать, какие его данные обрабатываются и как;</li>
+  <li>потребовать исправить данные, ограничить их обработку или удалить, если они неполные, устаревшие, неточные или не нужны для заявленной цели;</li>
+  <li>отозвать согласие на обработку, в том числе согласие на рассылки;</li>
+  <li>возразить против использования данных для рекламных рассылок;</li>
+  <li>пожаловаться в Роскомнадзор (<a href="https://rkn.gov.ru" target="_blank" rel="noopener">rkn.gov.ru</a>) или в суд, если считает, что его права нарушаются.</li>
+</ul>
+<div class="cl"><span class="no">5.2.</span><div class="tx">Чтобы воспользоваться правами, нужно написать Оператору на <span class="todo">укажите: почта для обращений</span> и указать в теме «Персональные данные». В письме надо назвать имя и телефон, которые были оставлены на Сайте или в Приложении: так Оператор найдёт данные и убедится, что запрос исходит от их владельца. Ответ будет дан в течение 10 рабочих дней. Если нужно больше времени, закон разрешает продлить срок не более чем на 5 рабочих дней, о чём Оператор предупредит.</div></div>
+<div class="cl"><span class="no">5.3.</span><div class="tx">После отзыва согласия Оператор прекращает обработку и удаляет данные в срок, который установлен законом (не более 30 дней), кроме тех, которые обязан хранить. Некоторые возможности, например карта гостя, после этого станут недоступны.</div></div>
+<div class="cl"><span class="no">5.4.</span><div class="tx">Онлайн-бронь и карту гостя оформляют лица, которым исполнилось 18 лет. Если кандидату на вакансию меньше 18 лет, это нужно указать в заявке: Оператор уточнит согласие родителя или законного представителя.</div></div>
+<div class="cl"><span class="no">5.5.</span><div class="tx">Изменения Политики публикуются на этой странице с новой датой редакции. Если изменения существенные, об этом сообщается на Сайте. Политика действует бессрочно, до замены новой редакцией. Актуальная версия всегда доступна по адресу этой страницы.</div></div>
+<div class="cl"><span class="no">5.6.</span><div class="tx">Вопросы о персональных данных и обращения: <span class="todo">укажите: почта для обращений</span>. Почтовый адрес: <span class="todo">укажите: юридический адрес</span>.</div></div>
+</section>
 
-    <nav class="pv-toc" aria-label="Содержание">
-      <div class="pv-toc-t">Содержание</div>
-      <ol>
-        <li><a href="#s1">Кто мы и о чём документ</a></li>
-        <li><a href="#s2">Какие данные и зачем</a></li>
-        <li><a href="#s3">Cookie и память браузера</a></li>
-        <li><a href="#s4">Кто получает доступ</a></li>
-        <li><a href="#s5">Хранение и защита</a></li>
-        <li><a href="#s6">Сроки хранения</a></li>
-        <li><a href="#s7">Ваши права</a></li>
-        <li><a href="#s8">Возраст</a></li>
-        <li><a href="#s9">Изменения политики</a></li>
-        <li><a href="#s10">Контакты</a></li>
-      </ol>
-    </nav>
-
-    <section id="s1">
-      <h2><span class="n">1</span>Кто мы и о чём документ</h2>
-      <p>Эта Политика составлена в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных». Она объясняет, как мы обрабатываем персональные данные посетителей сайта и гостей заведения «На Крыше».</p>
-      <div class="box">
-        <h3>Оператор персональных данных</h3>
-        <dl class="kv">
-          <div><dt>Оператор</dt><dd><span class="todo">укажите: название оператора</span></dd></div>
-          <div><dt>ИНН</dt><dd><span class="todo">укажите: ИНН</span></dd></div>
-          <div><dt>ОГРН / ОГРНИП</dt><dd><span class="todo">укажите: ОГРН или ОГРНИП</span></dd></div>
-          <div><dt>Адрес</dt><dd><span class="todo">укажите: юридический адрес</span></dd></div>
-          <div><dt>Почта для обращений</dt><dd><span class="todo">укажите: почта для обращений</span></dd></div>
-          <div><dt>Заведение</dt><dd>Владикавказ, ул. Весенняя 19Б</dd></div>
-        </dl>
-      </div>
-      <p>Политика действует для сайта, на котором размещена, и для гостевого приложения «На Крыше» в Telegram: карта гостя, профиль, брони. Ссылки на другие сервисы (карты, социальные сети, мессенджеры) ведут на ресурсы со своими правилами, за них мы не отвечаем. Данные сотрудников мы обрабатываем отдельно, по трудовому законодательству.</p>
-      <p>Данные мы обрабатываем на законных основаниях: с вашего согласия, которое вы даёте, отправляя заявку или оформляя карту, когда это нужно для брони, о которой вы просите, и когда этого требует закон.</p>
-    </section>
-
-    <section id="s2">
-      <h2><span class="n">2</span>Какие данные и зачем</h2>
-
-      <div class="box">
-        <h3>Заявка на бронь стола, ВИП-комнаты или мероприятия</h3>
-        <dl class="kv">
-          <div><dt>Данные</dt><dd>Имя, номер телефона, дата и время, число гостей, удобный способ связи, комментарий (повод, пожелания)</dd></div>
-          <div><dt>Зачем</dt><dd>Связаться с вами, подтвердить бронь и подготовить стол или комнату</dd></div>
-          <div><dt>Основание</dt><dd>Ваше согласие и исполнение брони, о которой вы просите</dd></div>
-        </dl>
-      </div>
-
-      <div class="box">
-        <h3>Заявка в разделе «Карьера»</h3>
-        <dl class="kv">
-          <div><dt>Данные</dt><dd>Имя, телефон, возраст, желаемая должность, рассказ о себе и опыте</dd></div>
-          <div><dt>Зачем</dt><dd>Рассмотреть кандидатуру и связаться с вами</dd></div>
-          <div><dt>Основание</dt><dd>Ваше согласие</dd></div>
-        </dl>
-      </div>
-
-      <div class="box">
-        <h3>Гостевое приложение в Telegram</h3>
-        <dl class="kv">
-          <div><dt>Данные</dt><dd><ul>
-            <li>Имя, ник и идентификатор в Telegram</li>
-            <li>Номер телефона, когда вы сами делитесь контактом</li>
-            <li>Дата рождения, если вы её указали</li>
-            <li>Ваши брони и визиты</li>
-            <li>Уровень карты и, по мере подключения кассовой системы, суммы счетов для его расчёта</li>
-            <li>Служебные пометки персонала о ваших предпочтениях (например, любимый напиток), чтобы встречать вас лучше</li>
-          </ul></dd></div>
-          <div><dt>Зачем</dt><dd>Оформить и вести карту гостя, подтверждать и напоминать о брони, поздравлять с днём рождения</dd></div>
-          <div><dt>Основание</dt><dd>Ваше согласие</dd></div>
-        </dl>
-      </div>
-
-      <div class="box">
-        <h3>Рассылки и сообщения</h3>
-        <dl class="kv">
-          <div><dt>Данные</dt><dd>Контакт, на который вы согласились получать сообщения (Telegram или телефон), и ваши отметки о согласии по каждому каналу</dd></div>
-          <div><dt>Зачем</dt><dd>Рассказывать об афише, событиях и предложениях заведения</dd></div>
-          <div><dt>Основание</dt><dd>Отдельное согласие на рассылки. Отказаться можно в любой момент</dd></div>
-        </dl>
-      </div>
-
-      <div class="box">
-        <h3>Технические данные при посещении сайта</h3>
-        <dl class="kv">
-          <div><dt>Данные</dt><dd>IP-адрес, тип устройства и браузера, дата и время запросов</dd></div>
-          <div><dt>Зачем</dt><dd>Чтобы сайт работал и формы были защищены от спама и злоупотреблений</dd></div>
-          <div><dt>Основание</dt><dd>Наш законный интерес в безопасной работе сайта</dd></div>
-        </dl>
-      </div>
-
-      <p>Мы не запрашиваем паспортные данные, реквизиты банковских карт, сведения о здоровье, убеждениях и другие особые категории данных. Пожалуйста, не пишите их в поле «Комментарий».</p>
-      <p>Мы не продаём данные и не передаём их рекламным сетям и другим компаниям для их рекламы.</p>
-    </section>
-
-    <section id="s3">
-      <h2><span class="n">3</span>Cookie и память браузера</h2>
-      <p>Сайт не использует cookie для аналитики и рекламы и не подключает счётчики посетителей.</p>
-      <ul>
-        <li>В памяти вашего браузера сайт хранит отметку о том, что вы приняли уведомление о cookie (на 12 месяцев), и копию содержимого сайта: меню, афишу, тексты. Благодаря ей страницы открываются быстрее. Ваших личных данных там нет.</li>
-        <li>Встроенная карта загружается с серверов Яндекса. Яндекс может использовать собственные cookie и получать технические данные вашего устройства по своим правилам.</li>
-        <li>Кнопки и ссылки на Telegram и социальные сети ведут на внешние сервисы. После перехода действуют их условия.</li>
-      </ul>
-      <p>Cookie можно удалить или запретить в настройках браузера. Основные функции сайта — меню, афиша, заявки — при этом продолжат работать.</p>
-    </section>
-
-    <section id="s4">
-      <h2><span class="n">4</span>Кто получает доступ</h2>
-      <ul>
-        <li><strong>Сотрудники заведения.</strong> Только те, кому это нужно для работы (администраторы, хостес, бармены), и в объёме их роли. Доступ выдаётся каждому лично и закрывается при увольнении или смене должности.</li>
-        <li><strong>Хостинг-провайдер.</strong> Российская компания, на серверах которой работают сайт, приложение и база данных. Она действует по нашему поручению.</li>
-        <li><strong>Telegram.</strong> Гостевое приложение работает внутри мессенджера, а уведомления о новых заявках приходят администраторам в рабочий чат Telegram. Уведомление отправляется после того, как заявка записана в нашу базу данных. Серверы Telegram могут находиться за пределами России.</li>
-        <li><strong>Яндекс.</strong> Показывает карту на сайте (раздел 3).</li>
-        <li><strong>Государственные органы.</strong> Только когда этого требует закон.</li>
-      </ul>
-      <p>Другим лицам мы передаём данные только с вашего согласия.</p>
-    </section>
-
-    <section id="s5">
-      <h2><span class="n">5</span>Хранение и защита</h2>
-      <p>Персональные данные граждан России записываются и хранятся в базах данных на серверах, расположенных на территории Российской Федерации. Резервные копии создаются автоматически. Чтобы защитить данные, мы делаем следующее:</p>
-      <ul>
-        <li>соединение с сайтом и приложением защищено (HTTPS);</li>
-        <li>сотрудники входят по личным логинам, пароли хранятся только в виде, из которого их нельзя восстановить;</li>
-        <li>права разделены по ролям: каждый видит только то, что нужно для его задач;</li>
-        <li>доступ сотрудникам выдаёт и закрывает только владелец заведения.</li>
-      </ul>
-      <p>Ни один сервис не может гарантировать абсолютную защиту. При инциденте мы действуем в порядке, который установлен законом, включая уведомление Роскомнадзора.</p>
-    </section>
-
-    <section id="s6">
-      <h2><span class="n">6</span>Сроки хранения</h2>
-      <ul>
-        <li><strong>Заявка на бронь:</strong> до 12 месяцев после даты, на которую вы бронировали. Если у вас есть карта гостя, визиты остаются в вашей карточке.</li>
-        <li><strong>Карта гостя и профиль:</strong> пока вы пользуетесь картой. После отзыва согласия или вашего заявления об удалении данные удаляются или обезличиваются.</li>
-        <li><strong>Заявка о работе:</strong> до 6 месяцев после рассмотрения. Дольше только если вы попросите оставить её в кадровом резерве.</li>
-        <li><strong>Технические журналы:</strong> не дольше, чем нужно для безопасной работы сайта.</li>
-      </ul>
-      <p>Когда срок вышел или цель достигнута, данные удаляются или обезличиваются, кроме случаев, когда закон требует хранить их дольше.</p>
-    </section>
-
-    <section id="s7">
-      <h2><span class="n">7</span>Ваши права</h2>
-      <p>Вы вправе:</p>
-      <ul>
-        <li>узнать, какие ваши данные мы обрабатываем и как;</li>
-        <li>потребовать исправить данные, ограничить их обработку или удалить, если они неполные, устаревшие, неточные или не нужны для заявленной цели;</li>
-        <li>отозвать согласие на обработку, в том числе согласие на рассылки;</li>
-        <li>возразить против использования данных для рекламных рассылок;</li>
-        <li>пожаловаться в Роскомнадзор (<a href="https://rkn.gov.ru" target="_blank" rel="noopener">rkn.gov.ru</a>) или в суд, если считаете, что мы нарушаем ваши права.</li>
-      </ul>
-      <p>Чтобы воспользоваться правами, напишите на <span class="todo">укажите: почта для обращений</span> и укажите в теме «Персональные данные». Напишите имя и телефон, которые вы нам оставляли: так мы найдём ваши данные и убедимся, что запрос исходит от вас. Ответим в течение 10 рабочих дней. Если нужно больше времени, закон разрешает продлить срок не более чем на 5 рабочих дней, о чём мы вас предупредим.</p>
-      <p>После отзыва согласия мы прекращаем обработку и удаляем данные в срок, который установлен законом (не более 30 дней), кроме тех, которые обязаны хранить. Некоторые возможности, например карта гостя, после этого станут недоступны.</p>
-    </section>
-
-    <section id="s8">
-      <h2><span class="n">8</span>Возраст</h2>
-      <p>Онлайн-бронь и карту гостя оформляют лица, которым исполнилось 18 лет. Если вам меньше 18 и вы откликаетесь на вакансию, укажите это в заявке: мы уточним согласие родителя или законного представителя.</p>
-    </section>
-
-    <section id="s9">
-      <h2><span class="n">9</span>Изменения политики</h2>
-      <p>Мы можем обновлять Политику. Новая редакция появляется на этой странице с новой датой. Если изменения существенные, мы предупредим об этом на сайте.</p>
-    </section>
-
-    <section id="s10">
-      <h2><span class="n">10</span>Контакты</h2>
-      <p>Вопросы о персональных данных и обращения: <span class="todo">укажите: почта для обращений</span>.<br>Почтовый адрес: <span class="todo">укажите: юридический адрес</span>.</p>
-    </section>
   </main>
 
   <footer class="pv-foot">
