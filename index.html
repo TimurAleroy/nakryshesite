@@ -1234,6 +1234,11 @@
   .booking-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
   .form-note { font-size: 11.5px; color: var(--text-muted); margin-top: 14px; line-height: 1.6; }
+  .form-note a { color: var(--text-sub); text-decoration: underline; text-decoration-color: rgba(201,168,128,0.45); text-underline-offset: 2px; transition: color 0.2s, text-decoration-color 0.2s; }
+  .form-note a:hover { color: #CD8C4F; text-decoration-color: currentColor; }
+  .legal-line { margin-top: 28px; font-size: 12.5px; line-height: 1.5; }
+  .legal-line a { color: #A98B68; text-decoration: underline; text-decoration-color: rgba(169,139,104,0.4); text-underline-offset: 3px; transition: color 0.2s, text-decoration-color 0.2s; }
+  .legal-line a:hover { color: #CD8C4F; text-decoration-color: currentColor; }
 
   .form-feedback {
     display: none; border-radius: 10px; padding: 13px 16px; font-size: 13px; line-height: 1.6; margin-bottom: 16px;
@@ -1629,7 +1634,7 @@
             <textarea class="form-textarea" id="vipComment" placeholder="Повод, пожелания..."></textarea>
           </div>
           <button type="submit" class="btn btn-primary btn-full" id="vipSubmitBtn">Отправить заявку</button>
-          <div class="form-note">Отправляя заявку, вы соглашаетесь на обработку персональных данных.</div>
+          <div class="form-note">Отправляя заявку, вы соглашаетесь на обработку персональных данных на условиях <a href="privacy/" target="_blank" rel="noopener">Политики конфиденциальности</a>.</div>
         </form>
 
         <div class="booking-success" id="vipBookingSuccess">
@@ -1921,6 +1926,7 @@
             </a>
           </div>
         </div>
+        <div class="legal-line"><a href="privacy/" target="_blank" rel="noopener">Политика конфиденциальности</a></div>
       </div>
     </div>
   </section>
@@ -1996,7 +2002,7 @@
           </div>
 
           <button type="submit" class="btn btn-primary btn-full" id="evSubmitBtn">Отправить заявку</button>
-          <div class="form-note">Отправляя заявку, вы соглашаетесь на обработку персональных данных.</div>
+          <div class="form-note">Отправляя заявку, вы соглашаетесь на обработку персональных данных на условиях <a href="privacy/" target="_blank" rel="noopener">Политики конфиденциальности</a>.</div>
         </form>
 
         <div class="booking-success" id="eventsBookingSuccess">
@@ -2110,7 +2116,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary btn-full" id="bkSubmitBtn">Отправить заявку</button>
-            <div class="form-note">Отправляя заявку, вы соглашаетесь на обработку персональных данных.</div>
+            <div class="form-note">Отправляя заявку, вы соглашаетесь на обработку персональных данных на условиях <a href="privacy/" target="_blank" rel="noopener">Политики конфиденциальности</a>.</div>
           </form>
 
           <div class="booking-success" id="bookingSuccess">
@@ -4024,5 +4030,6 @@
   } catch (e) { /* указатель — украшение, странице он не нужен */ }
 })();
 </script>
+<script src="assets/cookie-consent.js" defer></script>
 </body>
 </html>

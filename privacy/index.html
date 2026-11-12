@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#100906">
+<title>Политика конфиденциальности — На Крыше</title>
+<meta name="description" content="Какие персональные данные «На Крыше» собирает на сайте и в гостевом приложении, зачем, как хранит и как вы можете ими распоряжаться.">
+<link rel="preload" href="../assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/jost-cyrillic.woff2) format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/jost-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/jost-rub.woff2) format('woff2');
+    unicode-range: U+20BD; }
+  @font-face { font-family: 'Jost'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/jost-latin-ext.woff2) format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BC, U+20BE-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/inter-cyrillic-ext.woff2) format('woff2');
+    unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/inter-cyrillic.woff2) format('woff2');
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/inter-latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/inter-rub.woff2) format('woff2');
+    unicode-range: U+20BD; }
+  @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400 600; font-display: swap; src: url(../assets/fonts/inter-latin-ext.woff2) format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BC, U+20BE-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+</style>
+<style>
+  :root {
+    --bg: #100906; --bg-card: #20120A; --accent: #B87333; --accent-soft: rgba(184,115,51,0.10); --accent-line: rgba(184,115,51,0.35);
+    --text: #F4E2D1; --text-sub: #C9A880; --text-muted: #8A6A52; --border: rgba(244,226,209,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--bg); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    min-height: 100vh; color: var(--text); font-family: 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6;
+    background: radial-gradient(900px 460px at 50% -120px, rgba(184,115,51,0.16), transparent 70%), var(--bg);
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .pv-wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  .pv-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 26px 0 0; }
+  .pv-logo { display: block; line-height: 0; }
+  .pv-logo img { display: block; height: 52px; width: auto; }
+  .pv-back {
+    display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 100px; text-decoration: none;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.4px; color: var(--text); border: 1px solid rgba(244,226,209,0.22);
+    transition: border-color .2s, color .2s, background .25s;
+  }
+  .pv-back:hover { border-color: var(--accent); color: #CD8C4F; background: var(--accent-soft); }
+  .pv-back svg { flex-shrink: 0; }
+
+  .pv-head { padding: 64px 0 36px; }
+  .pv-eyebrow { font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+  h1 { font-family: 'Jost', sans-serif; font-weight: 400; letter-spacing: 0.3px; font-size: clamp(34px, 6vw, 56px); line-height: 1.08; margin-bottom: 22px; }
+  .pv-lead { font-size: 17px; line-height: 1.75; color: var(--text-sub); max-width: 640px; }
+  .pv-meta { margin-top: 22px; font-size: 13px; color: var(--text-muted); }
+
+  .pv-toc { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 22px 26px; margin: 8px 0 8px; }
+  .pv-toc-t { font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .pv-toc ol { list-style: none; columns: 2; column-gap: 32px; counter-reset: toc; }
+  .pv-toc li { counter-increment: toc; break-inside: avoid; padding-left: 0; margin-bottom: 0; }
+  .pv-toc li::before { content: none; }
+  .pv-toc a { display: block; padding: 6px 0; text-decoration: none; color: var(--text-sub); font-size: 14.5px; transition: color .2s; }
+  .pv-toc a::before { content: counter(toc) '.'; display: inline-block; min-width: 26px; color: var(--text-muted); }
+  .pv-toc a:hover { color: #CD8C4F; }
+
+  section { padding-top: 56px; scroll-margin-top: 16px; }
+  h2 { font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.3px; font-size: clamp(23px, 3.4vw, 30px); line-height: 1.2; margin-bottom: 18px; display: flex; gap: 14px; align-items: baseline; }
+  h2 .n { flex-shrink: 0; min-width: 28px; color: var(--accent); font-weight: 400; }
+  p { color: rgba(244,226,209,0.84); font-size: 15.5px; line-height: 1.78; margin-bottom: 14px; max-width: 70ch; }
+  p strong { color: var(--text); font-weight: 500; }
+  ul { list-style: none; margin: 0 0 14px; max-width: 70ch; }
+  li { position: relative; padding-left: 22px; margin-bottom: 10px; color: rgba(244,226,209,0.84); font-size: 15.5px; line-height: 1.7; }
+  li::before { content: ''; position: absolute; left: 2px; top: 0.78em; width: 8px; height: 1px; background: var(--accent); }
+  li strong { color: var(--text); font-weight: 500; }
+  p a, li a, dd a { color: var(--text); text-decoration: underline; text-decoration-color: rgba(244,226,209,0.4); text-underline-offset: 3px; transition: color .2s, text-decoration-color .2s; }
+  p a:hover, li a:hover, dd a:hover { color: #CD8C4F; text-decoration-color: currentColor; }
+  a:focus-visible { outline: 2px solid #CD8C4F; outline-offset: 3px; border-radius: 4px; }
+
+  .kv { margin: 0 0 18px; }
+  .kv > div { display: grid; grid-template-columns: 1fr; gap: 2px; padding: 12px 0; border-top: 1px solid var(--border); }
+  .kv > div:first-child { border-top: 0; padding-top: 0; }
+  .kv dt { font-size: 12.5px; letter-spacing: 0.4px; color: var(--text-muted); }
+  .kv dd { font-size: 15.5px; line-height: 1.7; color: rgba(244,226,209,0.9); }
+  @media (min-width: 720px) { .kv > div { grid-template-columns: 170px 1fr; gap: 20px; } }
+
+  .kv dd ul { margin: 0; max-width: none; }
+  .kv dd li { margin-bottom: 6px; }
+  .kv dd li:last-child { margin-bottom: 0; }
+
+  .box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 24px 26px; margin-bottom: 14px; }
+  .box h3 { font-family: 'Jost', sans-serif; font-weight: 500; letter-spacing: 0.3px; font-size: 20px; line-height: 1.3; margin-bottom: 16px; }
+  .box .kv { margin-bottom: 0; }
+
+  .todo { background: rgba(255,190,70,0.16); color: #FFD08A; border-radius: 6px; padding: 1px 7px; font-size: 0.92em; white-space: nowrap; }
+
+  .pv-foot { margin-top: 72px; padding: 26px 0 120px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+  .pv-foot a { color: var(--text-sub); text-decoration: none; }
+  .pv-foot a:hover { color: #CD8C4F; }
+
+  @media (max-width: 640px) {
+    .pv-wrap { padding: 0 20px; }
+    .pv-logo img { height: 44px; }
+    .pv-head { padding: 44px 0 28px; }
+    .pv-lead { font-size: 16px; }
+    .pv-toc { padding: 18px 20px; }
+    .pv-toc ol { columns: 1; }
+    section { padding-top: 44px; }
+    .box { padding: 20px 20px; }
+    h2 { gap: 10px; }
+    h2 .n { min-width: 24px; }
+  }
+  @media print {
+    body { background: #fff; color: #000; }
+    .pv-top, .pv-toc { display: none; }
+    p, li, .kv dd { color: #000; }
+    h1, h2, .box h3 { color: #000; }
+    .box { border-color: #bbb; background: #fff; }
+    .todo { background: none; color: #000; }
+  }
+</style>
+</head>
+<body>
+<!-- Реквизиты оператора вписываются в build_privacy.py (словарь OP) или в operator.json. Жёлтые метки «укажите …» на странице — ещё не заполненные поля. -->
+
+<div class="pv-wrap">
+  <header class="pv-top">
+    <a class="pv-logo" href="../" aria-label="На Крыше — на главную"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAdUAAAW4CAYAAADnnFlgAAAzgElEQVR4nO3dP2+c97nv60cHpziHnGkHGHYSjkTsDbLY5ABiN9CwFMFpxUTdRoJtrnew30dkIGm9YrcSlFIK1CkHsoEDu3ECJJ0JqKXklqewneU4okSKX87z576ubmVhrTxwQn74zPzu+3fjf0ynDXA5/+//9+Ss7We4Dl+9+qb5X//zf99o+zmgr/6Pth8AAIZCVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUASBEVAEgRFQBIERUgX/6v9f+r7YfAXpNVOGS5ou9s7af4br8t//+/zTj8fpx288BfSWqcElHvz5s+xGu1YOHh79r+xmgr0QVLuHO5q2zndlW249xrY4eLtt+BOgtUYVLOHo47LfUpmma0WitOVjuD/YjbrhOogoXNN2YnN0/XLT9GCvxm0+O2n4E6CVRhQs6WO63/QgrM51Omt3ZtrdVuCRRhQsYj9ePq33X6G0VLk9U4QLmi73fjUZrbT/GSu3M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" alt="На Крыше"></a>
+    <a class="pv-back" href="../">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      На главную
+    </a>
+  </header>
+
+  <main>
+    <div class="pv-head">
+      <div class="pv-eyebrow">Документы</div>
+      <h1>Политика конфиденциальности</h1>
+      <p class="pv-lead">Как «На Крыше» обращается с вашими персональными данными: что мы собираем, зачем, как храним и как вы можете ими распоряжаться.</p>
+      <div class="pv-meta">Редакция от 12 ноября 2026 года</div>
+    </div>
+
+    <nav class="pv-toc" aria-label="Содержание">
+      <div class="pv-toc-t">Содержание</div>
+      <ol>
+        <li><a href="#s1">Кто мы и о чём документ</a></li>
+        <li><a href="#s2">Какие данные и зачем</a></li>
+        <li><a href="#s3">Cookie и память браузера</a></li>
+        <li><a href="#s4">Кто получает доступ</a></li>
+        <li><a href="#s5">Хранение и защита</a></li>
+        <li><a href="#s6">Сроки хранения</a></li>
+        <li><a href="#s7">Ваши права</a></li>
+        <li><a href="#s8">Возраст</a></li>
+        <li><a href="#s9">Изменения политики</a></li>
+        <li><a href="#s10">Контакты</a></li>
+      </ol>
+    </nav>
+
+    <section id="s1">
+      <h2><span class="n">1</span>Кто мы и о чём документ</h2>
+      <p>Эта Политика составлена в соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных». Она объясняет, как мы обрабатываем персональные данные посетителей сайта и гостей заведения «На Крыше».</p>
+      <div class="box">
+        <h3>Оператор персональных данных</h3>
+        <dl class="kv">
+          <div><dt>Оператор</dt><dd><span class="todo">укажите: название оператора</span></dd></div>
+          <div><dt>ИНН</dt><dd><span class="todo">укажите: ИНН</span></dd></div>
+          <div><dt>ОГРН / ОГРНИП</dt><dd><span class="todo">укажите: ОГРН или ОГРНИП</span></dd></div>
+          <div><dt>Адрес</dt><dd><span class="todo">укажите: юридический адрес</span></dd></div>
+          <div><dt>Почта для обращений</dt><dd><span class="todo">укажите: почта для обращений</span></dd></div>
+          <div><dt>Заведение</dt><dd>Владикавказ, ул. Весенняя 19Б</dd></div>
+        </dl>
+      </div>
+      <p>Политика действует для сайта, на котором размещена, и для гостевого приложения «На Крыше» в Telegram: карта гостя, профиль, брони. Ссылки на другие сервисы (карты, социальные сети, мессенджеры) ведут на ресурсы со своими правилами, за них мы не отвечаем. Данные сотрудников мы обрабатываем отдельно, по трудовому законодательству.</p>
+      <p>Данные мы обрабатываем на законных основаниях: с вашего согласия, которое вы даёте, отправляя заявку или оформляя карту, когда это нужно для брони, о которой вы просите, и когда этого требует закон.</p>
+    </section>
+
+    <section id="s2">
+      <h2><span class="n">2</span>Какие данные и зачем</h2>
+
+      <div class="box">
+        <h3>Заявка на бронь стола, ВИП-комнаты или мероприятия</h3>
+        <dl class="kv">
+          <div><dt>Данные</dt><dd>Имя, номер телефона, дата и время, число гостей, удобный способ связи, комментарий (повод, пожелания)</dd></div>
+          <div><dt>Зачем</dt><dd>Связаться с вами, подтвердить бронь и подготовить стол или комнату</dd></div>
+          <div><dt>Основание</dt><dd>Ваше согласие и исполнение брони, о которой вы просите</dd></div>
+        </dl>
+      </div>
+
+      <div class="box">
+        <h3>Заявка в разделе «Карьера»</h3>
+        <dl class="kv">
+          <div><dt>Данные</dt><dd>Имя, телефон, возраст, желаемая должность, рассказ о себе и опыте</dd></div>
+          <div><dt>Зачем</dt><dd>Рассмотреть кандидатуру и связаться с вами</dd></div>
+          <div><dt>Основание</dt><dd>Ваше согласие</dd></div>
+        </dl>
+      </div>
+
+      <div class="box">
+        <h3>Гостевое приложение в Telegram</h3>
+        <dl class="kv">
+          <div><dt>Данные</dt><dd><ul>
+            <li>Имя, ник и идентификатор в Telegram</li>
+            <li>Номер телефона, когда вы сами делитесь контактом</li>
+            <li>Дата рождения, если вы её указали</li>
+            <li>Ваши брони и визиты</li>
+            <li>Уровень карты и, по мере подключения кассовой системы, суммы счетов для его расчёта</li>
+            <li>Служебные пометки персонала о ваших предпочтениях (например, любимый напиток), чтобы встречать вас лучше</li>
+          </ul></dd></div>
+          <div><dt>Зачем</dt><dd>Оформить и вести карту гостя, подтверждать и напоминать о брони, поздравлять с днём рождения</dd></div>
+          <div><dt>Основание</dt><dd>Ваше согласие</dd></div>
+        </dl>
+      </div>
+
+      <div class="box">
+        <h3>Рассылки и сообщения</h3>
+        <dl class="kv">
+          <div><dt>Данные</dt><dd>Контакт, на который вы согласились получать сообщения (Telegram или телефон), и ваши отметки о согласии по каждому каналу</dd></div>
+          <div><dt>Зачем</dt><dd>Рассказывать об афише, событиях и предложениях заведения</dd></div>
+          <div><dt>Основание</dt><dd>Отдельное согласие на рассылки. Отказаться можно в любой момент</dd></div>
+        </dl>
+      </div>
+
+      <div class="box">
+        <h3>Технические данные при посещении сайта</h3>
+        <dl class="kv">
+          <div><dt>Данные</dt><dd>IP-адрес, тип устройства и браузера, дата и время запросов</dd></div>
+          <div><dt>Зачем</dt><dd>Чтобы сайт работал и формы были защищены от спама и злоупотреблений</dd></div>
+          <div><dt>Основание</dt><dd>Наш законный интерес в безопасной работе сайта</dd></div>
+        </dl>
+      </div>
+
+      <p>Мы не запрашиваем паспортные данные, реквизиты банковских карт, сведения о здоровье, убеждениях и другие особые категории данных. Пожалуйста, не пишите их в поле «Комментарий».</p>
+      <p>Мы не продаём данные и не передаём их рекламным сетям и другим компаниям для их рекламы.</p>
+    </section>
+
+    <section id="s3">
+      <h2><span class="n">3</span>Cookie и память браузера</h2>
+      <p>Сайт не использует cookie для аналитики и рекламы и не подключает счётчики посетителей.</p>
+      <ul>
+        <li>В памяти вашего браузера сайт хранит отметку о том, что вы приняли уведомление о cookie (на 12 месяцев), и копию содержимого сайта: меню, афишу, тексты. Благодаря ей страницы открываются быстрее. Ваших личных данных там нет.</li>
+        <li>Встроенная карта загружается с серверов Яндекса. Яндекс может использовать собственные cookie и получать технические данные вашего устройства по своим правилам.</li>
+        <li>Кнопки и ссылки на Telegram и социальные сети ведут на внешние сервисы. После перехода действуют их условия.</li>
+      </ul>
+      <p>Cookie можно удалить или запретить в настройках браузера. Основные функции сайта — меню, афиша, заявки — при этом продолжат работать.</p>
+    </section>
+
+    <section id="s4">
+      <h2><span class="n">4</span>Кто получает доступ</h2>
+      <ul>
+        <li><strong>Сотрудники заведения.</strong> Только те, кому это нужно для работы (администраторы, хостес, бармены), и в объёме их роли. Доступ выдаётся каждому лично и закрывается при увольнении или смене должности.</li>
+        <li><strong>Хостинг-провайдер.</strong> Российская компания, на серверах которой работают сайт, приложение и база данных. Она действует по нашему поручению.</li>
+        <li><strong>Telegram.</strong> Гостевое приложение работает внутри мессенджера, а уведомления о новых заявках приходят администраторам в рабочий чат Telegram. Уведомление отправляется после того, как заявка записана в нашу базу данных. Серверы Telegram могут находиться за пределами России.</li>
+        <li><strong>Яндекс.</strong> Показывает карту на сайте (раздел 3).</li>
+        <li><strong>Государственные органы.</strong> Только когда этого требует закон.</li>
+      </ul>
+      <p>Другим лицам мы передаём данные только с вашего согласия.</p>
+    </section>
+
+    <section id="s5">
+      <h2><span class="n">5</span>Хранение и защита</h2>
+      <p>Персональные данные граждан России записываются и хранятся в базах данных на серверах, расположенных на территории Российской Федерации. Резервные копии создаются автоматически. Чтобы защитить данные, мы делаем следующее:</p>
+      <ul>
+        <li>соединение с сайтом и приложением защищено (HTTPS);</li>
+        <li>сотрудники входят по личным логинам, пароли хранятся только в виде, из которого их нельзя восстановить;</li>
+        <li>права разделены по ролям: каждый видит только то, что нужно для его задач;</li>
+        <li>доступ сотрудникам выдаёт и закрывает только владелец заведения.</li>
+      </ul>
+      <p>Ни один сервис не может гарантировать абсолютную защиту. При инциденте мы действуем в порядке, который установлен законом, включая уведомление Роскомнадзора.</p>
+    </section>
+
+    <section id="s6">
+      <h2><span class="n">6</span>Сроки хранения</h2>
+      <ul>
+        <li><strong>Заявка на бронь:</strong> до 12 месяцев после даты, на которую вы бронировали. Если у вас есть карта гостя, визиты остаются в вашей карточке.</li>
+        <li><strong>Карта гостя и профиль:</strong> пока вы пользуетесь картой. После отзыва согласия или вашего заявления об удалении данные удаляются или обезличиваются.</li>
+        <li><strong>Заявка о работе:</strong> до 6 месяцев после рассмотрения. Дольше только если вы попросите оставить её в кадровом резерве.</li>
+        <li><strong>Технические журналы:</strong> не дольше, чем нужно для безопасной работы сайта.</li>
+      </ul>
+      <p>Когда срок вышел или цель достигнута, данные удаляются или обезличиваются, кроме случаев, когда закон требует хранить их дольше.</p>
+    </section>
+
+    <section id="s7">
+      <h2><span class="n">7</span>Ваши права</h2>
+      <p>Вы вправе:</p>
+      <ul>
+        <li>узнать, какие ваши данные мы обрабатываем и как;</li>
+        <li>потребовать исправить данные, ограничить их обработку или удалить, если они неполные, устаревшие, неточные или не нужны для заявленной цели;</li>
+        <li>отозвать согласие на обработку, в том числе согласие на рассылки;</li>
+        <li>возразить против использования данных для рекламных рассылок;</li>
+        <li>пожаловаться в Роскомнадзор (<a href="https://rkn.gov.ru" target="_blank" rel="noopener">rkn.gov.ru</a>) или в суд, если считаете, что мы нарушаем ваши права.</li>
+      </ul>
+      <p>Чтобы воспользоваться правами, напишите на <span class="todo">укажите: почта для обращений</span> и укажите в теме «Персональные данные». Напишите имя и телефон, которые вы нам оставляли: так мы найдём ваши данные и убедимся, что запрос исходит от вас. Ответим в течение 10 рабочих дней. Если нужно больше времени, закон разрешает продлить срок не более чем на 5 рабочих дней, о чём мы вас предупредим.</p>
+      <p>После отзыва согласия мы прекращаем обработку и удаляем данные в срок, который установлен законом (не более 30 дней), кроме тех, которые обязаны хранить. Некоторые возможности, например карта гостя, после этого станут недоступны.</p>
+    </section>
+
+    <section id="s8">
+      <h2><span class="n">8</span>Возраст</h2>
+      <p>Онлайн-бронь и карту гостя оформляют лица, которым исполнилось 18 лет. Если вам меньше 18 и вы откликаетесь на вакансию, укажите это в заявке: мы уточним согласие родителя или законного представителя.</p>
+    </section>
+
+    <section id="s9">
+      <h2><span class="n">9</span>Изменения политики</h2>
+      <p>Мы можем обновлять Политику. Новая редакция появляется на этой странице с новой датой. Если изменения существенные, мы предупредим об этом на сайте.</p>
+    </section>
+
+    <section id="s10">
+      <h2><span class="n">10</span>Контакты</h2>
+      <p>Вопросы о персональных данных и обращения: <span class="todo">укажите: почта для обращений</span>.<br>Почтовый адрес: <span class="todo">укажите: юридический адрес</span>.</p>
+    </section>
+  </main>
+
+  <footer class="pv-foot">
+    <span>Редакция от 12 ноября 2026 года</span>
+    <a href="../">На Крыше, Владикавказ</a>
+  </footer>
+</div>
+
+<script src="../assets/cookie-consent.js" defer></script>
+</body>
+</html>
