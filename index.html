@@ -2426,6 +2426,8 @@
         if (!d || typeof d !== 'object' || !d.texts || typeof d.texts !== 'object' || !d.media || typeof d.media !== 'object') throw new Error('site shape');
         const raw = JSON.stringify(d);
         if (raw !== last) { last = raw; apply(d); try { localStorage.setItem(LS, raw); } catch (e) { /* память браузера может быть закрыта */ } }
+        // Окно с акцией (Jarvis → Сервис → Акции на сайте): только по свежему ответу сервера, не по запомненному. Нет акции — поля нет
+        try { if (window.nkPromo) window.nkPromo.show(d.promo || null); else window.__nkPromoData = d.promo || null; } catch (e) { /* окно не покажется, сайт работает */ }
       } catch (e) { /* остаются запомненные (или зашитые) надписи и картинки */ }
       finally { if (timer) clearTimeout(timer); if (HOLD && HOLD.all) { HOLD.all = false; HOLD.render(); } }
     })();
@@ -4031,5 +4033,6 @@
 })();
 </script>
 <script src="assets/cookie-consent.js" defer></script>
+<script src="assets/promo-popup.js" defer></script>
 </body>
 </html>
