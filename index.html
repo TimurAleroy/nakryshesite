@@ -4048,7 +4048,8 @@
   const el = document.querySelector('#hero .hero-tagline');
   if (!el) return;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let chars = [], focus = -0.2, target = -0.2, seconds = 0, hovering = false;
+  let chars = [], focus = -0.2, target = -0.2, hovering = false;
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
   let last = 0, raf = 0, visible = true, rebuilding = false;
   function rebuild() {
     if (rebuilding) return;
@@ -4072,6 +4073,7 @@
   const observer = new MutationObserver(rebuild);
   rebuild();
   el.addEventListener('pointermove', function (e) {
+    if (!canHover.matches || e.pointerType === 'touch') return;
     const r = el.getBoundingClientRect();
     hovering = true;
     target = Math.max(-0.2, Math.min(1.2, (e.clientX - r.left) / Math.max(r.width, 1)));
@@ -4085,16 +4087,13 @@
     if (reduce.matches || document.hidden || !visible || !chars.length) { last = now; return; }
     const dt = Math.min((now - (last || now)) / 1000, 0.05);
     last = now;
-    if (!hovering) {
-      seconds += dt;
-      target = -0.12 + 1.24 * (0.5 - 0.5 * Math.cos(seconds * Math.PI * 2 / 6.5));
-    }
-    focus += (target - focus) * Math.min(1, dt * 7);
+    if (hovering && canHover.matches) focus += (target - focus) * Math.min(1, dt * 7);
     const n = Math.max(1, chars.length - 1);
     chars.forEach(function (span, i) {
       const distance = (i/n - focus) / 0.16;
-      const intensity = Math.exp(-distance*distance);
-      span.style.fontWeight = (400 + 200 * intensity).toFixed(1);
+      const intensity = hovering && canHover.matches ? Math.exp(-distance*distance) : 0;
+      const current = parseFloat(span.style.fontWeight) || 400;
+      span.style.fontWeight = (current + (400 + 200 * intensity - current) * Math.min(1, dt * 9)).toFixed(1);
     });
   }
   reduce.addEventListener && reduce.addEventListener('change', function () {
